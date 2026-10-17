@@ -1,7 +1,7 @@
 import { colors } from '../../theme/colors';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Clock, X, FileText, UserRound, ArrowUp } from 'lucide-react-native';
-import { ActivityIndicator, BackHandler, Button, FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, AppState, BackHandler, Button, FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CouncilEvent } from '../../api/events';
 import { listComments, postComment, type EventComment } from '../../api/comments';
@@ -20,6 +20,8 @@ export function EventPanel({ event, onClose }: Props) {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [retry, setRetry] = useState(0);
+  const [replyTo, setReplyTo] = useState<EventComment | null>(null);
+  const input = useRef<ComponentRef<typeof TextInput>>(null);
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
@@ -34,11 +36,26 @@ export function EventPanel({ event, onClose }: Props) {
 
   useEffect(() => {
     const controller = new AbortController();
-    listComments(event.id, controller.signal)
-      .then((data) => { if (!controller.signal.aborted) setComments(data); })
-      .catch(() => { if (!controller.signal.aborted) setLoadError(true); })
-      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
-    return () => controller.abort();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let initial = true;
+    async function refresh() {
+      try {
+        if (initial || AppState.currentState === 'active') {
+          const data = await listComments(event.id, controller.signal);
+          if (!controller.signal.aborted) { setComments(data); setLoadError(false); }
+        }
+      } catch {
+        if (initial && !controller.signal.aborted) setLoadError(true);
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+          initial = false;
+          timer = setTimeout(refresh, 5000);
+        }
+      }
+    }
+    void refresh();
+    return () => { controller.abort(); clearTimeout(timer); };
   }, [event.id, retry]);
 
   async function send() {
@@ -47,10 +64,11 @@ export function EventPanel({ event, onClose }: Props) {
     setSending(true);
     setSendError('');
     try {
-      const comment = await postComment(event.id, body);
+      const comment = await postComment(event.id, body, replyTo?.id);
       if (!mounted.current) return;
       setComments((current) => [...current, comment]);
       setDraft('');
+      setReplyTo(null);
       requestAnimationFrame(() => list.current?.scrollToEnd({ animated: true }));
     } catch {
       if (mounted.current) setSendError('Couldn’t post your comment. Your draft is saved here—try again.');
@@ -98,16 +116,21 @@ export function EventPanel({ event, onClose }: Props) {
             renderItem={({ item }) => (
               <View style={[styles.commentRow, item.is_mine && styles.ownCommentRow]}>
                 <View style={styles.avatar}><UserRound size={17} color="#525252" /></View>
-                <CommentCard comment={item} onUpdated={(updated) => {
+                <CommentCard comment={item} onReply={(comment) => { setReplyTo(comment); input.current?.focus(); }}
+                  replyTo={item.parent_id ? comments.find((comment) => comment.id === item.parent_id)?.user_email ?? 'Anonymous' : undefined} onUpdated={(updated) => {
                   if (mounted.current) setComments((current) => current.map((comment) => comment.id === updated.id ? updated : comment));
-                }} onDeleted={(id) => { if (mounted.current) setComments((current) => current.filter((comment) => comment.id !== id)); }} />
+                }} onDeleted={(id) => { if (mounted.current) setComments((current) => current.filter((comment) => comment.id !== id).map((comment) => comment.parent_id === id ? { ...comment, parent_id: null } : comment)); }} />
               </View>
             )} />
           <View style={styles.composer}>
+            {replyTo && <View style={styles.replyBar}>
+              <Text style={styles.replyLabel}>Replying to {replyTo.user_email ?? 'Anonymous'}</Text>
+              <Pressable accessibilityRole="button" accessibilityLabel="Cancel reply" style={styles.cancelReply} disabled={sending} onPress={() => setReplyTo(null)}><X size={20} color="#737373" /></Pressable>
+            </View>}
             <Text style={styles.postingAs}>{session.status === 'authenticated' ? `Posting as ${session.email}` : 'Posting anonymously'}</Text>
             {sendError ? <Text style={styles.sendError} accessibilityRole="alert">{sendError}</Text> : null}
             <View style={styles.inputRow}>
-              <TextInput accessibilityLabel="Write a comment" placeholder="Add a comment…" placeholderTextColor="#737373"
+              <TextInput ref={input} accessibilityLabel={replyTo ? "Write a reply" : "Write a comment"} placeholder="Add a comment…" placeholderTextColor="#737373"
                 value={draft} onChangeText={setDraft} multiline maxLength={5000} style={styles.input} editable={!sending} />
               <Pressable accessibilityRole="button" accessibilityLabel="Post comment"
                 disabled={sending || !draft.trim() || loading || loadError}
@@ -142,6 +165,9 @@ const styles = StyleSheet.create({
   ownCommentRow: { flexDirection: 'row-reverse' },
   avatar: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#f5f5f5', alignItems: 'center', justifyContent: 'center' },
   composer: { padding: 12, borderTopWidth: 1, borderTopColor: '#e5e5e5', gap: 8 },
+  replyBar: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingLeft: 12, paddingRight: 4, paddingVertical: 4, borderWidth: 1, borderColor: '#a3a3a3', borderRadius: 12 },
+  replyLabel: { flex: 1, fontSize: 11, lineHeight: 16, color: '#737373' },
+  cancelReply: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
   postingAs: { fontSize: 11, color: '#737373' },
   sendError: { fontSize: 12, lineHeight: 18, color: '#525252' },
   inputRow: { flexDirection: 'row', alignItems: 'flex-end', borderWidth: 1, borderColor: '#a3a3a3', borderRadius: 12, padding: 4, gap: 4 },

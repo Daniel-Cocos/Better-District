@@ -1,12 +1,36 @@
 import { colors } from '../../theme/colors';
+import { useEffect } from 'react';
+import { useNotificationsStore } from '../../store/notifications';
+import { useSessionStore } from '../../store/session';
 import { Tabs } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { AppState, StyleSheet, View } from 'react-native';
 import { appTabs } from '../../navigation/tabs';
 
 const tint = { active: colors.accent, inactive: '#737373' };
 
 /** Shared tab navigator. Screens supply content; navigation stays in this component. */
 export function AppTabs() {
+  const session = useSessionStore((state) => state.session);
+  const refresh = useNotificationsStore((state) => state.refresh);
+  const unread = useNotificationsStore((state) => state.items.filter((item) => !item.is_read).length);
+  useEffect(() => {
+    let stopped = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let polling = false;
+    async function poll() {
+      if (stopped || polling || AppState.currentState !== 'active') return;
+      polling = true;
+      await refresh();
+      polling = false;
+      if (!stopped) timer = setTimeout(poll, 10000);
+    }
+    void poll();
+    const subscription = AppState.addEventListener('change', (state) => {
+      clearTimeout(timer);
+      if (state === 'active') void poll();
+    });
+    return () => { stopped = true; clearTimeout(timer); subscription.remove(); };
+  }, [session, refresh]);
   return (
     <Tabs
       backBehavior="history"
@@ -28,6 +52,7 @@ export function AppTabs() {
           name={tab.route}
           options={{
             title: tab.label,
+            tabBarBadge: tab.route === 'notifications' && unread ? unread : undefined,
             tabBarAccessibilityLabel: tab.label,
             tabBarButtonTestID: `tab-${tab.route}`,
             tabBarIcon: ({ focused }) => (

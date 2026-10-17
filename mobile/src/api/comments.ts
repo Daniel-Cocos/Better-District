@@ -3,6 +3,7 @@ import type { Vote } from './events';
 
 export type EventComment = {
   id: number;
+  parent_id?: number | null;
   event_id: number;
   body: string;
   user_email: string | null;
@@ -38,7 +39,7 @@ export async function voteComment(eventId: number, commentId: number, vote: Vote
   return data;
 }
 
-export async function postComment(eventId: number, body: string) {
-  const { data } = await api.post<EventComment>(`/events/${eventId}/comments`, { body: body.trim() });
+export async function postComment(eventId: number, body: string, parentId?: number) {
+  const { data } = await api.post<EventComment>(`/events/${eventId}/comments`, { body: body.trim(), parent_id: parentId });
   return data;
 }
