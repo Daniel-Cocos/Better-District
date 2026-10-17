@@ -1,11 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
+export default function AboutPage() {
   return (
     <View style={styles.container}>
-      <Text>hello worls</Text>
-      <StatusBar style="auto" />
+      <Text>Better District</Text>
+      <Text>Discover local events and join the conversation.</Text>
     </View>
   );
 }
@@ -13,8 +12,9 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 24,
+    gap: 16,
   },
 });

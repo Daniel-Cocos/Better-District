@@ -25,6 +25,16 @@ def initialize(path: Path = DEFAULT_DATABASE):
     path.parent.mkdir(parents=True, exist_ok=True)
     with connect(path) as connection:
         connection.executescript((BACKEND_DIR / "sql" / "schema.sql").read_text())
+        columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(events)")
+        }
+        if "closes_at" not in columns:
+            connection.execute("ALTER TABLE events ADD COLUMN closes_at TEXT")
+        comment_columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(comments)")
+        }
+        if "owner_key" not in comment_columns:
+            connection.execute("ALTER TABLE comments ADD COLUMN owner_key TEXT")
 
 
 def get_database(request: Request):

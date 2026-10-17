@@ -1,6 +1,79 @@
 # Mobile
 
-Minimal React Native app using Expo and TypeScript. Displays `hello worls`.
+React Native app using Expo, TypeScript, Axios, and Zustand.
+
+The app starts with a sign-in / create-account page. “Continue as guest” opens
+the Map tab without contacting the backend. Profile shows the current session
+and lets you sign out or return from guest mode to sign in. Sessions are in memory:
+reloading the app signs you out, and passwords are never saved to disk.
+
+Authentication uses the backend's `POST /users` and HTTP Basic `GET /users/me`
+endpoints. Axios attaches the current account credentials to later API requests;
+guest requests omit credentials. Use HTTPS for a deployed backend.
+
+Start the backend with `make dev` in `backend/`. The Android emulator uses
+`http://10.0.2.2:8000` to reach it by default. To override, copy `.env.example` to
+`.env.local`, set `EXPO_PUBLIC_API_URL`, and restart Metro. For an iOS simulator,
+use `http://127.0.0.1:8000`; for a phone use your computer's LAN address and bind
+the backend to `0.0.0.0`. This URL is public app configuration, not a secret.
+
+Pages use Expo Router. `src/app/auth.tsx` handles authentication, and the root
+layout guards the `(tabs)` group based on the session. The tab bar stays hidden
+on authentication screens. Profile links to the existing About page.
+
+`src/components/navigation/AppTabs.tsx` owns the bottom bar's appearance and
+navigation behavior. `src/navigation/tabs.ts` defines tab order, labels, and
+active/inactive icons. Screens in `src/app/(tabs)/` only provide their content;
+they never render or track the bar themselves. To add a tab, add its route file
+and a definition in `tabs.ts`. Put future detail pages outside `(tabs)` or nest
+them inside a tab's own stack. Map is the default tab; Android Back follows tab
+visit history. The navigator handles safe areas and keeps labels below icons
+even on wider screens. Notifications is a placeholder for now.
+
+Feed uses the shared events store with pull-to-refresh and retry support. Tap
+an event card to open the Map tab with `?eventId=...`, zoom to that pin, and show
+its existing details/comments panel. The camera keeps the marker in the exposed
+map strip beside the panel. Closing the panel clears the selection; returning
+to Feed preserves its scroll position. Feed and Map both refresh on focus.
+
+Map uses MapLibre with OpenFreeMap Positron tiles based on OpenStreetMap data, centered
+on Southampton. The light monochrome style keeps street labels with less visual
+clutter. Pan, pinch zoom, zoom controls, and visible map attribution are
+included. It needs internet access but no API key. The location button asks for
+foreground location permission on tap and centers the map on a fresh position,
+with a position marker and accuracy circle. It does not track in the background.
+Denied permission, disabled location services, and timeouts leave the map usable.
+For emulator testing, set a simulated position in the emulator's Location controls.
+`src/components/maps/OpenStreetMap.tsx` owns loading/retry and external links;
+`mapDocument.ts` owns the basemap and initial view. MapLibre is pinned to 5.8.0,
+using its bundled worker for Android WebView compatibility.
+`MapControls.tsx` groups zoom in, zoom out, and location at the bottom-right.
+Map credits are available through the compact attribution button at bottom-left.
+Tile requests use the WebView's normal HTTP cache and
+identify the app as BetterDistrict. Events load from `GET /events` when the Map tab
+opens or regains focus. Tap a pin to open a side panel with its title, description,
+closing/action deadline, and conversation. The map remains visible at the left
+and the bottom tabs remain accessible. Close with X, the map backdrop, or Android
+Back. The composer posts to `POST /events/{id}/comments`; guest comments are
+anonymous and signed-in comments use the active account. Drafts are retained
+when posting fails. Comments load separately for each event with retry support.
+Deadlines use your device's timezone. Passed deadlines are labeled closed;
+legacy events with no deadline say “Closing time not set”. API requests
+use native Axios and pass marker data to the WebView; the embedded map never
+receives account credentials. A failed request leaves the basemap usable and
+offers Retry. The initial view fits the events without moving the camera on
+subsequent refreshes.
+
+For laptop + Android emulator development, run `make seed` (if needed) and
+`make dev` from `backend/`, then `make android` from `mobile/`. The emulator's
+`10.0.2.2` address reaches the laptop's loopback interface, so the backend can
+keep its default `127.0.0.1:8000` binding. Native requests do not need browser
+CORS configuration. The five seeded events already have Southampton coordinates;
+the seed command refreshes those five demo event descriptions, coordinates, and
+demo comment text while preserving votes and accounts. These are fictional
+Common, Portswood, Riverside, Old Town, and Mayflower Park community events.
+
+After installing the router, restart Metro with `npm start -- --clear`.
 
 From `mobile/`:
 
@@ -41,4 +114,6 @@ uses the updated Android tools path.
 
 Like the backend, Make commands run inside the Nix development environment.
 Run `make` to list commands, `make typecheck` to check TypeScript, and `make lint`
-to run ESLint.
+to run ESLint. `make test` checks auth requests, errors, and session transitions.
+
+Comments support likes/dislikes, editing, deletion, and a profile history. Only the author can edit or delete a comment. Authors can see their vote counts but cannot like or dislike their own comments. Signed-in ownership follows the account; anonymous ownership uses a persistent device cookie. Anonymous comments created before ownership was added cannot be claimed.

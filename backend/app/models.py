@@ -2,7 +2,7 @@
 
 from datetime import date
 from typing import Annotated, Literal
-from pydantic import BaseModel, Field, StringConstraints, model_validator
+from pydantic import AwareDatetime, BaseModel, Field, StringConstraints, model_validator
 
 Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 Email = Annotated[
@@ -16,17 +16,23 @@ Email = Annotated[
 ]
 
 
-class EventCreate(BaseModel):
+class EventDetails(BaseModel):
     title: Text = Field(max_length=200)
     description: Text = Field(max_length=10000)
     latitude: float = Field(ge=-90, le=90, allow_inf_nan=False)
     longitude: float = Field(ge=-180, le=180, allow_inf_nan=False)
 
 
-class Event(EventCreate):
+class EventCreate(EventDetails):
+    closes_at: AwareDatetime
+
+
+class Event(EventDetails):
     id: int
     likes: int
     dislikes: int
+    closes_at: AwareDatetime | None = None
+    my_vote: Literal[-1, 0, 1] = 0
 
 
 class CommentCreate(BaseModel):
@@ -39,6 +45,16 @@ class Comment(CommentCreate):
     user_email: str | None
     likes: int
     dislikes: int
+    my_vote: Literal[-1, 0, 1] = 0
+    is_mine: bool = False
+
+
+class CommentHistory(Comment):
+    event_title: str
+
+
+class VoteCreate(BaseModel):
+    vote: Literal[-1, 0, 1]
 
 
 class UserCreate(BaseModel):
