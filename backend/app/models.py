@@ -1,7 +1,8 @@
 """Request and response models."""
 
-from typing import Annotated
-from pydantic import BaseModel, Field, StringConstraints
+from datetime import date
+from typing import Annotated, Literal
+from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 Email = Annotated[
@@ -47,3 +48,187 @@ class UserCreate(BaseModel):
 
 class User(BaseModel):
     email: str
+
+
+# ---------- Admin website ----------
+
+Stage = Literal["proposal", "live_trial", "built"]
+QuestionType = Literal["single_choice", "multiple_choice", "short_text", "rating"]
+Demographic = Literal[
+    "age_range", "postcode_area", "gender", "ethnicity", "disability", "connection"
+]
+
+
+class AdminLogin(BaseModel):
+    identifier: str = Field(max_length=254)  # email address
+    password: str = Field(max_length=128)
+
+
+class Admin(BaseModel):
+    email: str
+    name: str
+    job_title: str
+
+
+class AdminSession(BaseModel):
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
+    user: Admin
+
+
+class SiteLocation(BaseModel):
+    latitude: float = Field(ge=-90, le=90, allow_inf_nan=False)
+    longitude: float = Field(ge=-180, le=180, allow_inf_nan=False)
+    radius_m: int = Field(ge=10, le=5000)
+
+
+class CustomField(BaseModel):
+    label: str = Field(max_length=200)
+    value: str = Field(max_length=5000)
+
+
+class Question(BaseModel):
+    type: QuestionType
+    prompt: str = Field(max_length=500)
+    options: list[Annotated[str, Field(max_length=200)]] = Field(
+        default=[], max_length=20
+    )
+    required: bool = False
+
+
+class EngagementSettings(BaseModel):
+    default_questions: bool = True
+    custom_comments: bool = True
+    comment_replies: bool = True
+    demographics: list[Demographic] = []
+
+
+class ProjectForm(BaseModel):
+    """Everything the 5-step wizard collects. Lenient so drafts can be partial."""
+
+    # 1. Basics
+    title: str = Field(default="", max_length=200)
+    stage: Stage = "proposal"
+    feedback_opens: date | None = None
+    feedback_closes: date | None = None
+    team: str = Field(default="", max_length=200)
+    contact: str = Field(default="", max_length=254)
+    # 2. Location
+    location: SiteLocation | None = None
+    ward: str | None = Field(default=None, max_length=100)
+    # 3. Documents
+    document_ids: list[str] = Field(default=[], max_length=20)
+    summary: str = Field(default="", max_length=10000)
+    commitments: str = Field(default="", max_length=10000)
+    custom_fields: list[CustomField] = Field(default=[], max_length=30)
+    # 4. Permanent and changeable
+    permanent: list[Annotated[str, Field(max_length=500)]] = Field(
+        default=[], max_length=30
+    )
+    changeable: list[Annotated[str, Field(max_length=500)]] = Field(
+        default=[], max_length=30
+    )
+    # 5. Questions and comments
+    questions: list[Question] = Field(default=[], max_length=30)
+    engagement: EngagementSettings = EngagementSettings()
+
+    @model_validator(mode="after")
+    def feedback_window(self):
+        """Reject a feedback window that closes before it opens."""
+        if (
+            self.feedback_opens
+            and self.feedback_closes
+            and self.feedback_closes < self.feedback_opens
+        ):
+            raise ValueError("Feedback must close on or after the day it opens")
+        return self
+
+    def publish_problems(self) -> list[str]:
+        """What still has to be filled in before residents can see the project."""
+        problems = [
+            message
+            for message, ok in (
+                ("Add a title", self.title.strip()),
+                ("Name the responsible team", self.team.strip()),
+                ("Add a contact", self.contact.strip()),
+                ("Place the project on the map", self.location),
+                ("Write a summary", self.summary.strip()),
+            )
+            if not ok
+        ]
+        for question in self.questions:
+            if not question.prompt.strip():
+                problems.append("Every question needs some text")
+            elif question.type in ("single_choice", "multiple_choice") and (
+                len([o for o in question.options if o.strip()]) < 2
+            ):
+                problems.append(f"“{question.prompt}” needs at least two options")
+        return problems
+
+
+class DraftSummary(BaseModel):
+    id: int
+    title: str
+    updated_at: str
+
+
+class PublishRequest(ProjectForm):
+    draft_id: int | None = None  # deleted once the project is published
+
+
+class Document(BaseModel):
+    id: str
+    name: str
+    size: int
+    content_type: str
+
+
+class Draft(BaseModel):
+    id: int
+    form: ProjectForm
+    documents: list[Document]
+    updated_at: str
+
+
+class Project(ProjectForm):
+    event_id: int
+    documents: list[Document]
+    created_by: str | None
+    created_at: str
+    updated_at: str
+
+
+class OverviewStats(BaseModel):
+    open_consultations: int
+    live_trials: int
+    completed: int
+    drafts: int
+    comments: int
+    reactions: int
+
+
+class OverviewPost(BaseModel):
+    id: int
+    title: str
+    ward: str | None
+    location: SiteLocation | None
+    stage: Stage
+    engagement: list[Literal["comments", "threads", "poll", "survey"]]
+    responses: int
+    closes_on: date | None
+    updated_at: str | None  # events posted outside the admin site have no timestamp
+
+
+class OverviewComment(BaseModel):
+    id: int
+    event_id: int
+    event_title: str
+    body: str
+    user_email: str | None
+
+
+class Overview(BaseModel):
+    stats: OverviewStats
+    posts: list[OverviewPost]
+    recent_comments: list[OverviewComment]
+    drafts: list[DraftSummary]

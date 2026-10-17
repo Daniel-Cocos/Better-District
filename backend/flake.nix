@@ -22,6 +22,7 @@
               fastapi
               uvicorn
               httpx
+              python-multipart
             ]))
             pyright
             sqlite
