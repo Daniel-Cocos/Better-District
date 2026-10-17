@@ -12,6 +12,8 @@ import DescriptionOutlined from '@mui/icons-material/DescriptionOutlined'
 import ScheduleOutlined from '@mui/icons-material/ScheduleOutlined'
 import EditOutlined from '@mui/icons-material/EditOutlined'
 import DeleteOutline from '@mui/icons-material/DeleteOutlineRounded'
+import InsightsOutlined from '@mui/icons-material/InsightsOutlined'
+import { Link as RouterLink } from 'react-router'
 import { errorMessage } from '../../api/client'
 import { fetchComments, postComment, type AdminEvent, type EventComment } from '../../api/events'
 import { eventDeadlineLabel } from '../../utils/eventDeadline'
@@ -115,6 +117,9 @@ export default function EventPanel({ event, onClose, onEdit, onDelete, onDeleteC
             </Button>
             <Button size="small" variant="outlined" color="error" startIcon={<DeleteOutline />} onClick={onDelete}>
               Delete
+            </Button>
+            <Button size="small" component={RouterLink} to={`/insights?plan=${event.id}`} startIcon={<InsightsOutlined />}>
+              Insights
             </Button>
           </Stack>
         </Stack>

@@ -10,6 +10,7 @@ import Feed from './pages/Feed'
 import CommunityIssues from './pages/CommunityIssues'
 import Notifications from './pages/Notifications'
 import FlaggedComments from './pages/FlaggedComments'
+import Insights from './pages/Insights'
 import { FlaggedCommentsProvider } from './moderation/FlaggedCommentsContext'
 import { NotificationsProvider } from './notifications/NotificationsContext'
 import AppShell from './components/AppShell'
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Overview /> },
+      { path: 'insights', element: <Insights /> },
       { path: 'map', element: <MapPage /> },
       { path: 'feed', element: <Feed /> },
       { path: 'community', element: <CommunityIssues /> },
