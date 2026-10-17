@@ -1,7 +1,7 @@
 import { colors } from '../../theme/colors';
 import { useCallback, useState } from 'react';
 import { Link, router, useFocusEffect } from 'expo-router';
-import { UserRound, ArrowRight } from 'lucide-react-native';
+import { UserRound, ArrowRight, LogOut } from 'lucide-react-native';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CommentCard } from '../../components/events/CommentCard';
@@ -41,16 +41,16 @@ export default function ProfilePage() {
         ListHeaderComponent={<View style={styles.header}>
           <View style={styles.account}>
             <View style={styles.identityRow}>
-              <UserRound size={24} color="#737373" accessible={false} />
+              <View style={styles.avatar}>
+                <UserRound size={22} color="#737373" accessible={false} />
+              </View>
               <View style={styles.identityText}>
                 <Text style={styles.accountName}>{authenticated ? session.email : 'Guest'}</Text>
                 {!authenticated && <Link href="/auth" style={styles.link}>Sign in or create an account</Link>}
               </View>
-            </View>
-            <View style={styles.accountActions}>
-              <Pressable accessibilityRole="button" onPress={signOut} hitSlop={6}
-                style={({ pressed }) => pressed && styles.actionPressed}>
-                <Text style={styles.secondaryAction}>{authenticated ? 'Sign out' : 'Leave guest session'}</Text>
+              <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={signOut}
+                style={({ pressed }) => [styles.logout, pressed && styles.actionPressed]}>
+                <LogOut size={21} color="#737373" accessible={false} />
               </Pressable>
             </View>
           </View>
@@ -83,10 +83,10 @@ const styles = StyleSheet.create({
   header: { gap: 20 },
   account: { gap: 12, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#e5e5e5' },
   identityRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  avatar: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: '#d4d4d4', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
   identityText: { flex: 1, gap: 4 },
   accountName: { fontSize: 15, lineHeight: 21, fontWeight: '600', color: '#171717' },
-  accountActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 8 },
-  secondaryAction: { fontSize: 12, lineHeight: 18, color: '#737373', paddingVertical: 6 },
+  logout: { width: 44, height: 44, alignSelf: 'flex-start', alignItems: 'center', justifyContent: 'center' },
   actionPressed: { opacity: 0.6 },
   description: { fontSize: 13, lineHeight: 20, color: '#737373', textAlign: 'center' },
   link: { color: colors.accent, fontSize: 12, lineHeight: 18, fontWeight: '600', paddingVertical: 4 },
