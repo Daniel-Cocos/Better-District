@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react-native';
 import { ActivityIndicator, Alert, BackHandler, Button, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { deleteIssue, editIssue, issuePhotoUrl, type CommunityIssue } from '../../api/issues';
+import { deleteIssue, editIssue, ISSUE_CATEGORIES, issuePhotoUrl, type CommunityIssue } from '../../api/issues';
 
 export function IssuePanel({ issue, onClose, onUpdated, onDeleted }: { issue: CommunityIssue; onClose: () => void; onUpdated: (issue: CommunityIssue) => void; onDeleted: () => void }) {
   const [editing, setEditing] = useState(false);
@@ -42,6 +42,7 @@ export function IssuePanel({ issue, onClose, onUpdated, onDeleted }: { issue: Co
         </View>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
           <Image source={{ uri: issuePhotoUrl(issue.id) }} accessibilityLabel={issue.title} style={styles.photo} />
+          <Text style={styles.tag}>{ISSUE_CATEGORIES.find((c) => c.value === issue.category)?.label ?? 'Other'}</Text>
           {editing ? <>
             <TextInput accessibilityLabel="Issue title" value={title} onChangeText={setTitle} maxLength={200} editable={!busy} style={styles.input} />
             <TextInput accessibilityLabel="Issue description" value={description} onChangeText={setDescription} multiline maxLength={5000} editable={!busy} style={[styles.input, styles.descriptionInput]} />
@@ -65,6 +66,7 @@ export function IssuePanel({ issue, onClose, onUpdated, onDeleted }: { issue: Co
   </View>;
 }
 const styles = StyleSheet.create({
+  tag: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, backgroundColor: '#eef2f7', color: '#3e6fa8', fontSize: 12, fontWeight: '600', overflow: 'hidden' },
   overlay: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 },
   backdrop: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,0,0,0.18)' },
   position: { flex: 1, marginLeft: 40, marginRight: 8, marginBottom: 8 },

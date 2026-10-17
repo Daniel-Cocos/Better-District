@@ -6,13 +6,14 @@ import { ActivityIndicator, Button, Image, KeyboardAvoidingView, Pressable, Plat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { isAxiosError } from 'axios';
 import { OpenStreetMap } from '../../components/maps/OpenStreetMap';
-import { submitIssue, type IssueLocation } from '../../api/issues';
+import { ISSUE_CATEGORIES, submitIssue, type IssueCategory, type IssueLocation } from '../../api/issues';
 import { useNotificationsStore } from '../../store/notifications';
 import { colors } from '../../theme/colors';
 
 export default function ReportPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<IssueCategory | null>(null);
   const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [location, setLocation] = useState<IssueLocation | null>(null);
   const [busy, setBusy] = useState(false);
@@ -54,11 +55,11 @@ export default function ReportPage() {
   }
 
   async function send() {
-    if (busy || !title.trim() || !description.trim() || !photo || !location) return;
+    if (busy || !title.trim() || !description.trim() || !category || !photo || !location) return;
     setBusy(true); setError('');
     try {
-      const result = await submitIssue(title, description, location, photo);
-      setTitle(''); setDescription(''); setPhoto(null); setLocation(null);
+      const result = await submitIssue(title, description, category, location, photo);
+      setTitle(''); setDescription(''); setCategory(null); setPhoto(null); setLocation(null);
       void useNotificationsStore.getState().refresh();
       router.navigate({ pathname: '/', params: { issueId: String(result.id), eventId: undefined } });
     } catch (err) {
@@ -80,6 +81,15 @@ export default function ReportPage() {
           </Pressable>
           {photo && <Button title="Remove" color="#737373" disabled={busy || picking} onPress={() => setPhoto(null)} />}
         </View>
+        <Text style={styles.label}>What kind of problem is it?</Text>
+        <View accessibilityRole="radiogroup" style={styles.tags}>
+          {ISSUE_CATEGORIES.map((option) => {
+            const selected = category === option.value;
+            return <Pressable key={option.value} accessibilityRole="radio" accessibilityState={{ checked: selected, disabled: busy }} disabled={busy} onPress={() => setCategory(option.value)} style={[styles.tag, selected && styles.tagSelected]}>
+              <Text style={[styles.tagText, selected && styles.tagTextSelected]}>{option.label}</Text>
+            </Pressable>;
+          })}
+        </View>
         <Text style={styles.label}>What needs improving?</Text>
         <TextInput accessibilityLabel="Issue title" placeholder="For example, safer crossing by the school" value={title} onChangeText={setTitle} maxLength={200} editable={!busy} style={styles.input} />
         <Text style={styles.label}>Tell us more</Text>
@@ -93,7 +103,7 @@ export default function ReportPage() {
         <Text style={styles.help}>{location ? `Pin: ${location.latitude.toFixed(5)}, ${location.longitude.toFixed(5)}` : 'Place a pin before submitting.'}</Text>
         {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
         {busy && <ActivityIndicator color={colors.accent} />}
-        <Button title={busy ? 'Submitting…' : 'Submit issue'} color={colors.accent} disabled={busy || picking || locating || !photo || !location || !title.trim() || !description.trim()} onPress={send} />
+        <Button title={busy ? 'Submitting…' : 'Submit issue'} color={colors.accent} disabled={busy || picking || locating || !category || !photo || !location || !title.trim() || !description.trim()} onPress={send} />
       </ScrollView>
     </KeyboardAvoidingView>
   </SafeAreaView>;
@@ -104,6 +114,11 @@ const styles = StyleSheet.create({
   help: { fontSize: 13, lineHeight: 20, color: '#737373' }, buttons: { alignSelf: 'stretch', gap: 10 },
   photoButton: { width: '100%', minHeight: 48, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.accent, borderRadius: 10 },
   takePhoto: { backgroundColor: colors.accent },
+  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  tag: { minHeight: 40, paddingHorizontal: 16, justifyContent: 'center', borderWidth: 1, borderColor: '#d4d4d4', borderRadius: 20, backgroundColor: '#fff' },
+  tagSelected: { borderColor: colors.accent, backgroundColor: colors.accent },
+  tagText: { color: '#171717', fontSize: 14, fontWeight: '500' },
+  tagTextSelected: { color: '#fff', fontWeight: '600' },
   takePhotoText: { color: '#fff', fontSize: 15, fontWeight: '600' },
   uploadPhotoText: { color: colors.accent, fontSize: 15, fontWeight: '600' },
   input: { borderWidth: 1, borderColor: '#d4d4d4', borderRadius: 12, padding: 12, backgroundColor: '#fff', color: '#171717', fontSize: 14 },

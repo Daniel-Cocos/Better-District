@@ -4,7 +4,7 @@ import { runInNewContext } from 'node:vm';
 import { issueMarkersScript, reportLocationScript } from '../src/components/maps/issueBridge';
 import type { CommunityIssue } from '../src/api/issues';
 
-const issue: CommunityIssue = { id: 3, title: '</script><script>unexpected()</script>', description: 'Report', latitude: 50.91, longitude: -1.41, status: 'submitted', created_at: '2026-10-17 12:00:00' };
+const issue: CommunityIssue = { id: 3, title: '</script><script>unexpected()</script>', description: 'Report', latitude: 50.91, longitude: -1.41, status: 'submitted', category: 'pothole', created_at: '2026-10-17 12:00:00' };
 test('community map bridge preserves coordinates and treats report text as data', () => {
   let markers: unknown;
   const script = issueMarkersScript([issue, { ...issue, id: 4, latitude: Number.NaN }]);
