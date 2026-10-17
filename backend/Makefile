@@ -8,7 +8,7 @@ help: ## Show available commands
 	@awk 'BEGIN {FS = ":.*## "; printf "\nBackend commands\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2} END {printf "\n"}' $(MAKEFILE_LIST)
 
 dev: ## Start FastAPI with automatic reload
-	$(NIX_RUN) python -m uvicorn app.main:app --reload
+	$(NIX_RUN) python -m uvicorn app.main:app --reload --timeout-graceful-shutdown 3
 
 test: ## Run API tests against temporary databases
 	$(NIX_RUN) python -m pytest
