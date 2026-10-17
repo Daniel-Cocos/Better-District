@@ -61,12 +61,14 @@ export default function CommentItem({ comment, onDelete, context, replyTo, onRep
         </Typography>
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', mt: 0.5 }}>
           <VoteCounts likes={comment.likes} dislikes={comment.dislikes} />
-          {onReply && <Button size="small" onClick={onReply}>Reply</Button>}
-          <Tooltip title="Delete comment">
-            <IconButton size="small" aria-label="Delete comment" onClick={onDelete} sx={{ mr: -0.75 }}>
-              <DeleteOutline sx={{ fontSize: 18 }} />
-            </IconButton>
-          </Tooltip>
+          <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center', ml: 'auto' }}>
+            {onReply && <Button size="small" onClick={onReply}>Reply</Button>}
+            <Tooltip title="Delete comment">
+              <IconButton size="small" aria-label="Delete comment" onClick={onDelete} sx={{ mr: -0.75 }}>
+                <DeleteOutline sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         </Stack>
       </Box>
     </Stack>

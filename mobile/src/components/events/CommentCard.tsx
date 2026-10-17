@@ -37,8 +37,22 @@ export function CommentCard({ comment, onUpdated, onDeleted, onReply, replyTo, e
 
   return (
     <View style={[styles.card, embedded && styles.embedded]}>
-      {replyTo && <Text style={styles.author}>Replying to {replyTo}</Text>}
-      <Text style={styles.author}>{comment.user_email ?? 'Anonymous'}{comment.is_mine ? ' · You' : ''}</Text>
+      <View style={styles.header}>
+        <View style={styles.identity}>
+          {replyTo && <Text style={styles.author}>Replying to {replyTo}</Text>}
+          <Text style={styles.author}>{comment.user_email ?? 'Anonymous'}{comment.is_mine ? ' · You' : ''}</Text>
+        </View>
+        {comment.is_mine && !editing && <View style={styles.ownerActions}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Edit your comment" disabled={busy} hitSlop={6}
+            onPress={() => { setDraft(comment.body); setEditing(true); setError(''); }} style={styles.iconButton}>
+            <Pencil size={14} color="#737373" />
+          </Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Delete your comment" disabled={busy} hitSlop={6}
+            onPress={confirmDelete} style={styles.iconButton}>
+            <Trash2 size={14} color="#737373" />
+          </Pressable>
+        </View>}
+      </View>
       {editing ? (
         <>
           <TextInput accessibilityLabel="Edit your comment" value={draft} onChangeText={setDraft}
@@ -62,16 +76,6 @@ export function CommentCard({ comment, onUpdated, onDeleted, onReply, replyTo, e
           {onReply && <Pressable accessibilityRole="button" disabled={busy} onPress={() => onReply(comment)} style={styles.replyButton}>
             <Text style={styles.actionText}>Reply</Text>
           </Pressable>}
-          {comment.is_mine && <>
-          <Pressable accessibilityRole="button" accessibilityLabel="Edit your comment" disabled={busy} hitSlop={6}
-            onPress={() => { setDraft(comment.body); setEditing(true); setError(''); }} style={styles.iconButton}>
-            <Pencil size={14} color="#737373" />
-          </Pressable>
-          <Pressable accessibilityRole="button" accessibilityLabel="Delete your comment" disabled={busy} hitSlop={6}
-            onPress={confirmDelete} style={styles.iconButton}>
-            <Trash2 size={14} color="#737373" />
-          </Pressable>
-          </>}
         </View>
       </View>}
       {busy && <ActivityIndicator size="small" color="#737373" />}
@@ -83,6 +87,9 @@ export function CommentCard({ comment, onUpdated, onDeleted, onReply, replyTo, e
 const styles = StyleSheet.create({
   card: { flex: 1, padding: 12, borderWidth: 1, borderColor: '#e5e5e5', borderRadius: 12, gap: 6, backgroundColor: '#fff' },
   embedded: { borderWidth: 0, borderRadius: 0, backgroundColor: 'transparent' },
+  header: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  identity: { flex: 1, gap: 6 },
+  ownerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   author: { fontSize: 11, fontWeight: '600', color: '#737373' },
   body: { fontSize: 14, lineHeight: 21, color: '#171717' },
   actions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 4 },
