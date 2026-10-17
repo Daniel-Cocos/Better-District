@@ -18,7 +18,7 @@ router = APIRouter(prefix="/auth", tags=["admin auth"])
 def login(body: AdminLogin, database: Database):
     admin = authenticate_admin(database, body.identifier, body.password)
     if admin is None:
-        raise HTTPException(status_code=401, detail="Incorrect email or password.")
+        raise HTTPException(status_code=401, detail="Incorrect username or password.")
     return AdminSession(access_token=start_admin_session(database, admin), user=admin)
 
 

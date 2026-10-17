@@ -76,7 +76,7 @@ Demographic = Literal[
 
 
 class AdminLogin(BaseModel):
-    identifier: str = Field(max_length=254)  # email address
+    identifier: str = Field(max_length=254)  # username or email address
     password: str = Field(max_length=128)
 
 

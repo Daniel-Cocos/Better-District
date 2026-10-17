@@ -143,8 +143,8 @@ def test_seed_is_repeatable_and_foreign_keys_are_enforced(tmp_path):
         database.executescript(sql)
         assert database.execute("SELECT count(*) FROM events").fetchone()[0] == 5
         assert database.execute("SELECT count(*) FROM comments").fetchone()[0] == 10
-        assert database.execute("SELECT count(*) FROM users").fetchone()[0] == 3
-        assert database.execute("SELECT count(*) FROM admins").fetchone()[0] == 1
+        assert database.execute("SELECT count(*) FROM users").fetchone()[0] == 4
+        assert database.execute("SELECT count(*) FROM admins").fetchone()[0] == 2
         locations = database.execute(
             "SELECT latitude, longitude FROM events"
         ).fetchall()

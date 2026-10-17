@@ -33,7 +33,7 @@ export default function AdminLogin() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const errors: FieldErrors = {}
-    if (!identifier.trim()) errors.identifier = 'Enter your email address'
+    if (!identifier.trim()) errors.identifier = 'Enter your username or email'
     if (!password) errors.password = 'Enter your password'
     setFieldErrors(errors)
     setFormError(null)
@@ -145,8 +145,7 @@ export default function AdminLogin() {
               )}
 
               <TextField
-                label="Email address"
-                type="email"
+                label="Username or email"
                 name="identifier"
                 autoComplete="username"
                 autoFocus

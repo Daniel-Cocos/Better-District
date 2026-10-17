@@ -74,6 +74,7 @@ npm run dev                      # http://localhost:5173
 | Who | Email | Password |
 | --- | --- | --- |
 | Council admin (website) | `admin@southampton.gov.uk` | `council-admin-2026` |
+| Quick local admin (website) | `admin` | `admin` |
 | Residents (app) | `alex@example.com`, `sam@example.com` | `council-demo-2026` |
 
 ## Not built yet

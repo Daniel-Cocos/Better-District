@@ -1,7 +1,7 @@
 import { api, tokenStore } from './client'
 
 export interface AdminCredentials {
-  identifier: string // email address
+  identifier: string // username or email address
   password: string
 }
 

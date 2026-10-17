@@ -36,7 +36,7 @@ Set or remove votes with `PUT /events/{id}/vote` or `PUT /events/{id}/comments/{
 
 The council admin website (React, in `web/`) uses the
 `/auth/*` and `/admin/*` endpoints. After `make seed`, sign in as
-`admin@southampton.gov.uk` / `council-admin-2026`.
+`admin@southampton.gov.uk` / `council-admin-2026`, or `admin` / `admin` for quick local testing.
 
 - Admins are rows in the `admins` table on top of `users`; they get bearer tokens from `POST /auth/login`.
 - The project wizard saves drafts to `project_drafts`; publishing creates a normal `events` row
