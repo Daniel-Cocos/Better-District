@@ -57,7 +57,9 @@ def list_notifications(database: Database, voter: Voter):
         "FROM notifications n LEFT JOIN comments c ON c.id = n.comment_id "
         "LEFT JOIN events e ON e.id = c.event_id "
         "LEFT JOIN community_issues i ON i.id = n.issue_id "
-        "WHERE n.recipient = ? ORDER BY n.id DESC",
+        # Replies under review stay hidden, like they are in the conversation
+        "WHERE n.recipient = ? AND (c.id IS NULL OR c.status != 'flagged') "
+        "ORDER BY n.id DESC",
         (voter,),
     ).fetchall()
     return [{**dict(row), "is_read": bool(row["is_read"])} for row in rows]

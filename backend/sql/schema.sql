@@ -24,10 +24,21 @@ CREATE TABLE IF NOT EXISTS comments (
     owner_key TEXT,
     parent_id INTEGER REFERENCES comments(id) ON DELETE SET NULL,
     likes INTEGER NOT NULL DEFAULT 0 CHECK (likes >= 0),
-    dislikes INTEGER NOT NULL DEFAULT 0 CHECK (dislikes >= 0)
+    dislikes INTEGER NOT NULL DEFAULT 0 CHECK (dislikes >= 0),
+    -- 'flagged' comments are hidden from the app until an admin keeps ('approved') or deletes them
+    status TEXT NOT NULL DEFAULT 'visible' CHECK (status IN ('visible', 'flagged', 'approved'))
 );
 
 CREATE INDEX IF NOT EXISTS comments_event_id ON comments(event_id);
+
+-- Residents' reports of inappropriate comments, at most one per person per comment.
+CREATE TABLE IF NOT EXISTS comment_flags (
+    comment_id INTEGER NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
+    reporter TEXT NOT NULL,
+    reason TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (comment_id, reporter)
+);
 
 CREATE TABLE IF NOT EXISTS event_votes (
     event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,

@@ -39,6 +39,7 @@ def with_vote(database: Database, target: Target, row: dict, voter: str) -> dict
     result = {**row, "my_vote": vote["vote"] if vote else 0}
     if target == "comments":
         result["is_mine"] = owns_comment(row, voter)
+        result["under_review"] = row.get("status") == "flagged"
     return result
 
 

@@ -59,6 +59,7 @@ def test_events_comments_and_persistence(tmp_path):
             "my_vote": 0,
             "is_mine": True,
             "parent_id": None,
+            "under_review": False,
         }
         api.post("/events", json={**EVENT, "title": "Another project"})
         assert api.get("/events/2/comments").json() == []

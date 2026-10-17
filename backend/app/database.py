@@ -41,6 +41,11 @@ def initialize(path: Path = DEFAULT_DATABASE):
             connection.execute(
                 "ALTER TABLE comments ADD COLUMN parent_id INTEGER REFERENCES comments(id) ON DELETE SET NULL"
             )
+        if "status" not in comment_columns:
+            connection.execute(
+                "ALTER TABLE comments ADD COLUMN status TEXT NOT NULL DEFAULT 'visible' "
+                "CHECK (status IN ('visible', 'flagged', 'approved'))"
+            )
         notification_columns = {
             row["name"]
             for row in connection.execute("PRAGMA table_info(notifications)")

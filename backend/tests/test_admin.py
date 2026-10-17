@@ -248,6 +248,7 @@ def test_overview_counts_app_data(client, auth):
         "likes": 0,
         "dislikes": 1,
         "residents": 1,  # the admin account isn't a resident
+        "flagged_comments": 0,
     }
     (comment,) = overview["recent_comments"]
     assert comment["event_title"] == "Old fair"
@@ -393,3 +394,79 @@ def test_website_replies_respect_project_settings(client, auth):
         json={"body": "Reply", "parent_id": parent["id"]},
     )
     assert response.status_code == 403
+
+
+def test_flagged_comments_leave_the_app_until_an_admin_decides(client, auth):
+    client.post("/admin/events", json=APP_EVENT, headers=auth)
+    resident = ("resident@example.com", "resident-password")
+    rude = client.post(
+        "/events/1/comments", auth=resident, json={"body": "Rude words"}
+    ).json()
+    reply = client.post(
+        "/admin/events/1/comments",
+        headers=auth,
+        json={"body": "Please keep it civil", "parent_id": rude["id"]},
+    ).json()
+    flag_url = f"/events/1/comments/{rude['id']}/flag"
+    assert client.post(flag_url, auth=resident, json={}).status_code == 403
+    assert client.post("/events/1/comments/99/flag", json={}).status_code == 404
+
+    # One report hides it from everyone in the app, but not from the website
+    with TestClient(client.app) as reporter:
+        assert reporter.post(flag_url, json={"reason": "Abusive"}).status_code == 204
+        assert reporter.post(flag_url, json={"reason": "Again"}).status_code == 204
+    with TestClient(client.app) as other:
+        assert other.post(flag_url, json={}).status_code == 204
+    assert [c["id"] for c in client.get("/events/1/comments").json()] == [reply["id"]]
+    vote_url = f"/events/1/comments/{rude['id']}/vote"
+    assert client.put(vote_url, json={"vote": 1}).status_code == 404
+    reply_body = {"body": "Agreed", "parent_id": rude["id"]}
+    assert client.post("/events/1/comments", json=reply_body).status_code == 404
+    (mine,) = client.get("/users/me/comments", auth=resident).json()
+    assert mine["under_review"] is True
+    admin_view = client.get("/admin/events/1/comments", headers=auth).json()
+    assert [c["under_review"] for c in admin_view] == [True, False]
+    overview = client.get("/admin/overview", headers=auth).json()
+    assert overview["stats"]["flagged_comments"] == 1
+
+    (flagged,) = client.get("/admin/flagged-comments", headers=auth).json()
+    assert flagged["id"] == rude["id"]
+    assert flagged["event_title"] == APP_EVENT["title"]
+    assert flagged["flags"] == 2
+    assert flagged["reasons"] == ["Abusive"]
+    assert client.get("/admin/flagged-comments").status_code == 401
+
+    # Keeping it puts it back, and it can't be flagged again until edited
+    approve_url = f"/admin/comments/{rude['id']}/approve"
+    assert client.post(approve_url).status_code == 401
+    assert client.post(approve_url, headers=auth).status_code == 204
+    assert client.post("/admin/comments/99/approve", headers=auth).status_code == 404
+    assert client.get("/admin/flagged-comments", headers=auth).json() == []
+    assert len(client.get("/events/1/comments").json()) == 2
+    assert client.post(flag_url, json={}).status_code == 409
+    client.patch(
+        f"/events/1/comments/{rude['id']}", auth=resident, json={"body": "Ruder"}
+    )
+    assert client.post(flag_url, json={}).status_code == 204
+
+    # Removing it deletes it for good
+    assert (
+        client.delete(f"/admin/comments/{rude['id']}", headers=auth).status_code == 204
+    )
+    assert client.get("/admin/flagged-comments", headers=auth).json() == []
+
+
+def test_flagged_replies_drop_out_of_notifications(client, auth):
+    client.post("/admin/events", json=APP_EVENT, headers=auth)
+    resident = ("resident@example.com", "resident-password")
+    parent = client.post(
+        "/events/1/comments", auth=resident, json={"body": "Hello"}
+    ).json()
+    reply = client.post(
+        "/events/1/comments", json={"body": "Nasty", "parent_id": parent["id"]}
+    ).json()
+    assert len(client.get("/users/me/notifications", auth=resident).json()) == 1
+    client.post(f"/events/1/comments/{reply['id']}/flag", auth=resident, json={})
+    assert client.get("/users/me/notifications", auth=resident).json() == []
+    client.post(f"/admin/comments/{reply['id']}/approve", headers=auth)
+    assert len(client.get("/users/me/notifications", auth=resident).json()) == 1

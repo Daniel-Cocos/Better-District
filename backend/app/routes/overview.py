@@ -23,16 +23,19 @@ def overview(database: Database, _admin: CurrentAdmin):
         "stats": {
             **dict(events),
             "comments": database.execute("SELECT count(*) FROM comments").fetchone()[0],
+            "flagged_comments": database.execute(
+                "SELECT count(*) FROM comments WHERE status = 'flagged'"
+            ).fetchone()[0],
             "residents": database.execute(
                 "SELECT count(*) FROM users "
                 "WHERE email NOT IN (SELECT email FROM admins)"
             ).fetchone()[0],
         },
         "recent_comments": [
-            dict(row)
+            {**dict(row), "under_review": row["status"] == "flagged"}
             for row in database.execute(
                 "SELECT c.id, c.event_id, e.title AS event_title, c.body, c.user_email, "
-                "c.likes, c.dislikes "
+                "c.likes, c.dislikes, c.status "
                 "FROM comments c JOIN events e ON e.id = c.event_id "
                 "ORDER BY c.id DESC LIMIT 10"
             )

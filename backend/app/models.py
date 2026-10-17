@@ -52,10 +52,15 @@ class Comment(CommentCreate):
     dislikes: int
     my_vote: Literal[-1, 0, 1] = 0
     is_mine: bool = False
+    under_review: bool = False  # flagged, so hidden from the app until an admin decides
 
 
 class CommentHistory(Comment):
     event_title: str
+
+
+class CommentFlagCreate(BaseModel):
+    reason: str = Field(default="", max_length=500)
 
 
 class VoteCreate(BaseModel):
@@ -236,6 +241,7 @@ class OverviewStats(BaseModel):
     likes: int
     dislikes: int
     residents: int  # app accounts; anonymous guests aren't counted
+    flagged_comments: int
 
 
 class OverviewComment(BaseModel):
@@ -246,6 +252,16 @@ class OverviewComment(BaseModel):
     user_email: str | None
     likes: int
     dislikes: int
+    under_review: bool = False
+
+
+class FlaggedComment(OverviewComment):
+    """A comment residents reported, hidden from the app while it waits for a decision."""
+
+    parent_id: int | None
+    flags: int
+    reasons: list[str]
+    first_flagged_at: str
 
 
 class Overview(BaseModel):
