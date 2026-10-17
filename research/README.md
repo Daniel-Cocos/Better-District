@@ -39,3 +39,27 @@ make data
 
 - The council asked residents and health workers if there are enough local pharmacies and if their opening hours work.
 - A small table of 21 responses paired with the council's reply
+
+## Evaluation
+
+The ML Algorithms / Models evaluated are the following
+
+### Classical ML - LightGBM
+
+Basic ML model based on decision trees, the features I chose are the following: total word count, reasoning words enum, southampton place names (gazateer), rant phrases enum
+
+### DeBERTa-v3 - advanced transformer encoder
+ 
+Fine tune encoder using data from documents above.
+
+### Zero-Shot LLM
+
+Uncalibrated Zero-Shot LLM with custom prompt
+
+### Compiled LLM - DSPy 
+
+Rather than manual prompt compile the llm - automatically test different instructions and injects real Southampton examples into the prompt until the accuracy score peaks
+
+### System-1 classifier - Laya
+
+System 1 decision model - recent gain in popularity due to the release of Jev from typesafe-AI 
