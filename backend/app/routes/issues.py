@@ -11,7 +11,11 @@ from app.voting import Voter
 
 router = APIRouter(tags=["community issues"])
 MAX_PHOTO_BYTES = 10 * 1024 * 1024
-ISSUE_SQL = "SELECT id, title, description, latitude, longitude, status, category, created_at FROM community_issues"
+ISSUE_SQL = (
+    "SELECT id, title, description, latitude, longitude, status, category, created_at, "
+    "COALESCE((SELECT version FROM issue_photos WHERE issue_id = community_issues.id), 1) "
+    "AS photo_version FROM community_issues"
+)
 
 
 def normalize_photo(data: bytes) -> bytes:
@@ -33,6 +37,20 @@ def normalize_photo(data: bytes) -> bytes:
             return output.getvalue()
     except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as error:
         raise ValueError("Unreadable image") from error
+
+
+async def read_photo(photo: UploadFile) -> bytes:
+    """The uploaded photo as a clean JPEG, or the HTTP error to show the resident."""
+    data = await photo.read(MAX_PHOTO_BYTES + 1)
+    if len(data) > MAX_PHOTO_BYTES:
+        raise HTTPException(status_code=413, detail="Choose a photo smaller than 10 MB")
+    try:
+        return normalize_photo(data)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=415,
+            detail="Choose a valid JPEG, PNG or WebP photo (up to 25 megapixels)",
+        ) from error
 
 
 def issue_record(database: Database, issue_id: int):
@@ -57,16 +75,7 @@ async def create_issue(
     title, description = title.strip(), description.strip()
     if not title or not description:
         raise HTTPException(status_code=422, detail="Add a title and description")
-    data = await photo.read(MAX_PHOTO_BYTES + 1)
-    if len(data) > MAX_PHOTO_BYTES:
-        raise HTTPException(status_code=413, detail="Choose a photo smaller than 10 MB")
-    try:
-        normalized = normalize_photo(data)
-    except ValueError as error:
-        raise HTTPException(
-            status_code=415,
-            detail="Choose a valid JPEG, PNG or WebP photo (up to 25 megapixels)",
-        ) from error
+    normalized = await read_photo(photo)
     cursor = database.execute(
         "INSERT INTO community_issues (title, description, latitude, longitude, owner_key, category) VALUES (?, ?, ?, ?, ?, ?)",
         (title, description, latitude, longitude, voter, category),
@@ -120,6 +129,29 @@ def edit_issue(issue_id: int, changes: IssueEdit, database: Database, voter: Vot
     )
     if cursor.rowcount == 0:
         raise HTTPException(status_code=404, detail="Issue not found")
+    database.execute("DELETE FROM issue_analyses WHERE issue_id = ?", (issue_id,))
+    return issue_record(database, issue_id)
+
+
+@router.put("/issues/{issue_id}/photo", response_model=CommunityIssue)
+async def replace_issue_photo(
+    issue_id: int, photo: UploadFile, database: Database, voter: Voter
+):
+    owned = database.execute(
+        "SELECT 1 FROM community_issues WHERE id = ? AND owner_key = ?",
+        (issue_id, voter),
+    ).fetchone()
+    if owned is None:
+        raise HTTPException(status_code=404, detail="Issue not found")
+    normalized = await read_photo(photo)
+    database.execute(
+        "INSERT INTO issue_photos (issue_id, content_type, size, data) "
+        "VALUES (?, 'image/jpeg', ?, ?) ON CONFLICT(issue_id) DO UPDATE SET "
+        "content_type = excluded.content_type, size = excluded.size, "
+        "data = excluded.data, version = version + 1",
+        (issue_id, len(normalized), normalized),
+    )
+    # The severity estimate may have been based on the old photo
     database.execute("DELETE FROM issue_analyses WHERE issue_id = ?", (issue_id,))
     return issue_record(database, issue_id)
 

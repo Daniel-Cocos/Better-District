@@ -55,6 +55,13 @@ def initialize(path: Path = DEFAULT_DATABASE):
                 "ALTER TABLE community_issues ADD COLUMN category TEXT NOT NULL "
                 "DEFAULT 'other' CHECK (category IN ('pothole', 'graffiti', 'other'))"
             )
+        photo_columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(issue_photos)")
+        }
+        if "version" not in photo_columns:
+            connection.execute(
+                "ALTER TABLE issue_photos ADD COLUMN version INTEGER NOT NULL DEFAULT 1"
+            )
         notification_columns = {
             row["name"]
             for row in connection.execute("PRAGMA table_info(notifications)")

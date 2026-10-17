@@ -254,3 +254,55 @@ def test_issue_edit_delete_and_ownership(client):
     assert client.get(f"{url}/photo").status_code == 404
     assert client.get("/users/me/notifications").json() == []
     assert client.delete(url).status_code == 404
+
+
+def test_owner_replaces_issue_photo(client):
+    issue = submit(client).json()
+    assert issue["photo_version"] == 1
+    url = f"/issues/{issue['id']}/photo"
+    original_photo = client.get(url).content
+    output = io.BytesIO()
+    Image.new("RGB", (16, 12), "green").save(output, "PNG")
+    replacement = {"photo": ("cropped.png", output.getvalue(), "image/png")}
+    with TestClient(client.app) as other:
+        assert other.put(url, files=replacement).status_code == 404
+    assert (
+        client.put(url, files={"photo": ("bad.png", b"bad", "image/png")}).status_code
+        == 415
+    )
+    assert client.get(url).content == original_photo
+    with connect(client.app.state.database_path) as database:
+        database.execute(
+            "INSERT INTO issue_analyses (issue_id, model_version, result_json) VALUES (?, 'test-v1', '{}')",
+            (issue["id"],),
+        )
+    response = client.put(url, files=replacement)
+    assert response.status_code == 200
+    assert response.json() == {**issue, "photo_version": 2}
+    assert client.get("/issues").json() == [response.json()]
+    with Image.open(io.BytesIO(client.get(url).content)) as decoded:
+        assert decoded.size == (16, 12)
+    with connect(client.app.state.database_path) as database:
+        assert (
+            database.execute("SELECT count(*) FROM issue_analyses").fetchone()[0] == 0
+        )
+    assert client.put("/issues/999/photo", files=replacement).status_code == 404
+
+
+def test_photo_version_migration(tmp_path):
+    path = tmp_path / "photos.db"
+    initialize(path)
+    with connect(path) as database:
+        database.execute("DROP TABLE issue_photos")
+        database.execute(
+            "CREATE TABLE issue_photos (issue_id INTEGER PRIMARY KEY REFERENCES community_issues(id) ON DELETE CASCADE, content_type TEXT NOT NULL, size INTEGER NOT NULL CHECK (size > 0), data BLOB NOT NULL)"
+        )
+        database.execute(
+            "INSERT INTO community_issues (title, description, latitude, longitude, owner_key) VALUES ('Old', 'Old', 50.9, -1.4, 'guest:test')"
+        )
+        database.execute(
+            "INSERT INTO issue_photos (issue_id, content_type, size, data) VALUES (1, 'image/jpeg', 1, x'00')"
+        )
+    initialize(path)
+    with connect(path) as database:
+        assert database.execute("SELECT version FROM issue_photos").fetchone()[0] == 1

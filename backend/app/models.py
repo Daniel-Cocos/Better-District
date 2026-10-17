@@ -283,6 +283,7 @@ class CommunityIssue(BaseModel):
     status: Literal["submitted", "reviewed", "planned", "resolved"]
     category: IssueCategory = "other"
     created_at: str
+    photo_version: int = 1  # changes when the photo is replaced; add it to photo URLs
 
 
 class IssueEdit(BaseModel):

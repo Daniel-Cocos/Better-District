@@ -189,7 +189,9 @@ CREATE TABLE IF NOT EXISTS issue_photos (
     issue_id INTEGER PRIMARY KEY REFERENCES community_issues(id) ON DELETE CASCADE,
     content_type TEXT NOT NULL,
     size INTEGER NOT NULL CHECK (size > 0),
-    data BLOB NOT NULL
+    data BLOB NOT NULL,
+    -- Bumped when the owner replaces the photo, so apps don't show a cached copy
+    version INTEGER NOT NULL DEFAULT 1
 );
 -- Future ML results are versioned independently; no synthetic analysis is created.
 CREATE TABLE IF NOT EXISTS issue_analyses (
