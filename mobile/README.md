@@ -2,6 +2,13 @@
 
 Minimal React Native app using Expo and TypeScript. Displays `hello worls`.
 
+Pages use Expo Router: `src/app/index.tsx` is Home, `src/app/about.tsx` is About,
+and `src/app/_layout.tsx` defines the stack and headers. Tap “About this app” on
+Home, then use the header back button or Android's back action to return.
+Add pages as files in `src/app/`; keep shared components outside that directory.
+
+After installing the router, restart Metro with `npm start -- --clear`.
+
 From `mobile/`:
 
 ```sh

@@ -1,11 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
+import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
+export default function HomePage() {
   return (
     <View style={styles.container}>
       <Text>hello worls</Text>
-      <StatusBar style="auto" />
+      <Link href="/about" style={styles.link}>About this app</Link>
     </View>
   );
 }
@@ -13,8 +13,14 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 24,
+    gap: 16,
+  },
+  link: {
+    color: '#0066cc',
+    padding: 12,
+    textDecorationLine: 'underline',
   },
 });
