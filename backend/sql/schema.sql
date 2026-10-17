@@ -179,6 +179,8 @@ CREATE TABLE IF NOT EXISTS community_issues (
     longitude REAL NOT NULL CHECK (longitude BETWEEN -180 AND 180),
     owner_key TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted', 'reviewed', 'planned', 'resolved')),
+    -- The tag residents pick in the app; keep in step with IssueCategory in app/models.py
+    category TEXT NOT NULL DEFAULT 'other' CHECK (category IN ('pothole', 'graffiti', 'other')),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS issues_location ON community_issues(latitude, longitude);

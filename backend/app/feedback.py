@@ -22,6 +22,8 @@ from app.models import CommentType
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://100.100.79.70:11434").rstrip("/")
 # Unset: use the first local model the server has installed
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "")
+# For judging report photos. Unset: the first local model that can see images
+OLLAMA_VISION_MODEL = os.environ.get("OLLAMA_VISION_MODEL", "")
 OLLAMA_TIMEOUT = float(os.environ.get("OLLAMA_TIMEOUT", "300"))
 
 # Bump when the prompts or result shape change, so cached results are redone
@@ -228,10 +230,39 @@ def pick_model() -> str:
     return local[0]
 
 
+def pick_vision_model() -> tuple[str, bool]:
+    """A local model that can see photos, and whether it can. Falls back to the usual
+    text model, which then has to judge from the words alone."""
+    models = _request("/api/tags").get("models") or []
+    local = [m["name"] for m in models if is_local(m)]
+    if OLLAMA_VISION_MODEL:
+        if OLLAMA_VISION_MODEL not in local:
+            raise AnalysisUnavailable(
+                f"{OLLAMA_VISION_MODEL} isn’t installed locally on {OLLAMA_URL}"
+            )
+        return OLLAMA_VISION_MODEL, True
+    for name in local:
+        if "vision" in (
+            _request("/api/show", {"model": name}).get("capabilities") or []
+        ):
+            return name, True
+    return pick_model(), False
+
+
 def ask_model(
-    model: str, prompt: str, system: str = SYSTEM_PROMPT, schema: dict | None = None
+    model: str,
+    prompt: str,
+    system: str = SYSTEM_PROMPT,
+    schema: dict | None = None,
+    *,
+    images: list[str] | None = None,
+    num_ctx: int = 32768,
 ) -> dict:
-    """One structured chat call; Ollama constrains the output to the JSON schema."""
+    """One structured chat call; Ollama constrains the output to the JSON schema.
+    `images` are base64 photos, for vision models."""
+    message: dict = {"role": "user", "content": prompt}
+    if images:
+        message["images"] = images
     reply = _request(
         "/api/chat",
         {
@@ -239,12 +270,9 @@ def ask_model(
             "stream": False,
             "format": schema or RESPONSE_SCHEMA,
             # Room for ~150 comments; skip "thinking" on models that do it, it's slow here
-            "options": {"temperature": 0, "num_ctx": 32768},
+            "options": {"temperature": 0, "num_ctx": num_ctx},
             "think": False,
-            "messages": [
-                {"role": "system", "content": system},
-                {"role": "user", "content": prompt},
-            ],
+            "messages": [{"role": "system", "content": system}, message],
         },
     )
     if "error" in reply:

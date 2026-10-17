@@ -46,6 +46,15 @@ def initialize(path: Path = DEFAULT_DATABASE):
                 "ALTER TABLE comments ADD COLUMN status TEXT NOT NULL DEFAULT 'visible' "
                 "CHECK (status IN ('visible', 'flagged', 'approved'))"
             )
+        issue_columns = {
+            row["name"]
+            for row in connection.execute("PRAGMA table_info(community_issues)")
+        }
+        if "category" not in issue_columns:
+            connection.execute(
+                "ALTER TABLE community_issues ADD COLUMN category TEXT NOT NULL "
+                "DEFAULT 'other' CHECK (category IN ('pothole', 'graffiti', 'other'))"
+            )
         notification_columns = {
             row["name"]
             for row in connection.execute("PRAGMA table_info(notifications)")

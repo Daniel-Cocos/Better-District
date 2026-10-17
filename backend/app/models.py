@@ -269,6 +269,11 @@ class Overview(BaseModel):
     recent_comments: list[OverviewComment]
 
 
+# The tags residents choose from when they report something; keep in step with
+# schema.sql and the app's and website's category lists
+IssueCategory = Literal["pothole", "graffiti", "other"]
+
+
 class CommunityIssue(BaseModel):
     id: int
     title: str
@@ -276,6 +281,7 @@ class CommunityIssue(BaseModel):
     latitude: float
     longitude: float
     status: Literal["submitted", "reviewed", "planned", "resolved"]
+    category: IssueCategory = "other"
     created_at: str
 
 
@@ -427,3 +433,30 @@ class Insights(BaseModel):
     briefing: Briefing | None
     job: InsightJob
     pending: int  # plans whose analysis is missing or out of date
+
+
+# ---------- Reports gallery (admin website) ----------
+
+
+class Severity(BaseModel):
+    """The self-hosted model's estimate of how urgent a report is."""
+
+    level: Literal[1, 2, 3]  # 3 is the most severe
+    reason: str
+    model: str
+    saw_photo: (
+        bool  # False when no vision model was available, so it read the text alone
+    )
+    generated_at: str
+
+
+class Report(CommunityIssue):
+    severity: Severity | None
+
+
+class Reports(BaseModel):
+    reports: list[Report]
+    job: InsightJob
+    pending: int  # reports the model hasn't assessed yet
+    folder: str  # where photos can be dropped to add them as reports
+    skipped: list[str]  # files in that folder that couldn't be read as photos

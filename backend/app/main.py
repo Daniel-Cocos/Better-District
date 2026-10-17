@@ -15,6 +15,7 @@ from app.routes import (
     moderation,
     overview,
     projects,
+    reports,
     users,
 )
 
@@ -45,6 +46,7 @@ def create_app(
     application.include_router(moderation.router)
     application.include_router(feedback.router)
     application.include_router(insights.router)
+    application.include_router(reports.router)
 
     @application.get("/health")
     def health():
