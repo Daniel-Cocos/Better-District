@@ -30,10 +30,38 @@ def add_comment(
     voter: Voter,
 ):
     require_event(database, event_id)
+    parent = None
+    if comment.parent_id is not None:
+        parent = database.execute(
+            "SELECT * FROM comments WHERE id = ? AND event_id = ?",
+            (comment.parent_id, event_id),
+        ).fetchone()
+        if parent is None:
+            raise HTTPException(
+                status_code=404, detail="Reply target not found in this event"
+            )
+        project = database.execute(
+            "SELECT comment_replies FROM projects WHERE event_id = ?", (event_id,)
+        ).fetchone()
+        if project is not None and not project["comment_replies"]:
+            raise HTTPException(
+                status_code=403, detail="Replies are disabled for this event"
+            )
     cursor = database.execute(
-        "INSERT INTO comments (event_id, body, user_email, owner_key) VALUES (?, ?, ?, ?)",
-        (event_id, comment.body, user, voter),
+        "INSERT INTO comments (event_id, body, user_email, owner_key, parent_id) VALUES (?, ?, ?, ?, ?)",
+        (event_id, comment.body, user, voter, comment.parent_id),
     )
+    if parent is not None and not owns_comment(dict(parent), voter):
+        recipient = (
+            f"user:{parent['user_email']}"
+            if parent["user_email"]
+            else parent["owner_key"]
+        )
+        if recipient:
+            database.execute(
+                "INSERT INTO notifications (recipient, comment_id) VALUES (?, ?)",
+                (recipient, cursor.lastrowid),
+            )
     row = database.execute(
         "SELECT * FROM comments WHERE id = ?", (cursor.lastrowid,)
     ).fetchone()

@@ -37,6 +37,10 @@ def initialize(path: Path = DEFAULT_DATABASE):
         }
         if "owner_key" not in comment_columns:
             connection.execute("ALTER TABLE comments ADD COLUMN owner_key TEXT")
+        if "parent_id" not in comment_columns:
+            connection.execute(
+                "ALTER TABLE comments ADD COLUMN parent_id INTEGER REFERENCES comments(id) ON DELETE SET NULL"
+            )
         # Projects published before the app read their deadline from events.closes_at
         connection.executemany(
             "UPDATE events SET closes_at = ? WHERE id = ?",

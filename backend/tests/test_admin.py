@@ -314,3 +314,82 @@ def test_existing_projects_get_their_app_deadline(client, auth):
         database.execute("UPDATE events SET closes_at = NULL")
     initialize(path)
     assert client.get("/events/1").json()["closes_at"] == "2026-12-01T23:59:59Z"
+
+
+def test_website_replies_and_mobile_notifications(client, auth):
+    event = client.post(
+        "/admin/events",
+        headers=auth,
+        json={
+            "title": "Library",
+            "description": "New study space",
+            "latitude": 50.9,
+            "longitude": -1.4,
+            "closes_at": "2026-12-01T17:00:00Z",
+        },
+    ).json()
+    event_id = event["id"]
+    resident = ("resident@example.com", "resident-password")
+    parent = client.post(
+        f"/events/{event_id}/comments", auth=resident, json={"body": "Please add desks"}
+    ).json()
+    url = f"/admin/events/{event_id}/comments"
+    assert client.get(url).status_code == 401
+    assert client.post(url, json={"body": "Unauthorized"}).status_code == 401
+    reply = client.post(
+        url, headers=auth, json={"body": "We can do that", "parent_id": parent["id"]}
+    )
+    assert reply.status_code == 201
+    reply = reply.json()
+    assert reply["user_email"] == ADMIN["identifier"]
+    assert reply["is_mine"] is True
+    assert reply["parent_id"] == parent["id"]
+    assert client.get(url, headers=auth).json()[-1]["is_mine"] is True
+    notice = client.get("/users/me/notifications", auth=resident).json()[0]
+    assert notice["body"] == "We can do that"
+    assert notice["user_email"] == ADMIN["identifier"]
+    assert client.get("/admin/notifications", headers=auth).json() == []
+    client.post(
+        f"/events/{event_id}/comments",
+        auth=resident,
+        json={"body": "Thanks!", "parent_id": reply["id"]},
+    )
+    notices = client.get("/admin/notifications", headers=auth).json()
+    assert len(notices) == 1
+    assert notices[0]["body"] == "Thanks!"
+    assert notices[0]["is_read"] is False
+    read_url = f"/admin/notifications/{notices[0]['id']}/read"
+    assert client.patch(read_url).status_code == 401
+    assert client.patch(read_url, headers=auth).status_code == 200
+    assert client.get("/admin/notifications", headers=auth).json()[0]["is_read"] is True
+    # Another staff account cannot see or mark this staff member's notifications.
+    with connect(client.app.state.database_path) as database:
+        database.execute(
+            "INSERT INTO admins (email, name) VALUES (?, ?)",
+            (resident[0], "Other officer"),
+        )
+    other = client.post(
+        "/auth/login", json={"identifier": resident[0], "password": resident[1]}
+    ).json()["access_token"]
+    other_auth = {"Authorization": f"Bearer {other}"}
+    assert all(
+        item["id"] != notices[0]["id"]
+        for item in client.get("/admin/notifications", headers=other_auth).json()
+    )
+    assert client.patch(read_url, headers=other_auth).status_code == 404
+    client.delete(f"/admin/comments/{reply['id']}", headers=auth)
+    assert client.get("/users/me/notifications", auth=resident).json() == []
+
+
+def test_website_replies_respect_project_settings(client, auth):
+    form = {**FORM, "engagement": {**FORM["engagement"], "comment_replies": False}}
+    published = client.post("/admin/projects", headers=auth, json=form)
+    assert published.status_code == 201
+    event_id = published.json()["event_id"]
+    parent = client.post(f"/events/{event_id}/comments", json={"body": "Hello"}).json()
+    response = client.post(
+        f"/admin/events/{event_id}/comments",
+        headers=auth,
+        json={"body": "Reply", "parent_id": parent["id"]},
+    )
+    assert response.status_code == 403

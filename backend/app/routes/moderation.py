@@ -2,7 +2,9 @@
 
 from fastapi import APIRouter, HTTPException, Response
 from app.database import Database
-from app.models import AdminEvent, EventCreate
+from app.models import AdminEvent, EventCreate, Comment, CommentCreate
+from app.routes.comments import add_comment, list_comments
+from app.routes.users import list_notifications, read_notification
 from app.routes.events import event_values, insert_event
 from app.security import CurrentAdmin
 
@@ -65,3 +67,27 @@ def delete_any_comment(comment_id: int, database: Database, _admin: CurrentAdmin
     ):
         raise HTTPException(status_code=404, detail="Comment not found")
     return Response(status_code=204)
+
+
+@router.get("/events/{event_id}/comments", response_model=list[Comment])
+def admin_comments(event_id: int, database: Database, admin: CurrentAdmin):
+    return list_comments(event_id, database, f"user:{admin.email}")
+
+
+@router.post("/events/{event_id}/comments", response_model=Comment, status_code=201)
+def admin_add_comment(
+    event_id: int, comment: CommentCreate, database: Database, admin: CurrentAdmin
+):
+    return add_comment(event_id, comment, database, admin.email, f"user:{admin.email}")
+
+
+@router.get("/notifications")
+def admin_notifications(database: Database, admin: CurrentAdmin):
+    return list_notifications(database, f"user:{admin.email}")
+
+
+@router.patch("/notifications/{notification_id}/read")
+def admin_read_notification(
+    notification_id: int, database: Database, admin: CurrentAdmin
+):
+    return read_notification(notification_id, database, f"user:{admin.email}")

@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS comments (
     body TEXT NOT NULL CHECK (length(trim(body)) > 0),
     user_email TEXT REFERENCES users(email) ON DELETE SET NULL,
     owner_key TEXT,
+    parent_id INTEGER REFERENCES comments(id) ON DELETE SET NULL,
     likes INTEGER NOT NULL DEFAULT 0 CHECK (likes >= 0),
     dislikes INTEGER NOT NULL DEFAULT 0 CHECK (dislikes >= 0)
 );
@@ -145,3 +146,12 @@ CREATE TRIGGER IF NOT EXISTS comments_update_revision AFTER UPDATE ON comments
 BEGIN UPDATE revision SET value = value + 1; END;
 CREATE TRIGGER IF NOT EXISTS comments_delete_revision AFTER DELETE ON comments
 BEGIN UPDATE revision SET value = value + 1; END;
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    recipient TEXT NOT NULL,
+    comment_id INTEGER NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_read INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS notifications_recipient ON notifications(recipient, id);

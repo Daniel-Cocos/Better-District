@@ -56,6 +56,7 @@ def test_events_comments_and_persistence(tmp_path):
             "dislikes": 0,
             "my_vote": 0,
             "is_mine": True,
+            "parent_id": None,
         }
         api.post("/events", json={**EVENT, "title": "Another project"})
         assert api.get("/events/2/comments").json() == []
@@ -252,3 +253,59 @@ def test_account_comment_ownership_survives_a_new_client(client):
             == 200
         )
         assert other.delete("/events/1/comments/1", auth=AUTH).status_code == 204
+
+
+def test_replies_deliver_private_notifications(client):
+    client.post("/users", json=USER)
+    client.post("/events", json=EVENT)
+    parent = client.post(
+        "/events/1/comments", json={"body": "Original"}, auth=AUTH
+    ).json()
+    reply = client.post(
+        "/events/1/comments", json={"body": "A reply", "parent_id": parent["id"]}
+    )
+    assert reply.status_code == 201
+    assert reply.json()["parent_id"] == parent["id"]
+    assert client.get("/users/me/notifications").json() == []
+    notices = client.get("/users/me/notifications", auth=AUTH).json()
+    assert len(notices) == 1
+    notice = notices[0]
+    assert notice["body"] == "A reply"
+    assert notice["event_title"] == EVENT["title"]
+    assert notice["is_read"] is False
+    url = f"/users/me/notifications/{notice['id']}/read"
+    assert client.patch(url).status_code == 404
+    assert client.patch(url, auth=AUTH).status_code == 200
+    assert client.get("/users/me/notifications", auth=AUTH).json()[0]["is_read"] is True
+    client.post(
+        "/events/1/comments",
+        json={"body": "Self reply", "parent_id": parent["id"]},
+        auth=AUTH,
+    )
+    assert len(client.get("/users/me/notifications", auth=AUTH).json()) == 1
+    client.delete(f"/events/1/comments/{reply.json()['id']}")
+    assert client.get("/users/me/notifications", auth=AUTH).json() == []
+
+
+def test_reply_targets_and_deleted_parents(client):
+    client.post("/events", json=EVENT)
+    client.post("/events", json=EVENT)
+    parent = client.post("/events/1/comments", json={"body": "Original"}).json()
+    assert (
+        client.post(
+            "/events/2/comments",
+            json={"body": "Wrong event", "parent_id": parent["id"]},
+        ).status_code
+        == 404
+    )
+    assert (
+        client.post(
+            "/events/1/comments", json={"body": "Missing", "parent_id": 999}
+        ).status_code
+        == 404
+    )
+    reply = client.post(
+        "/events/1/comments", json={"body": "Reply", "parent_id": parent["id"]}
+    ).json()
+    client.delete(f"/events/1/comments/{parent['id']}")
+    assert client.get("/events/1/comments").json() == [{**reply, "parent_id": None}]

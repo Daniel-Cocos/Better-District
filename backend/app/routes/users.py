@@ -45,3 +45,26 @@ def comment_history(database: Database, voter: Voter):
         (value,),
     ).fetchall()
     return [with_vote(database, "comments", dict(row), voter) for row in rows]
+
+
+@router.get("/me/notifications")
+def list_notifications(database: Database, voter: Voter):
+    rows = database.execute(
+        "SELECT n.id, n.created_at, n.is_read, c.id AS comment_id, c.parent_id, "
+        "c.event_id, c.body, c.user_email, e.title AS event_title FROM notifications n "
+        "JOIN comments c ON c.id = n.comment_id JOIN events e ON e.id = c.event_id "
+        "WHERE n.recipient = ? ORDER BY n.id DESC",
+        (voter,),
+    ).fetchall()
+    return [{**dict(row), "is_read": bool(row["is_read"])} for row in rows]
+
+
+@router.patch("/me/notifications/{notification_id}/read")
+def read_notification(notification_id: int, database: Database, voter: Voter):
+    cursor = database.execute(
+        "UPDATE notifications SET is_read = 1 WHERE id = ? AND recipient = ?",
+        (notification_id, voter),
+    )
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    return {"is_read": True}

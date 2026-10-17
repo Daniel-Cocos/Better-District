@@ -40,6 +40,7 @@ class ChangeVersion(BaseModel):
 
 
 class CommentCreate(BaseModel):
+    parent_id: int | None = Field(default=None, gt=0)
     body: Text = Field(max_length=5000)
 
 
