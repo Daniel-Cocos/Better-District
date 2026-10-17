@@ -1,18 +1,18 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import type { ComponentProps, ReactNode } from 'react';
+import type { LucideIcon } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 type Props = {
-  icon: ComponentProps<typeof Ionicons>['name'];
+  icon: LucideIcon;
   description: string;
   children?: ReactNode;
 };
 
-export function EmptyTab({ icon, description, children }: Props) {
+export function EmptyTab({ icon: Icon, description, children }: Props) {
   return (
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.card}>
-        <Ionicons name={icon} size={32} color="#404040" />
+        <Icon size={32} color="#404040" />
         <Text style={styles.description}>{description}</Text>
         {children}
       </View>

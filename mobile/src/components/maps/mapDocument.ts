@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 // OpenFreeMap hosts OpenStreetMap data without an API key.
 export const mapDocument = `<!doctype html>
 <html><head>
@@ -35,7 +36,7 @@ try {
       if (!Number.isFinite(event.latitude) || !Number.isFinite(event.longitude) ||
           Math.abs(event.latitude) > 90 || Math.abs(event.longitude) > 180) return;
       const point = [event.longitude, event.latitude];
-      const marker = new Marker({ color:'#171717', scale:0.7 })
+      const marker = new Marker({ color:'${colors.accent}', scale:0.7 })
         .setLngLat(point)
         .addTo(map);
       const element = marker.getElement();
@@ -82,7 +83,7 @@ try {
       'circle-stroke-color':'#737373', 'circle-stroke-width':1
     } });
     map.addLayer({ id:'user-position', type:'circle', source:'user-location', paint:{
-      'circle-color':'#171717', 'circle-radius':7, 'circle-stroke-color':'#fff', 'circle-stroke-width':3
+      'circle-color':'${colors.accent}', 'circle-radius':7, 'circle-stroke-color':'#fff', 'circle-stroke-width':3
     } });
     window.ReactNativeWebView.postMessage('ready');
   });

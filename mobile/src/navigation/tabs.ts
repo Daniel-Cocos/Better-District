@@ -1,17 +1,15 @@
-import type { ComponentProps } from 'react';
-import type Ionicons from '@expo/vector-icons/Ionicons';
+import { Bell, Map, List, UserRound, type LucideIcon } from 'lucide-react-native';
 
 type TabDefinition = {
   route: string;
   label: string;
-  icon: ComponentProps<typeof Ionicons>['name'];
-  activeIcon: ComponentProps<typeof Ionicons>['name'];
+  icon: LucideIcon;
 };
 
 // Order, labels, and icons live here; the navigator owns selection and history.
 export const appTabs = [
-  { route: 'notifications', label: 'Notifications', icon: 'notifications-outline', activeIcon: 'notifications' },
-  { route: 'index', label: 'Map', icon: 'map-outline', activeIcon: 'map' },
-  { route: 'feed', label: 'Feed', icon: 'newspaper-outline', activeIcon: 'newspaper' },
-  { route: 'profile', label: 'Profile', icon: 'person-outline', activeIcon: 'person' },
+  { route: 'notifications', label: 'Notifications', icon: Bell },
+  { route: 'index', label: 'Map', icon: Map },
+  { route: 'feed', label: 'Feed', icon: List },
+  { route: 'profile', label: 'Profile', icon: UserRound },
 ] as const satisfies readonly TabDefinition[];

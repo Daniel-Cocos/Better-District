@@ -81,7 +81,7 @@ export function OpenStreetMap({ events, focusedEvent, onSelectEvent }: Props) {
         source={{ html: mapDocument }}
         style={styles.map}
         accessibilityLabel="Interactive OpenStreetMap of Southampton"
-        applicationNameForUserAgent="SotonShip/1.0"
+        applicationNameForUserAgent="BetterDistrict/1.0"
         cacheEnabled
         javaScriptEnabled
         domStorageEnabled

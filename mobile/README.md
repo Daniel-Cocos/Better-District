@@ -50,7 +50,7 @@ using its bundled worker for Android WebView compatibility.
 `MapControls.tsx` groups zoom in, zoom out, and location at the bottom-right.
 Map credits are available through the compact attribution button at bottom-left.
 Tile requests use the WebView's normal HTTP cache and
-identify the app as SotonShip. Events load from `GET /events` when the Map tab
+identify the app as BetterDistrict. Events load from `GET /events` when the Map tab
 opens or regains focus. Tap a pin to open a side panel with its title, description,
 closing/action deadline, and conversation. The map remains visible at the left
 and the bottom tabs remain accessible. Close with X, the map backdrop, or Android

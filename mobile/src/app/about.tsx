@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function AboutPage() {
   return (
     <View style={styles.container}>
-      <Text>Soton Ship</Text>
+      <Text>Better District</Text>
       <Text>Discover local events and join the conversation.</Text>
     </View>
   );

@@ -1,3 +1,4 @@
+import { colors } from '../theme/colors';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { Button, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -49,9 +50,7 @@ export default function AuthPage() {
       <KeyboardAvoidingView style={styles.screen} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <View style={styles.form}>
-            <Text style={styles.title}>Welcome to Soton Ship</Text>
-            <Text>Sign in to join the conversation, or explore as a guest.</Text>
-            <Text style={styles.heading}>{mode === 'signIn' ? 'Sign in' : 'Create an account'}</Text>
+            <Text style={styles.title}>Better District</Text>
             <Text nativeID="email-label">Email</Text>
             <TextInput accessibilityLabel="Email" style={styles.input} value={email} onChangeText={setEmail}
               autoCapitalize="none" autoCorrect={false} keyboardType="email-address" autoComplete="email"
@@ -62,10 +61,10 @@ export default function AuthPage() {
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'} editable={!busy}
               onSubmitEditing={submit} returnKeyType="go" />
             {error ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{error}</Text> : null}
-            <Button title={busy ? 'Please wait…' : mode === 'signIn' ? 'Sign in' : 'Create account'} onPress={submit} disabled={busy} />
-            <Button title={mode === 'signIn' ? 'Create an account' : 'Already have an account? Sign in'} disabled={busy}
+            <Button color={colors.accent} title={busy ? 'Please wait…' : mode === 'signIn' ? 'Sign in' : 'Create account'} onPress={submit} disabled={busy} />
+            <Button color={colors.accent} title={mode === 'signIn' ? 'Create an account' : 'Already have an account? Sign in'} disabled={busy}
               onPress={() => { setMode(mode === 'signIn' ? 'register' : 'signIn'); setError(''); }} />
-            <Button title="Continue as guest" onPress={enterAsGuest} disabled={busy} />
+            <Button color={colors.accent} title="Continue as guest" onPress={enterAsGuest} disabled={busy} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -77,8 +76,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fff' },
   content: { flexGrow: 1, justifyContent: 'center', padding: 24 },
   form: { width: '100%', maxWidth: 420, alignSelf: 'center', gap: 12 },
-  title: { fontSize: 28, fontWeight: '700' },
-  heading: { fontSize: 20, fontWeight: '600', marginTop: 16 },
+  title: { fontSize: 28, fontWeight: '700', textAlign: 'center' },
   input: { borderWidth: 1, borderColor: '#999', borderRadius: 8, padding: 12, color: '#111', minHeight: 48 },
   error: { color: '#a01818' },
 });

@@ -1,5 +1,6 @@
+import { colors } from '../../theme/colors';
 import { useEffect, useRef, useState } from 'react';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Clock, X, FileText, UserRound, ArrowUp } from 'lucide-react-native';
 import { ActivityIndicator, BackHandler, Button, FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CouncilEvent } from '../../api/events';
@@ -67,7 +68,7 @@ export function EventPanel({ event, onClose }: Props) {
           <View style={styles.titleBar}>
             <Text style={styles.title}>{event.title}</Text>
             <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel="Close event details" style={styles.close}>
-              <Ionicons name="close" size={24} color="#171717" />
+              <X size={24} color="#171717" />
             </Pressable>
           </View>
           <FlatList ref={list} data={comments} keyExtractor={(comment) => String(comment.id)}
@@ -75,28 +76,28 @@ export function EventPanel({ event, onClose }: Props) {
             ListHeaderComponent={(
               <View style={styles.header}>
                 <View style={styles.detailRow}>
-                  <Ionicons name="document-text-outline" size={16} color="#737373" accessible={false} />
+                  <FileText size={16} color="#737373" accessible={false} />
                   <Text style={styles.description}>{event.description}</Text>
                 </View>
                 <View style={styles.detailRow}>
-                  <Ionicons name="time-outline" size={16} color="#737373" accessible={false} />
+                  <Clock size={16} color="#737373" accessible={false} />
                   <Text style={styles.deadline}>{eventDeadlineLabel(event.closes_at)}</Text>
                 </View>
                 <VoteButtons likes={event.likes} dislikes={event.dislikes} myVote={event.my_vote ?? 0}
                   label={event.title} onVote={(vote) => voteEvent(event.id, vote)} />
               </View>
             )}
-            ListEmptyComponent={loading ? <ActivityIndicator color="#171717" style={styles.empty} /> : loadError ? (
+            ListEmptyComponent={loading ? <ActivityIndicator color={colors.accent} style={styles.empty} /> : loadError ? (
               <View style={styles.empty}>
                 <Text accessibilityRole="alert">Couldn’t load comments.</Text>
-                <Button color="#171717" title="Retry comments" onPress={() => {
+                <Button color={colors.accent} title="Retry comments" onPress={() => {
                   setLoading(true); setLoadError(false); setRetry((value) => value + 1);
                 }} />
               </View>
             ) : <Text style={styles.empty}>No comments yet. Start the conversation.</Text>}
             renderItem={({ item }) => (
               <View style={[styles.commentRow, item.is_mine && styles.ownCommentRow]}>
-                <View style={styles.avatar}><Ionicons name="person-outline" size={17} color="#525252" /></View>
+                <View style={styles.avatar}><UserRound size={17} color="#525252" /></View>
                 <CommentCard comment={item} onUpdated={(updated) => {
                   if (mounted.current) setComments((current) => current.map((comment) => comment.id === updated.id ? updated : comment));
                 }} onDeleted={(id) => { if (mounted.current) setComments((current) => current.filter((comment) => comment.id !== id)); }} />
@@ -112,7 +113,7 @@ export function EventPanel({ event, onClose }: Props) {
                 disabled={sending || !draft.trim() || loading || loadError}
                 accessibilityState={{ disabled: sending || !draft.trim() || loading || loadError, busy: sending }}
                 style={[styles.send, (sending || !draft.trim() || loading || loadError) && styles.disabled]} onPress={send}>
-                {sending ? <ActivityIndicator color="#fff" /> : <Ionicons name="arrow-up" size={22} color="#fff" />}
+                {sending ? <ActivityIndicator color="#fff" /> : <ArrowUp size={22} color="#fff" />}
               </Pressable>
             </View>
           </View>
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   header: { gap: 12, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#e5e5e5' },
   titleBar: { flexDirection: 'row', alignItems: 'flex-start', gap: 4, padding: 16, borderBottomWidth: 1, borderBottomColor: '#e5e5e5' },
   list: { flex: 1, minHeight: 0 },
-  title: { flex: 1, fontSize: 22, fontWeight: '700', color: '#171717' },
+  title: { flex: 1, fontSize: 16, lineHeight: 22, fontWeight: '600', color: '#171717' },
   close: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center', marginTop: -8, marginRight: -8 },
   detailRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   description: { flex: 1, fontSize: 12, lineHeight: 18, color: '#525252' },
@@ -145,6 +146,6 @@ const styles = StyleSheet.create({
   sendError: { fontSize: 12, lineHeight: 18, color: '#525252' },
   inputRow: { flexDirection: 'row', alignItems: 'flex-end', borderWidth: 1, borderColor: '#a3a3a3', borderRadius: 12, padding: 4, gap: 4 },
   input: { flex: 1, minHeight: 40, maxHeight: 100, paddingHorizontal: 8, paddingVertical: 10, color: '#171717', fontSize: 14 },
-  send: { width: 40, height: 40, borderRadius: 8, backgroundColor: '#171717', alignItems: 'center', justifyContent: 'center' },
+  send: { width: 40, height: 40, borderRadius: 8, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
   disabled: { opacity: 0.35 },
 });

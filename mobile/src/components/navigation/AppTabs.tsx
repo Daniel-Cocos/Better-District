@@ -1,9 +1,9 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { colors } from '../../theme/colors';
 import { Tabs } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { appTabs } from '../../navigation/tabs';
 
-const tint = { active: '#171717', inactive: '#737373' };
+const tint = { active: colors.accent, inactive: '#737373' };
 
 /** Shared tab navigator. Screens supply content; navigation stays in this component. */
 export function AppTabs() {
@@ -32,7 +32,7 @@ export function AppTabs() {
             tabBarButtonTestID: `tab-${tab.route}`,
             tabBarIcon: ({ focused }) => (
               <View style={styles.icon}>
-                <Ionicons name={focused ? tab.activeIcon : tab.icon} size={23} color={focused ? tint.active : tint.inactive} />
+                <tab.icon size={23} color={focused ? tint.active : tint.inactive} />
               </View>
             ),
           }}

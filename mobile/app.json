@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
-    "scheme": "sotonship",
+    "name": "Better District",
+    "slug": "better-district",
+    "scheme": "betterdistrict",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,7 +26,7 @@
     "plugins": [
       "expo-router",
       "expo-status-bar",
-      ["expo-location", { "locationWhenInUsePermission": "Allow Soton Ship to center the map on your location." }]
+      ["expo-location", { "locationWhenInUsePermission": "Allow Better District to center the map on your location." }]
     ]
   }
 }

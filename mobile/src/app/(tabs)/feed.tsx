@@ -34,7 +34,7 @@ export default function FeedPage() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fafafa' },
-  content: { padding: 20, gap: 16 },
+  content: { padding: 16, gap: 10 },
   subtitle: { fontSize: 13, lineHeight: 20, color: '#737373' },
   error: { padding: 12, gap: 8, borderRadius: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd' },
   empty: { padding: 24, textAlign: 'center', color: '#737373' },

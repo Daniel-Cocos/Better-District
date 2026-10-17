@@ -1,7 +1,8 @@
+import { colors } from '../../theme/colors';
 import { useCallback, useState } from 'react';
 import { Link, router, useFocusEffect } from 'expo-router';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { ActivityIndicator, Button, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { UserRound, ArrowRight } from 'lucide-react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CommentCard } from '../../components/events/CommentCard';
 import { listMyComments, type CommentHistory } from '../../api/comments';
@@ -39,23 +40,36 @@ export default function ProfilePage() {
         keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
         ListHeaderComponent={<View style={styles.header}>
           <View style={styles.account}>
-            <Ionicons name="person-outline" size={28} color="#404040" />
-            <Text style={styles.description}>{authenticated ? session.email : 'You’re exploring as a guest.'}</Text>
-            {!authenticated && <Link href="/auth" style={styles.link}>Sign in or create an account</Link>}
-            <Link href="/about" style={styles.link}>About Soton Ship</Link>
-            <Button title={authenticated ? 'Sign out' : 'Leave guest session'} color="#171717" onPress={signOut} />
+            <View style={styles.identityRow}>
+              <UserRound size={24} color="#737373" accessible={false} />
+              <View style={styles.identityText}>
+                <Text style={styles.accountName}>{authenticated ? session.email : 'Guest'}</Text>
+                {!authenticated && <Link href="/auth" style={styles.link}>Sign in or create an account</Link>}
+              </View>
+            </View>
+            <View style={styles.accountActions}>
+              <Pressable accessibilityRole="button" onPress={signOut} hitSlop={6}
+                style={({ pressed }) => pressed && styles.actionPressed}>
+                <Text style={styles.secondaryAction}>{authenticated ? 'Sign out' : 'Leave guest session'}</Text>
+              </Pressable>
+            </View>
           </View>
           <Text style={styles.historyLabel}>History</Text>
           {error ? <Text accessibilityRole="alert" style={styles.description}>{error}</Text> : null}
         </View>}
-        ListEmptyComponent={loading ? <ActivityIndicator color="#171717" /> : !error ? <Text style={styles.description}>Your comments will appear here, newest first.</Text> : undefined}
+        ListEmptyComponent={loading ? <ActivityIndicator color={colors.accent} /> : !error ? <Text style={styles.description}>Your comments will appear here, newest first.</Text> : undefined}
         renderItem={({ item }) => <View style={styles.historyItem}>
           <Pressable accessibilityRole="button" accessibilityLabel={`Open ${item.event_title} on the map`}
-            onPress={() => router.navigate({ pathname: '/', params: { eventId: String(item.event_id) } })} style={styles.eventLink}>
-            <Ionicons name="location-outline" size={14} color="#737373" />
-            <Text style={styles.eventTitle}>{item.event_title}</Text>
+            accessibilityHint="Shows this initiative on the map and opens its comments"
+            onPress={() => router.navigate({ pathname: '/', params: { eventId: String(item.event_id) } })}
+            style={({ pressed }) => [styles.eventLink, pressed && styles.eventLinkPressed]}>
+            <View style={styles.eventText}>
+              <Text style={styles.eventTitle}>{item.event_title}</Text>
+              <Text style={styles.mapLabel}>View on map</Text>
+            </View>
+            <ArrowRight size={18} color={colors.accent} accessible={false} />
           </Pressable>
-          <CommentCard comment={item}
+          <CommentCard comment={item} embedded
             onUpdated={(updated) => setHistory((current) => current.map((comment) => comment.id === updated.id ? { ...comment, ...updated } : comment))}
             onDeleted={(id) => setHistory((current) => current.filter((comment) => comment.id !== id))} />
         </View>} />
@@ -67,11 +81,20 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#fafafa' },
   content: { padding: 20, gap: 14 },
   header: { gap: 20 },
-  account: { padding: 20, backgroundColor: '#fff', borderRadius: 16, borderWidth: 1, borderColor: '#e5e5e5', alignItems: 'center', gap: 12 },
+  account: { gap: 12, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: '#e5e5e5' },
+  identityRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  identityText: { flex: 1, gap: 4 },
+  accountName: { fontSize: 15, lineHeight: 21, fontWeight: '600', color: '#171717' },
+  accountActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 8 },
+  secondaryAction: { fontSize: 12, lineHeight: 18, color: '#737373', paddingVertical: 6 },
+  actionPressed: { opacity: 0.6 },
   description: { fontSize: 13, lineHeight: 20, color: '#737373', textAlign: 'center' },
-  link: { color: '#171717', fontSize: 13, fontWeight: '600', padding: 4 },
+  link: { color: colors.accent, fontSize: 12, lineHeight: 18, fontWeight: '600', paddingVertical: 4 },
   historyLabel: { fontSize: 15, fontWeight: '600', color: '#171717' },
-  historyItem: { gap: 6 },
-  eventLink: { flexDirection: 'row', gap: 4, alignItems: 'center', paddingVertical: 4 },
-  eventTitle: { flex: 1, fontSize: 12, color: '#737373', fontWeight: '600' },
+  historyItem: { borderWidth: 1, borderColor: '#e5e5e5', borderRadius: 12, backgroundColor: '#fff', overflow: 'hidden' },
+  eventLink: { flexDirection: 'row', gap: 10, alignItems: 'center', padding: 12, minHeight: 64, borderBottomWidth: 1, borderBottomColor: '#e5e5e5' },
+  eventLinkPressed: { backgroundColor: '#f0f4f8' },
+  eventText: { flex: 1, gap: 4 },
+  eventTitle: { fontSize: 13, lineHeight: 18, color: '#171717', fontWeight: '600' },
+  mapLabel: { fontSize: 12, color: colors.accent, fontWeight: '600' },
 });
