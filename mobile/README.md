@@ -3,8 +3,8 @@
 React Native app using Expo, TypeScript, Axios, and Zustand.
 
 The app starts with a sign-in / create-account page. “Continue as guest” opens
-Home without contacting the backend. Home shows the current session and lets
-you sign out or return from guest mode to sign in. Sessions are in memory:
+the Map tab without contacting the backend. Profile shows the current session
+and lets you sign out or return from guest mode to sign in. Sessions are in memory:
 reloading the app signs you out, and passwords are never saved to disk.
 
 Authentication uses the backend's `POST /users` and HTTP Basic `GET /users/me`
@@ -17,11 +17,18 @@ Start the backend with `make dev` in `backend/`. The Android emulator uses
 use `http://127.0.0.1:8000`; for a phone use your computer's LAN address and bind
 the backend to `0.0.0.0`. This URL is public app configuration, not a secret.
 
-Pages use Expo Router: `src/app/index.tsx` is Home, `src/app/about.tsx` is About,
-`src/app/auth.tsx` handles authentication, and `src/app/_layout.tsx` guards the
-stack based on the session. Tap “About this app” on
-Home, then use the header back button or Android's back action to return.
-Add pages as files in `src/app/`; keep shared components outside that directory.
+Pages use Expo Router. `src/app/auth.tsx` handles authentication, and the root
+layout guards the `(tabs)` group based on the session. The tab bar stays hidden
+on authentication screens. Profile links to the existing About page.
+
+`src/components/navigation/AppTabs.tsx` owns the bottom bar's appearance and
+navigation behavior. `src/navigation/tabs.ts` defines tab order, labels, and
+active/inactive icons. Screens in `src/app/(tabs)/` only provide their content;
+they never render or track the bar themselves. To add a tab, add its route file
+and a definition in `tabs.ts`. Put future detail pages outside `(tabs)` or nest
+them inside a tab's own stack. Map is the default tab; Android Back follows tab
+visit history. The navigator handles safe areas and keeps labels below icons
+even on wider screens. Map, Feed, and Notifications are placeholders for now.
 
 After installing the router, restart Metro with `npm start -- --clear`.
 
