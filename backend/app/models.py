@@ -282,3 +282,148 @@ class CommunityIssue(BaseModel):
 class IssueEdit(BaseModel):
     title: Text = Field(max_length=200)
     description: Text = Field(max_length=5000)
+
+
+# ---------- Feedback summaries (admin website) ----------
+
+CommentType = Literal[
+    "support", "oppose", "concern", "mixed", "suggestion", "question", "other"
+]
+
+
+class CommentTypeCount(BaseModel):
+    type: CommentType
+    count: int
+    likes: int  # likes those comments received, a rough measure of agreement
+
+
+class FeedbackTheme(BaseModel):
+    label: str
+    sentiment: Literal["positive", "negative", "mixed"]
+    count: int
+
+
+Priority = Literal["high", "medium", "low"]
+Sentiment = Literal["positive", "negative", "mixed"]
+
+
+class Pivot(BaseModel):
+    """A change the council could make in response to the feedback."""
+
+    action: str
+    reason: str
+    priority: Priority
+    count: int  # comments behind it
+
+
+class FeedbackAnalysis(BaseModel):
+    """What the self-hosted model made of the comments."""
+
+    summary: str
+    verdict: Literal["on_track", "adjust", "rethink"] | None = None
+    types: list[CommentTypeCount]
+    themes: list[FeedbackTheme]
+    pivots: list[Pivot] = []
+    analysed: int  # comments sent to the model (the most recent, up to a limit)
+    classified: int  # of those, how many the model gave a type
+    model: str
+    generated_at: str
+    stale: bool  # comments have changed since this analysis ran
+
+
+class FeedbackSummary(BaseModel):
+    event_id: int
+    likes: int
+    dislikes: int
+    approval: float | None  # likes / (likes + dislikes); None before anyone votes
+    comments: int  # visible to residents; comments under review are left out
+    comment_likes: int
+    comment_dislikes: int
+    analysis: FeedbackAnalysis | None
+
+
+# ---------- Insights page ----------
+
+
+class Attention(BaseModel):
+    level: Literal["low", "medium", "high"]
+    reasons: list[str]
+
+
+class InsightPlan(BaseModel):
+    id: int
+    title: str
+    closes_at: AwareDatetime | None
+    is_open: bool
+    likes: int
+    dislikes: int
+    approval: float | None
+    comments: int
+    analysis: FeedbackAnalysis | None
+    attention: Attention
+
+
+class InsightTotals(BaseModel):
+    plans: int
+    analysed: int  # plans with a current analysis
+    likes: int
+    dislikes: int
+    approval: float | None
+    comments: int
+    classified: int  # comments the model has typed, across current analyses
+    types: list[CommentTypeCount]
+    high_attention: int
+    medium_attention: int
+
+
+class PlanRef(BaseModel):
+    event_id: int
+    title: str
+
+
+class BriefingPriority(PlanRef):
+    action: str
+    why: str
+    urgency: Priority
+
+
+class CrossCutting(BaseModel):
+    label: str
+    insight: str
+    sentiment: Sentiment
+    events: list[PlanRef]
+
+
+class WorkingWell(PlanRef):
+    note: str
+
+
+class Briefing(BaseModel):
+    """The model's city-wide reading of every plan's feedback."""
+
+    headline: str
+    overview: str
+    priorities: list[BriefingPriority]
+    cross_cutting: list[CrossCutting]
+    working_well: list[WorkingWell]
+    model: str
+    plans: int  # plans it was based on
+    generated_at: str
+    stale: bool
+
+
+class InsightJob(BaseModel):
+    running: bool
+    done: int
+    total: int
+    current: str | None  # what it's working on now
+    error: str | None
+    failed: int
+
+
+class Insights(BaseModel):
+    plans: list[InsightPlan]
+    totals: InsightTotals
+    briefing: Briefing | None
+    job: InsightJob
+    pending: int  # plans whose analysis is missing or out of date

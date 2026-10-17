@@ -46,7 +46,9 @@ FORM = {
 
 @pytest.fixture
 def client(tmp_path):
-    with TestClient(create_app(tmp_path / "test.db")) as test_client:
+    with TestClient(
+        create_app(tmp_path / "test.db", background_jobs=False)
+    ) as test_client:
         with connect(test_client.app.state.database_path) as database:
             database.execute(
                 "INSERT INTO users (email, password_hash) VALUES (?, ?), (?, ?)",
@@ -470,3 +472,279 @@ def test_flagged_replies_drop_out_of_notifications(client, auth):
     assert client.get("/users/me/notifications", auth=resident).json() == []
     client.post(f"/admin/comments/{reply['id']}/approve", headers=auth)
     assert len(client.get("/users/me/notifications", auth=resident).json()) == 1
+
+
+def test_feedback_summary_combines_votes_and_cached_model_analysis(
+    client, auth, monkeypatch
+):
+    from app import feedback
+
+    calls = []
+
+    def fake_model(model, prompt):
+        calls.append(prompt)
+        return {
+            "summary": "Most residents back the party but worry about noise.",
+            "comments": [
+                {"n": 1, "type": "support"},
+                {"n": 2, "type": "oppose"},
+                {"n": 3, "type": "support"},
+                {"n": 3, "type": "oppose"},  # duplicate label: first one wins
+                {"n": 9, "type": "support"},  # no such comment
+                {"n": 4, "type": "nonsense"},
+            ],
+            "themes": [
+                {"label": "Noise", "sentiment": "negative", "comments": [2, 2, 9]},
+                {"label": "Community", "sentiment": "positive", "comments": [1, 3]},
+                {"label": "Empty", "sentiment": "positive", "comments": []},
+            ],
+        }
+
+    monkeypatch.setattr(feedback, "pick_model", lambda: "test-model")
+    monkeypatch.setattr(feedback, "ask_model", fake_model)
+    client.post("/admin/events", json=APP_EVENT, headers=auth)
+    url = "/admin/events/1/feedback"
+    assert client.get(url).status_code == 401
+    assert client.post(f"{url}/analyse").status_code == 401
+    assert client.get("/admin/events/9/feedback", headers=auth).status_code == 404
+
+    empty = client.get(url, headers=auth).json()
+    assert empty["approval"] is None and empty["analysis"] is None
+    assert client.post(f"{url}/analyse", headers=auth).json()["analysis"] is None
+    assert calls == []  # nothing to analyse
+
+    resident = ("resident@example.com", "resident-password")
+    client.put("/events/1/vote", json={"vote": 1})
+    client.put("/events/1/vote", auth=resident, json={"vote": -1})
+    with TestClient(client.app) as third:
+        third.put("/events/1/vote", json={"vote": 1})
+    for body in ("Great idea", "Too loud", "Love it", "When does it start?"):
+        client.post("/events/1/comments", auth=resident, json={"body": body})
+    client.put("/events/1/comments/1/vote", json={"vote": 1})
+    hidden = client.post("/events/1/comments", json={"body": "Spam"}).json()
+    client.post(f"/events/1/comments/{hidden['id']}/flag", auth=resident, json={})
+
+    before = client.get(url, headers=auth).json()
+    assert before["likes"] == 2 and before["dislikes"] == 1
+    assert before["approval"] == pytest.approx(2 / 3)
+    assert before["comments"] == 4  # the flagged one is left out
+    assert before["comment_likes"] == 1
+    assert before["analysis"] is None
+
+    analysis = client.post(f"{url}/analyse", headers=auth).json()["analysis"]
+    assert "Spam" not in calls[0] and "Great idea" in calls[0]
+    assert analysis["summary"].startswith("Most residents")
+    assert analysis["model"] == "test-model"
+    assert analysis["types"] == [
+        {"type": "support", "count": 2, "likes": 1},
+        {"type": "oppose", "count": 1, "likes": 0},
+    ]
+    assert analysis["classified"] == 3 and analysis["analysed"] == 4
+    assert analysis["themes"] == [
+        {"label": "Community", "sentiment": "positive", "count": 2},
+        {"label": "Noise", "sentiment": "negative", "count": 1},
+    ]
+    assert analysis["stale"] is False
+
+    # Cached until the comments change; votes alone don't trigger a new run
+    client.put("/events/1/comments/2/vote", json={"vote": -1})
+    client.post(f"{url}/analyse", headers=auth)
+    assert len(calls) == 1
+    client.post("/events/1/comments", json={"body": "Another view"})
+    assert client.get(url, headers=auth).json()["analysis"]["stale"] is True
+    client.post(f"{url}/analyse", headers=auth)
+    assert len(calls) == 2
+    client.post(f"{url}/analyse?force=true", headers=auth)
+    assert len(calls) == 3
+
+
+def test_feedback_reports_an_unreachable_model_server(client, auth, monkeypatch):
+    from app import feedback
+
+    monkeypatch.setattr(feedback, "OLLAMA_URL", "http://127.0.0.1:9")
+    monkeypatch.setattr(feedback, "OLLAMA_MODEL", "")
+    client.post("/admin/events", json=APP_EVENT, headers=auth)
+    client.post("/events/1/comments", json={"body": "Hello"})
+    response = client.post("/admin/events/1/feedback/analyse", headers=auth)
+    assert response.status_code == 503
+    assert "127.0.0.1:9" in response.json()["detail"]
+    # The vote numbers still work without the model
+    assert client.get("/admin/events/1/feedback", headers=auth).json()["comments"] == 1
+
+
+def test_feedback_never_uses_ollama_cloud_models(monkeypatch):
+    from app import feedback
+
+    tags = {
+        "models": [
+            {"name": "minimax-m2.7:cloud", "remote_host": "https://ollama.com:443"},
+            {"name": "sneaky", "remote_host": "https://ollama.com:443"},
+            {"name": "qwen3.5:9b"},
+        ]
+    }
+    monkeypatch.setattr(feedback, "_request", lambda path, body=None: tags)
+    monkeypatch.setattr(feedback, "OLLAMA_MODEL", "")
+    assert feedback.pick_model() == "qwen3.5:9b"
+    monkeypatch.setattr(feedback, "OLLAMA_MODEL", "minimax-m2.7:cloud")
+    with pytest.raises(feedback.AnalysisUnavailable, match="cloud"):
+        feedback.pick_model()
+    monkeypatch.setattr(feedback, "OLLAMA_MODEL", "missing:1b")
+    with pytest.raises(feedback.AnalysisUnavailable, match="isn’t installed"):
+        feedback.pick_model()
+    tags["models"] = tags["models"][:2]
+    monkeypatch.setattr(feedback, "OLLAMA_MODEL", "")
+    with pytest.raises(feedback.AnalysisUnavailable, match="No local models"):
+        feedback.pick_model()
+
+
+def test_insights_analyse_every_plan_then_brief_the_council(client, auth, monkeypatch):
+    from app import feedback
+
+    prompts = {"plans": [], "briefing": []}
+
+    def fake_model(model, prompt, system=feedback.SYSTEM_PROMPT, schema=None):
+        if system == feedback.BRIEFING_PROMPT:
+            prompts["briefing"].append(prompt)
+            return {
+                "headline": "Rethink the street party; keep the library.",
+                "overview": "Mixed.",
+                "priorities": [
+                    {"id": 1, "action": "Move it", "why": "Noise", "urgency": "high"},
+                    {"id": 1, "action": "Duplicate", "why": "x", "urgency": "low"},
+                    {"id": 99, "action": "Made up", "why": "x", "urgency": "high"},
+                ],
+                "cross_cutting": [
+                    {
+                        "label": "Noise",
+                        "insight": "Comes up a lot",
+                        "sentiment": "negative",
+                        "ids": [1, 2, 99],
+                    }
+                ],
+                "working_well": [{"id": 2, "note": "Loved"}, {"id": 42, "note": "?"}],
+            }
+        prompts["plans"].append(prompt)
+        n = prompt.count("\nn=")
+        party = "Street party" in prompt
+        return {
+            "summary": "Summary",
+            "verdict": "rethink" if party else "on_track",
+            "comments": [
+                {"n": i, "type": "oppose" if party else "support"}
+                for i in range(1, n + 1)
+            ],
+            "themes": [],
+            "pivots": [
+                {"action": "Low", "reason": "r", "priority": "low", "comments": [1]},
+                {
+                    "action": "High",
+                    "reason": "r",
+                    "priority": "high",
+                    "comments": [1, 9],
+                },
+                {
+                    "action": " ",
+                    "reason": "dropped",
+                    "priority": "high",
+                    "comments": [],
+                },
+            ],
+        }
+
+    monkeypatch.setattr(feedback, "pick_model", lambda: "test-model")
+    monkeypatch.setattr(feedback, "ask_model", fake_model)
+    assert client.get("/admin/insights").status_code == 401
+    assert client.post("/admin/insights/refresh").status_code == 401
+
+    client.post("/admin/events", json=APP_EVENT, headers=auth)
+    client.post(
+        "/admin/events", json={**APP_EVENT, "title": "Library hours"}, headers=auth
+    )
+    client.post(
+        "/admin/events", json={**APP_EVENT, "title": "No comments yet"}, headers=auth
+    )
+    for body in ("Too loud", "Not here", "Awful idea", "No", "Please don't", "Stop"):
+        client.post("/events/1/comments", json={"body": body})
+    client.post("/events/2/comments", json={"body": "Longer hours please"})
+
+    before = client.get("/admin/insights", headers=auth).json()
+    assert before["pending"] == 2 and before["briefing"] is None
+    assert before["job"]["running"] is False
+    assert [p["analysis"] for p in before["plans"]] == [None, None, None]
+
+    response = client.post("/admin/insights/refresh", headers=auth)
+    assert response.status_code == 202
+    data = response.json()
+    assert len(prompts["plans"]) == 2 and len(prompts["briefing"]) == 1
+    assert "id=1 | Street party" in prompts["briefing"][0]
+    assert data["pending"] == 0
+    assert data["job"] == {
+        "running": False,
+        "done": 3,
+        "total": 3,
+        "current": None,
+        "error": None,
+        "failed": 0,
+    }
+
+    party, library, empty = data["plans"]
+    assert party["analysis"]["verdict"] == "rethink"
+    assert [p["action"] for p in party["analysis"]["pivots"]] == ["High", "Low"]
+    assert party["analysis"]["pivots"][0]["count"] == 1  # comment 9 doesn't exist
+    assert party["attention"]["level"] == "high"
+    assert "100% of comments object or raise concerns" in party["attention"]["reasons"]
+    assert library["attention"]["level"] == "low"  # one comment is too few to judge
+    assert empty["analysis"] is None and empty["is_open"] is True
+
+    totals = data["totals"]
+    assert totals["plans"] == 3 and totals["analysed"] == 2
+    assert totals["comments"] == 7 and totals["classified"] == 7
+    assert totals["types"] == [
+        {"type": "support", "count": 1, "likes": 0},
+        {"type": "oppose", "count": 6, "likes": 0},
+    ]
+    assert totals["high_attention"] == 1
+
+    briefing = data["briefing"]
+    assert briefing["headline"].startswith("Rethink")
+    assert briefing["stale"] is False and briefing["plans"] == 2
+    assert briefing["priorities"] == [
+        {
+            "event_id": 1,
+            "title": "Street party",
+            "action": "Move it",
+            "why": "Noise",
+            "urgency": "high",
+        }
+    ]
+    assert [e["event_id"] for e in briefing["cross_cutting"][0]["events"]] == [1, 2]
+    assert briefing["working_well"] == [
+        {"event_id": 2, "title": "Library hours", "note": "Loved"}
+    ]
+
+    # Nothing changed: a refresh asks the model nothing
+    client.post("/admin/insights/refresh", headers=auth)
+    assert len(prompts["plans"]) == 2 and len(prompts["briefing"]) == 1
+    # A new comment redoes that plan and the briefing only
+    client.post("/events/2/comments", json={"body": "And a café"})
+    stale = client.get("/admin/insights", headers=auth).json()
+    assert stale["pending"] == 1 and stale["briefing"]["stale"] is True
+    client.post("/admin/insights/refresh", headers=auth)
+    assert len(prompts["plans"]) == 3 and len(prompts["briefing"]) == 2
+    # force redoes everything
+    client.post("/admin/insights/refresh?force=true", headers=auth)
+    assert len(prompts["plans"]) == 5 and len(prompts["briefing"]) == 3
+
+
+def test_insights_job_reports_an_unreachable_model(client, auth, monkeypatch):
+    from app import feedback
+
+    monkeypatch.setattr(feedback, "OLLAMA_URL", "http://127.0.0.1:9")
+    for title in ("One", "Two", "Three", "Four"):
+        client.post("/admin/events", json={**APP_EVENT, "title": title}, headers=auth)
+    for event_id in range(1, 5):
+        client.post(f"/events/{event_id}/comments", json={"body": "Hi"})
+    job = client.post("/admin/insights/refresh", headers=auth).json()["job"]
+    assert job["running"] is False
+    assert job["failed"] == 3  # gives up after three failures in a row
+    assert "127.0.0.1:9" in job["error"]

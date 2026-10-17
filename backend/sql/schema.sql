@@ -198,3 +198,20 @@ CREATE TABLE IF NOT EXISTS issue_analyses (
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS analyses_issue ON issue_analyses(issue_id, id);
+
+-- Cached comment analyses from the self-hosted model, one per event, recomputed only
+-- when the event's visible comments change (fingerprint).
+CREATE TABLE IF NOT EXISTS feedback_analyses (
+    event_id INTEGER PRIMARY KEY REFERENCES events(id) ON DELETE CASCADE,
+    fingerprint TEXT NOT NULL,
+    result_json TEXT NOT NULL CHECK (json_valid(result_json)),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- The latest city-wide briefing across every plan's analysis (a single row).
+CREATE TABLE IF NOT EXISTS insight_briefings (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    fingerprint TEXT NOT NULL,
+    result_json TEXT NOT NULL CHECK (json_valid(result_json)),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

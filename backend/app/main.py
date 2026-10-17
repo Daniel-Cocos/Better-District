@@ -8,6 +8,8 @@ from app.routes import (
     auth,
     comments,
     events,
+    feedback,
+    insights,
     live,
     issues,
     moderation,
@@ -17,7 +19,9 @@ from app.routes import (
 )
 
 
-def create_app(database_path: Path | None = None) -> FastAPI:
+def create_app(
+    database_path: Path | None = None, background_jobs: bool = True
+) -> FastAPI:
     """Create the API using a local SQLite file."""
     path = database_path or DEFAULT_DATABASE
 
@@ -28,6 +32,8 @@ def create_app(database_path: Path | None = None) -> FastAPI:
 
     application = FastAPI(title="Soton Ship API", lifespan=lifespan)
     application.state.database_path = path
+    # Tests run long jobs inline so they can check the results straight away
+    application.state.background_jobs = background_jobs
     application.include_router(issues.router)
     application.include_router(events.router)
     application.include_router(comments.router)
@@ -37,6 +43,8 @@ def create_app(database_path: Path | None = None) -> FastAPI:
     application.include_router(projects.router)
     application.include_router(live.router)
     application.include_router(moderation.router)
+    application.include_router(feedback.router)
+    application.include_router(insights.router)
 
     @application.get("/health")
     def health():
