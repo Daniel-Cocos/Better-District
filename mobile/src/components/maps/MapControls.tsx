@@ -29,7 +29,7 @@ export function MapControls({ locating, onZoomIn, onZoomOut, onLocate }: Props) 
 }
 
 const styles = StyleSheet.create({
-  controls: { position: 'absolute', bottom: 12, left: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', borderRadius: 8, overflow: 'hidden' },
+  controls: { position: 'absolute', bottom: 12, right: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', borderRadius: 8, overflow: 'hidden' },
   button: { width: 48, height: 48, justifyContent: 'center', alignItems: 'center' },
   divider: { borderBottomWidth: 1, borderBottomColor: '#e5e5e5' },
   pressed: { backgroundColor: '#e5e5e5' },

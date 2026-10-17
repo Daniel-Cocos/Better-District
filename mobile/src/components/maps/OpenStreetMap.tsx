@@ -4,14 +4,31 @@ import { ActivityIndicator, Button, Linking, StyleSheet, Text, View } from 'reac
 import { WebView } from 'react-native-webview';
 import { mapDocument } from './mapDocument';
 import { MapControls } from './MapControls';
+import type { CouncilEvent } from '../../api/events';
+import { eventMarkersScript, focusEventScript } from './eventBridge';
 
 /** Keyless OSM-based map, isolated so screens need no WebView logic. */
-export function OpenStreetMap() {
+type Props = { events: CouncilEvent[]; focusedEvent?: CouncilEvent; onSelectEvent: (id: number) => void };
+
+export function OpenStreetMap({ events, focusedEvent, onSelectEvent }: Props) {
   const webView = useRef<WebView<object>>(null);
   const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<{ message: string; settings?: boolean } | null>(null);
+
+  useEffect(() => {
+    if (status === 'ready') webView.current?.injectJavaScript(eventMarkersScript(events));
+  }, [events, status]);
+
+  const focusLatitude = focusedEvent?.latitude;
+  const focusLongitude = focusedEvent?.longitude;
+  const focusId = focusedEvent?.id;
+  useEffect(() => {
+    if (status === 'ready' && focusLatitude !== undefined && focusLongitude !== undefined) {
+      webView.current?.injectJavaScript(focusEventScript({ latitude: focusLatitude, longitude: focusLongitude }));
+    }
+  }, [focusId, focusLatitude, focusLongitude, status]);
 
   async function centerOnUser() {
     if (locating || status !== 'ready') return;
@@ -77,6 +94,13 @@ export function OpenStreetMap() {
           else if (nativeEvent.data.startsWith('error:')) {
             console.warn('Map renderer:', nativeEvent.data.slice(6));
             setStatus('error');
+          } else {
+            try {
+              const message = JSON.parse(nativeEvent.data);
+              if (message.type === 'selectEvent' && Number.isInteger(message.id)) onSelectEvent(message.id);
+            } catch {
+              // Ignore unrelated messages from the embedded renderer.
+            }
           }
         }}
         onError={() => setStatus('error')}

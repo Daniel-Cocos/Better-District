@@ -1,7 +1,7 @@
--- Fictional Southampton projects and opinions, for local development only.
+-- Fictional Southampton community events and opinions, for local development only.
 -- Demo users: alex@example.com and sam@example.com
 -- Demo password for both: council-demo-2026
--- Re-running this file keeps existing records unchanged.
+-- Re-running refreshes demo event details and comment text, preserving votes and users.
 PRAGMA foreign_keys = ON;
 BEGIN;
 INSERT INTO users (email, password_hash) VALUES
@@ -9,24 +9,29 @@ INSERT INTO users (email, password_hash) VALUES
 ('sam@example.com', 'scrypt$12d135dc3c0658d540527ae53544e0e7$c1a7611f799d5b946fcbe9d90cb5676feeabe14ec9fad7d7f62307c839813c624a481c11821af33f9bd65a981408d4741c777fa993b0110238452560c9fd45bd')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO events (id, title, description, latitude, longitude, likes, dislikes) VALUES
-(1, 'Central Library renovation', 'Proposed accessible entrance, improved lighting and new study spaces at the city library.', 50.9081, -1.4043, 42, 5),
-(2, 'Portswood Road cycle lane', 'Consultation on a protected cycle lane and safer crossings along Portswood Road.', 50.9255, -1.3910, 28, 17),
-(3, 'Riverside Park playground renewal', 'Replace worn play equipment and add inclusive play areas and more seating.', 50.9340, -1.3790, 65, 3),
-(4, 'City centre pavement repairs', 'Repair uneven paving and improve dropped kerbs around the High Street.', 50.9004, -1.4032, 36, 8),
-(5, 'Mayflower Park tree planting', 'Plant shade trees and native flower beds, with paths kept clear for public events.', 50.8964, -1.4090, 51, 6)
-ON CONFLICT DO NOTHING;
+INSERT INTO events (id, title, description, latitude, longitude, likes, dislikes, closes_at) VALUES
+(1, 'Southampton Common community clean-up', 'Fictional demo event: meet near the Hawthorns Urban Wildlife Centre for a community litter pick on Southampton Common. Bring gloves and help care for the woodland paths.', 50.9297, -1.4120, 42, 5, '2026-11-01T17:00:00Z'),
+(2, 'Portswood Road cycling workshop', 'Fictional demo event: a friendly bike-maintenance workshop near Portswood Library, with puncture repair demonstrations and tips for cycling around Southampton.', 50.9255, -1.3910, 28, 17, '2026-11-04T18:00:00Z'),
+(3, 'Riverside Park family picnic', 'Fictional demo event: a bring-your-own picnic beside the River Itchen at Riverside Park, with lawn games and a relaxed stroll along the riverside paths.', 50.9340, -1.3790, 65, 3, '2026-11-07T16:00:00Z'),
+(4, 'Southampton Old Town heritage walk', 'Fictional demo event: a guided walk from the Tudor House area through Southampton Old Town, exploring the medieval walls, historic lanes and links to the waterfront.', 50.8979, -1.4054, 36, 8, '2026-11-10T17:00:00Z'),
+(5, 'Mayflower Park waterfront music', 'Fictional demo event: local acoustic performers and a relaxed community gathering at Mayflower Park, overlooking Southampton Water. Bring a picnic blanket.', 50.8964, -1.4090, 51, 6, '2026-11-14T18:00:00Z')
+ON CONFLICT(id) DO UPDATE SET
+    title = excluded.title,
+    description = excluded.description,
+    latitude = excluded.latitude,
+    longitude = excluded.longitude,
+    closes_at = excluded.closes_at;
 
 INSERT INTO comments (id, event_id, body, user_email, likes, dislikes) VALUES
-(1, 1, 'The accessible entrance is overdue. Please keep a quiet study area during the works.', 'alex@example.com', 12, 0),
-(2, 1, 'I support this, but what will happen to library opening hours during construction?', NULL, 8, 1),
-(3, 2, 'A protected lane would make my commute much safer.', 'sam@example.com', 16, 4),
-(4, 2, 'Please explain how deliveries to local shops will work before removing parking.', NULL, 11, 6),
-(5, 3, 'Inclusive equipment would mean our whole family can enjoy the playground together.', 'alex@example.com', 23, 0),
-(6, 3, 'More benches near the play area would really help grandparents.', NULL, 9, 0),
-(7, 4, 'These repairs will make a big difference for wheelchair users.', 'sam@example.com', 14, 0),
-(8, 4, 'Can the work be phased so businesses still have access?', NULL, 6, 1),
-(9, 5, 'More shade is welcome. Please choose trees that support local wildlife.', 'alex@example.com', 18, 1),
-(10, 5, 'A good idea, provided there is a budget to water and maintain the trees.', 'sam@example.com', 10, 0)
-ON CONFLICT DO NOTHING;
+(1, 1, 'Happy to help with the Common clean-up. Will litter pickers be provided?', 'alex@example.com', 12, 0),
+(2, 1, 'Could we include the paths around the Hawthorns? They could use some attention.', NULL, 8, 1),
+(3, 2, 'A puncture repair demo would be really useful for my cycle to Portswood.', 'sam@example.com', 16, 4),
+(4, 2, 'Can beginners bring a bike along for a quick safety check?', NULL, 11, 6),
+(5, 3, 'The Riverside picnic sounds lovely. Are the lawn games suitable for younger children?', 'alex@example.com', 23, 0),
+(6, 3, 'Please share an accessible meeting point near the riverside path.', NULL, 9, 0),
+(7, 4, 'I would love to learn more about the Old Town walls and Tudor House.', 'sam@example.com', 14, 0),
+(8, 4, 'Will the heritage walk include steps, or is there a step-free route?', NULL, 6, 1),
+(9, 5, 'Local acoustic music by Southampton Water sounds like a great afternoon.', 'alex@example.com', 18, 1),
+(10, 5, 'Please leave enough space for people using the waterfront path.', 'sam@example.com', 10, 0)
+ON CONFLICT(id) DO UPDATE SET body = excluded.body;
 COMMIT;

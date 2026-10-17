@@ -17,18 +17,57 @@ html, body, #map { width:100%; height:100%; margin:0; background:#f5f5f5; }
 <script>
 try {
   // This pinned build bundles its worker, avoiding cross-origin module workers.
-  const { Map, AttributionControl } = maplibregl;
+  const { Map, AttributionControl, Marker, LngLatBounds } = maplibregl;
   const map = new Map({
     container:'map', style:'https://tiles.openfreemap.org/styles/positron',
     center:[-1.4044, 50.9097], zoom:13, maxZoom:19,
     attributionControl:false, dragRotate:false, pitchWithRotate:false
   });
   map.touchZoomRotate.disableRotation();
-  map.addControl(new AttributionControl({ compact:false }), 'bottom-right');
+  map.addControl(new AttributionControl({ compact:true }), 'bottom-left');
+  let eventMarkers = [];
+  let fittedEvents = false;
+  window.setEvents = function (events) {
+    eventMarkers.forEach(function (marker) { marker.remove(); });
+    eventMarkers = [];
+    const bounds = new LngLatBounds();
+    events.forEach(function (event) {
+      if (!Number.isFinite(event.latitude) || !Number.isFinite(event.longitude) ||
+          Math.abs(event.latitude) > 90 || Math.abs(event.longitude) > 180) return;
+      const point = [event.longitude, event.latitude];
+      const marker = new Marker({ color:'#171717', scale:0.7 })
+        .setLngLat(point)
+        .addTo(map);
+      const element = marker.getElement();
+      element.setAttribute('aria-label', event.title);
+      element.setAttribute('role', 'button');
+      element.setAttribute('tabindex', '0');
+      element.style.cursor = 'pointer';
+      function select() { window.ReactNativeWebView.postMessage(JSON.stringify({ type:'selectEvent', id:event.id })); }
+      element.addEventListener('click', function (click) { click.stopPropagation(); select(); });
+      element.addEventListener('keydown', function (key) {
+        if (key.key === 'Enter' || key.key === ' ') { key.preventDefault(); select(); }
+      });
+      eventMarkers.push(marker);
+      bounds.extend(point);
+    });
+    if (!fittedEvents && eventMarkers.length) {
+      map.fitBounds(bounds, { padding:{ top:60, bottom:60, left:32, right:76 }, maxZoom:13, duration:0 });
+      fittedEvents = true;
+    }
+  };
   window.zoomMap = function (delta) {
+    fittedEvents = true;
     map.easeTo({ zoom:Math.max(0, Math.min(19, map.getZoom() + delta)), duration:250 });
   };
+  window.focusEvent = function (latitude, longitude) {
+    fittedEvents = true;
+    // The details panel starts 40px from the left; keep the pin in that strip.
+    map.flyTo({ center:[longitude, latitude], zoom:16, duration:650,
+      offset:[-(window.innerWidth - 40) / 2, 0] });
+  };
   window.centerOnLocation = function (latitude, longitude, accuracy) {
+    fittedEvents = true;
     const point = [longitude, latitude];
     const radiusAtZoomZero = accuracy / (78271.51696 * Math.max(0.01, Math.cos(latitude * Math.PI / 180)));
     map.getSource('user-location').setData({ type:'Feature', properties:{}, geometry:{ type:'Point', coordinates:point } });

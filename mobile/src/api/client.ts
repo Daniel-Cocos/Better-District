@@ -5,6 +5,7 @@ import { useSessionStore } from '../store/session';
 export const api = create({
   baseURL: process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:8000',
   timeout: 10000,
+  withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
