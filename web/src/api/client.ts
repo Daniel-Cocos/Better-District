@@ -38,7 +38,9 @@ api.interceptors.response.use(undefined, (error) => {
 /** Turns an axios/FastAPI error into a sentence fit for the UI. */
 export function errorMessage(err: unknown, fallback = 'Something went wrong. Please try again.') {
   if (isAxiosError(err)) {
-    if (!err.response) return 'Can’t reach the server. Check your connection and try again.'
+    // 502–504 is the dev proxy (or a gateway) failing to reach the API, so it's the same problem
+    if (!err.response || [502, 503, 504].includes(err.response.status))
+      return 'Can’t reach the server. Check your connection and try again.'
     const detail = err.response.data?.detail
     if (typeof detail === 'string') return detail
   }
