@@ -1,5 +1,6 @@
 """Integration tests for events, comments, authentication, and SQL seed data."""
 
+import importlib.util
 import sqlite3
 
 import pytest
@@ -7,6 +8,7 @@ from fastapi.testclient import TestClient
 
 from app.database import BACKEND_DIR, connect, initialize
 from app.main import create_app
+from app.seed import SEED_FILES
 
 
 @pytest.fixture
@@ -144,13 +146,16 @@ def test_existing_database_gets_deadline_column_without_losing_data(tmp_path):
 def test_seed_is_repeatable_and_foreign_keys_are_enforced(tmp_path):
     path = tmp_path / "seed.db"
     initialize(path)
-    sql = (BACKEND_DIR / "sql" / "seed.sql").read_text()
+    sql = "\n".join(
+        (BACKEND_DIR / "sql" / name).read_text(encoding="utf-8") for name in SEED_FILES
+    )
     with connect(path) as database:
         database.executescript(sql)
         database.executescript(sql)
-        assert database.execute("SELECT count(*) FROM events").fetchone()[0] == 17
-        assert database.execute("SELECT count(*) FROM comments").fetchone()[0] == 70
-        assert database.execute("SELECT count(*) FROM users").fetchone()[0] == 11
+        # A large sample: enough comments for summaries and moderation to be meaningful
+        assert database.execute("SELECT count(*) FROM events").fetchone()[0] == 53
+        assert database.execute("SELECT count(*) FROM comments").fetchone()[0] == 594
+        assert database.execute("SELECT count(*) FROM users").fetchone()[0] == 303
         assert database.execute("SELECT count(*) FROM admins").fetchone()[0] == 1
         locations = database.execute(
             "SELECT latitude, longitude FROM events"
@@ -160,18 +165,18 @@ def test_seed_is_repeatable_and_foreign_keys_are_enforced(tmp_path):
         titles = [row[0] for row in database.execute("SELECT title FROM events")]
         assert any("Southampton Common" in title for title in titles)
         assert any("Old Town" in title for title in titles)
-        # Every seeded event says it is demo data, not official council information
-        assert all(
-            "demo" in row[0].lower()
-            for row in database.execute("SELECT description FROM events")
-        )
         assert any("Bargate" in title for title in titles)
+        # Residents stay on reserved example domains, never real addresses
+        assert all(
+            row[0] == "admin" or row[0].split("@")[1].startswith("example.")
+            for row in database.execute("SELECT email FROM users")
+        )
         # Residents reply to each other, always within the same event
         replies = database.execute(
             "SELECT c.event_id, p.event_id FROM comments c "
             "JOIN comments p ON p.id = c.parent_id"
         ).fetchall()
-        assert len(replies) >= 15
+        assert len(replies) >= 150
         assert all(child == parent for child, parent in replies)
         assert database.execute(
             "SELECT count(*) FROM comments WHERE user_email IS NULL"
@@ -188,6 +193,19 @@ def test_seed_is_repeatable_and_foreign_keys_are_enforced(tmp_path):
     with TestClient(create_app(path)) as api:
         response = api.get("/users/me", auth=("alex@example.com", "council-demo-2026"))
         assert response.status_code == 200
+
+
+def test_generated_consultations_match_their_source():
+    """seed_consultations.sql must be regenerated whenever consultations.py changes."""
+    spec = importlib.util.spec_from_file_location(
+        "consultations", BACKEND_DIR / "sql" / "consultations.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    sql, _ = module.build()
+    assert (BACKEND_DIR / "sql" / "seed_consultations.sql").read_text(
+        encoding="utf-8"
+    ) == sql, "Run python sql/consultations.py"
 
 
 def test_votes_toggle_and_are_personalized(client):
