@@ -16,7 +16,7 @@ Better District is a map-based platform for Southampton City Council. The counci
 | --- | --- | --- | --- |
 | Backend API | `Soton-Ship/backend` | Python, FastAPI, SQLite | Stores events, comments, users, admins and projects |
 | Mobile app | `Soton-Ship/mobile` | React Native (Expo) | Resident-facing app (early stage) |
-| Admin website | `soton-council-map` (separate folder, not yet in this repo) | React, MUI, axios, Leaflet | Council staff portal |
+| Admin website | `Soton-Ship/web` | React, MUI, axios, Leaflet | Council staff portal |
 
 The admin website calls the backend through axios. In development, Vite forwards `/api/*` to the backend on port 8000.
 
@@ -64,7 +64,7 @@ Interactive API docs: http://localhost:8000/docs
 make seed && make dev            # with Nix
 # or without Nix, see backend/README.md
 
-# Admin website (from soton-council-map)
+# Admin website (from Soton-Ship/web)
 npm install
 npm run dev                      # http://localhost:5173
 ```

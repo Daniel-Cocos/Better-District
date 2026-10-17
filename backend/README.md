@@ -34,7 +34,7 @@ Set or remove votes with `PUT /events/{id}/vote` or `PUT /events/{id}/comments/{
 
 ## Admin website
 
-The council admin website (React, separate repo folder `soton-council-map`) uses the
+The council admin website (React, in `web/`) uses the
 `/auth/*` and `/admin/*` endpoints. After `make seed`, sign in as
 `admin@southampton.gov.uk` / `council-admin-2026`.
 
