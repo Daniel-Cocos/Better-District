@@ -11,9 +11,7 @@ export function AppTabs() {
     <Tabs
       backBehavior="history"
       screenOptions={{
-        headerTitleAlign: 'center',
-        headerShadowVisible: false,
-        headerStyle: { backgroundColor: '#fafafa' },
+        headerShown: false,
         sceneStyle: { backgroundColor: '#fafafa' },
         tabBarPosition: 'bottom',
         tabBarLabelPosition: 'below-icon',

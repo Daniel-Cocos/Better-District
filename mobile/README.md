@@ -28,7 +28,22 @@ they never render or track the bar themselves. To add a tab, add its route file
 and a definition in `tabs.ts`. Put future detail pages outside `(tabs)` or nest
 them inside a tab's own stack. Map is the default tab; Android Back follows tab
 visit history. The navigator handles safe areas and keeps labels below icons
-even on wider screens. Map, Feed, and Notifications are placeholders for now.
+even on wider screens. Feed and Notifications are placeholders for now.
+
+Map uses MapLibre with OpenFreeMap Positron tiles based on OpenStreetMap data, centered
+on Southampton. The light monochrome style keeps street labels with less visual
+clutter. Pan, pinch zoom, zoom controls, and visible map attribution are
+included. It needs internet access but no API key. The location button asks for
+foreground location permission on tap and centers the map on a fresh position,
+with a position marker and accuracy circle. It does not track in the background.
+Denied permission, disabled location services, and timeouts leave the map usable.
+For emulator testing, set a simulated position in the emulator's Location controls.
+`src/components/maps/OpenStreetMap.tsx` owns loading/retry and external links;
+`mapDocument.ts` owns the basemap and initial view. MapLibre is pinned to 5.8.0,
+using its bundled worker for Android WebView compatibility.
+`MapControls.tsx` groups zoom in, zoom out, and location at the bottom-left.
+Tile requests use the WebView's normal HTTP cache and
+identify the app as SotonShip. Backend event markers are not connected yet.
 
 After installing the router, restart Metro with `npm start -- --clear`.
 

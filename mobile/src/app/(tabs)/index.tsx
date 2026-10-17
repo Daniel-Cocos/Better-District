@@ -1,5 +1,5 @@
-import { EmptyTab } from '../../components/EmptyTab';
+import { OpenStreetMap } from '../../components/maps/OpenStreetMap';
 
 export default function MapPage() {
-  return <EmptyTab icon="map-outline" title="Explore your area" description="Your local events map will appear here." />;
+  return <OpenStreetMap />;
 }
