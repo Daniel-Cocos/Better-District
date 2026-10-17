@@ -35,6 +35,10 @@ class Event(EventDetails):
     my_vote: Literal[-1, 0, 1] = 0
 
 
+class ChangeVersion(BaseModel):
+    version: str
+
+
 class CommentCreate(BaseModel):
     body: Text = Field(max_length=5000)
 
@@ -214,25 +218,23 @@ class Project(ProjectForm):
     updated_at: str
 
 
-class OverviewStats(BaseModel):
-    open_consultations: int
-    live_trials: int
-    completed: int
-    drafts: int
-    comments: int
-    reactions: int
+class AdminEvent(EventDetails):
+    """An event as the app shows it, plus what moderators need to see."""
 
-
-class OverviewPost(BaseModel):
     id: int
-    title: str
-    ward: str | None
-    location: SiteLocation | None
-    stage: Stage
-    engagement: list[Literal["comments", "threads", "poll", "survey"]]
-    responses: int
-    closes_on: date | None
-    updated_at: str | None  # events posted outside the admin site have no timestamp
+    likes: int
+    dislikes: int
+    closes_at: AwareDatetime | None = None
+    comments: int
+
+
+class OverviewStats(BaseModel):
+    events: int
+    open_events: int
+    comments: int
+    likes: int
+    dislikes: int
+    residents: int  # app accounts; anonymous guests aren't counted
 
 
 class OverviewComment(BaseModel):
@@ -241,10 +243,10 @@ class OverviewComment(BaseModel):
     event_title: str
     body: str
     user_email: str | None
+    likes: int
+    dislikes: int
 
 
 class Overview(BaseModel):
     stats: OverviewStats
-    posts: list[OverviewPost]
     recent_comments: list[OverviewComment]
-    drafts: list[DraftSummary]

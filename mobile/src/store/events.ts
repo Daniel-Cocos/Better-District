@@ -6,6 +6,7 @@ type EventsStore = {
   loading: boolean;
   error: string | null;
   loadEvents: () => Promise<void>;
+  refreshEvents: () => Promise<void>;
   voteEvent: (eventId: number, vote: Vote) => Promise<void>;
 };
 
@@ -27,6 +28,15 @@ export const useEventsStore = create<EventsStore>((set, get) => ({
       set({ error: 'Couldn’t load events. Check that the backend is running.' });
     } finally {
       set({ loading: false });
+    }
+  },
+  refreshEvents: async () => {
+    // Background updates: no spinner, and a missed poll keeps the pins already shown.
+    if (get().loading) return;
+    try {
+      set({ events: await listEvents(), error: null });
+    } catch {
+      // The next poll tries again.
     }
   },
 }));

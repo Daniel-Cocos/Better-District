@@ -33,7 +33,7 @@ export default function AdminLogin() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const errors: FieldErrors = {}
-    if (!identifier.trim()) errors.identifier = 'Enter your username or email'
+    if (!identifier.trim()) errors.identifier = 'Enter your username'
     if (!password) errors.password = 'Enter your password'
     setFieldErrors(errors)
     setFormError(null)
@@ -90,17 +90,17 @@ export default function AdminLogin() {
           <Box>
             <Typography sx={{ fontWeight: 650, lineHeight: 1.2 }}>Southampton City Council</Typography>
             <Typography variant="body2" sx={{ opacity: 0.8 }}>
-              City Map &amp; Proposals
+              Better District admin
             </Typography>
           </Box>
         </Stack>
 
         <Box sx={{ position: 'relative', maxWidth: 420 }}>
           <Typography variant="h1" component="p" sx={{ mb: 2 }}>
-            Shape the city, one place at a time.
+            Look after what residents see.
           </Typography>
           <Typography sx={{ opacity: 0.85 }}>
-            Publish proposals and projects on the map, and decide how residents can respond.
+            Add and edit the events in the Better District app, and moderate residents’ comments.
           </Typography>
         </Box>
       </Box>
@@ -133,7 +133,7 @@ export default function AdminLogin() {
             Sign in to the admin portal
           </Typography>
           <Typography color="text.secondary" sx={{ mb: 4 }}>
-            Use your council account details.
+            Sign in with your admin username and password.
           </Typography>
 
           <Box component="form" noValidate onSubmit={handleSubmit}>
@@ -145,7 +145,7 @@ export default function AdminLogin() {
               )}
 
               <TextField
-                label="Username or email"
+                label="Username"
                 name="identifier"
                 autoComplete="username"
                 autoFocus

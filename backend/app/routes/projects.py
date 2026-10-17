@@ -7,6 +7,7 @@ import sqlite3
 from fastapi import APIRouter, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse
 from app.database import Database
+from app.deadlines import feedback_deadline
 from app.models import (
     Document,
     Draft,
@@ -267,12 +268,15 @@ def publish_project(body: PublishRequest, database: Database, admin: CurrentAdmi
     assert body.location is not None
 
     event_id = database.execute(
-        "INSERT INTO events (title, description, latitude, longitude) VALUES (?, ?, ?, ?)",
+        "INSERT INTO events (title, description, latitude, longitude, closes_at) "
+        "VALUES (?, ?, ?, ?, ?)",
         (
             body.title.strip(),
             body.summary.strip(),
             body.location.latitude,
             body.location.longitude,
+            # The app shows events.closes_at, so it must match the feedback window
+            body.feedback_closes and feedback_deadline(body.feedback_closes),
         ),
     ).lastrowid
     settings = body.engagement

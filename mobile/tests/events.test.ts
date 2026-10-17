@@ -8,6 +8,7 @@ import { useEventsStore } from '../src/store/events';
 import { eventMarkersScript, focusEventScript } from '../src/components/maps/eventBridge';
 import { eventDeadlineLabel } from '../src/utils/eventDeadline';
 import { listComments, postComment } from '../src/api/comments';
+import { getEventsVersion } from '../src/api/events';
 
 const adapter = api.defaults.adapter;
 const event: CouncilEvent = { id: 1, title: 'Common clean-up', description: 'Community litter pick', latitude: 50.9297, longitude: -1.412, likes: 0, dislikes: 0, closes_at: '2026-11-01T17:00:00Z', my_vote: 0 };
@@ -124,4 +125,30 @@ test('event votes update shared state only after successful server responses', a
   api.defaults.adapter = async () => { throw new Error('offline'); };
   await assert.rejects(useEventsStore.getState().voteEvent(1, -1), /offline/);
   assert.equal(useEventsStore.getState().events[0].my_vote, 1);
+});
+
+const added: CouncilEvent = { ...event, id: 2, title: 'Bargate square' };
+
+test('background refreshes add new pins quietly and keep pins when offline', async () => {
+  useEventsStore.setState({ events: [event] });
+  api.defaults.adapter = async (config) => {
+    assert.equal(config.url, '/events');
+    return { config, data: [event, added], status: 200, statusText: 'OK', headers: {} };
+  };
+  const refresh = useEventsStore.getState().refreshEvents();
+  assert.equal(useEventsStore.getState().loading, false);
+  await refresh;
+  assert.deepEqual(useEventsStore.getState().events, [event, added]);
+  api.defaults.adapter = async () => { throw new Error('offline'); };
+  await useEventsStore.getState().refreshEvents();
+  assert.deepEqual(useEventsStore.getState().events, [event, added]);
+  assert.equal(useEventsStore.getState().error, null);
+});
+
+test('the change version is read from the public events endpoint', async () => {
+  api.defaults.adapter = async (config) => {
+    assert.equal(config.url, '/events/version');
+    return { config, data: { version: '7:7:0:0|1:x|0:0' }, status: 200, statusText: 'OK', headers: {} };
+  };
+  assert.equal(await getEventsVersion(), '7:7:0:0|1:x|0:0');
 });

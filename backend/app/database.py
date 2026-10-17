@@ -1,10 +1,12 @@
 """SQLite connections, schema setup, and request dependencies."""
 
 from contextlib import closing, contextmanager
+from datetime import date
 from pathlib import Path
 import sqlite3
 from typing import Annotated
 from fastapi import Depends, Request
+from app.deadlines import feedback_deadline
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_DATABASE = BACKEND_DIR / "data" / "app.db"
@@ -35,6 +37,21 @@ def initialize(path: Path = DEFAULT_DATABASE):
         }
         if "owner_key" not in comment_columns:
             connection.execute("ALTER TABLE comments ADD COLUMN owner_key TEXT")
+        # Projects published before the app read their deadline from events.closes_at
+        connection.executemany(
+            "UPDATE events SET closes_at = ? WHERE id = ?",
+            [
+                (
+                    feedback_deadline(date.fromisoformat(row["feedback_closes"])),
+                    row["id"],
+                )
+                for row in connection.execute(
+                    "SELECT e.id, p.feedback_closes FROM events e "
+                    "JOIN projects p ON p.event_id = e.id "
+                    "WHERE e.closes_at IS NULL AND p.feedback_closes IS NOT NULL"
+                )
+            ],
+        )
 
 
 def get_database(request: Request):

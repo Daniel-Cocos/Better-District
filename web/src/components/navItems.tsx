@@ -1,16 +1,11 @@
 import type { ReactElement } from 'react'
 import DashboardOutlined from '@mui/icons-material/SpaceDashboardOutlined'
 import MapOutlined from '@mui/icons-material/MapOutlined'
-import CampaignOutlined from '@mui/icons-material/CampaignOutlined'
-import ConstructionOutlined from '@mui/icons-material/ConstructionOutlined'
-import LightbulbOutlined from '@mui/icons-material/LightbulbOutlined'
-import ForumOutlined from '@mui/icons-material/ForumOutlined'
+import FormatListBulleted from '@mui/icons-material/FormatListBulletedRounded'
 
+/** Map and Feed mirror the app's tabs of the same names; Overview sums them up. */
 export const navItems: { to: string; label: string; icon: ReactElement }[] = [
   { to: '/', label: 'Overview', icon: <DashboardOutlined fontSize="small" /> },
-  { to: '/map', label: 'City map', icon: <MapOutlined fontSize="small" /> },
-  { to: '/proposals', label: 'Proposals', icon: <CampaignOutlined fontSize="small" /> },
-  { to: '/projects', label: 'Projects', icon: <ConstructionOutlined fontSize="small" /> },
-  { to: '/ideas', label: 'Ideas & interest areas', icon: <LightbulbOutlined fontSize="small" /> },
-  { to: '/engagement', label: 'Engagement', icon: <ForumOutlined fontSize="small" /> },
+  { to: '/map', label: 'Map', icon: <MapOutlined fontSize="small" /> },
+  { to: '/feed', label: 'Feed', icon: <FormatListBulleted fontSize="small" /> },
 ]

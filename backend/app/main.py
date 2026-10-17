@@ -4,7 +4,16 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI
 from app.database import DEFAULT_DATABASE, connect, initialize
-from app.routes import auth, comments, events, overview, projects, users
+from app.routes import (
+    auth,
+    comments,
+    events,
+    live,
+    moderation,
+    overview,
+    projects,
+    users,
+)
 
 
 def create_app(database_path: Path | None = None) -> FastAPI:
@@ -24,6 +33,8 @@ def create_app(database_path: Path | None = None) -> FastAPI:
     application.include_router(auth.router)
     application.include_router(overview.router)
     application.include_router(projects.router)
+    application.include_router(live.router)
+    application.include_router(moderation.router)
 
     @application.get("/health")
     def health():

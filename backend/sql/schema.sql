@@ -124,3 +124,24 @@ CREATE TABLE IF NOT EXISTS project_questions (
 
 CREATE INDEX IF NOT EXISTS project_documents_event_id ON project_documents(event_id);
 CREATE INDEX IF NOT EXISTS project_questions_event_id ON project_questions(event_id);
+
+-- A counter bumped by every change residents or admins can see, so the app and the
+-- admin website can cheaply ask "has anything changed?" (GET /events/version).
+CREATE TABLE IF NOT EXISTS revision (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    value INTEGER NOT NULL
+);
+INSERT OR IGNORE INTO revision (id, value) VALUES (1, 0);
+
+CREATE TRIGGER IF NOT EXISTS events_insert_revision AFTER INSERT ON events
+BEGIN UPDATE revision SET value = value + 1; END;
+CREATE TRIGGER IF NOT EXISTS events_update_revision AFTER UPDATE ON events
+BEGIN UPDATE revision SET value = value + 1; END;
+CREATE TRIGGER IF NOT EXISTS events_delete_revision AFTER DELETE ON events
+BEGIN UPDATE revision SET value = value + 1; END;
+CREATE TRIGGER IF NOT EXISTS comments_insert_revision AFTER INSERT ON comments
+BEGIN UPDATE revision SET value = value + 1; END;
+CREATE TRIGGER IF NOT EXISTS comments_update_revision AFTER UPDATE ON comments
+BEGIN UPDATE revision SET value = value + 1; END;
+CREATE TRIGGER IF NOT EXISTS comments_delete_revision AFTER DELETE ON comments
+BEGIN UPDATE revision SET value = value + 1; END;

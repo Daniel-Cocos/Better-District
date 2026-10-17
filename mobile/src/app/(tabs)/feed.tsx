@@ -4,6 +4,7 @@ import { ActivityIndicator, Button, FlatList, StyleSheet, Text, View } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { EventFeedCard } from '../../components/events/EventFeedCard';
 import { useEventsStore } from '../../store/events';
+import { useEventUpdates } from '../../hooks/useEventUpdates';
 
 export default function FeedPage() {
   const events = useEventsStore((state) => state.events);
@@ -11,6 +12,7 @@ export default function FeedPage() {
   const error = useEventsStore((state) => state.error);
   const loadEvents = useEventsStore((state) => state.loadEvents);
   useFocusEffect(useCallback(() => { void loadEvents(); }, [loadEvents]));
+  useEventUpdates();
 
   return (
     <SafeAreaView edges={['top']} style={styles.screen}>

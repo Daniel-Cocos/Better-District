@@ -32,16 +32,23 @@ Comments support likes/dislikes, editing, deletion, and a profile history. Only 
 
 Set or remove votes with `PUT /events/{id}/vote` or `PUT /events/{id}/comments/{comment_id}/vote`, using `{ "vote": 1 }`, `-1`, or `0`. Responses include `my_vote`; comments include `is_mine`. Use `PATCH` (body text) or `DELETE` on `/events/{id}/comments/{comment_id}`. `GET /users/me/comments` returns the current account or guest’s comments, newest first, including `event_title`. Existing databases gain ownership and voting storage on startup.
 
+The app polls `GET /events/version`, which changes whenever events, votes or comments do (triggers bump the `revision` table), and refetches `/events` when it moves.
+
 ## Admin website
 
 The council admin website (React, in `web/`) uses the
 `/auth/*` and `/admin/*` endpoints. After `make seed`, sign in as
-`admin@southampton.gov.uk` / `council-admin-2026`, or `admin` / `admin` for quick local testing.
+`admin` / `admin` (the only admin login for now; development only).
 
 - Admins are rows in the `admins` table on top of `users`; they get bearer tokens from `POST /auth/login`.
-- The project wizard saves drafts to `project_drafts`; publishing creates a normal `events` row
-  (so the app sees it) plus `projects`, `project_documents`, `project_fields`, `project_terms`
-  and `project_questions`. Uploaded files are stored in `data/uploads/`.
+- The website mirrors the app: `GET /admin/events` lists every event the app shows (with comment
+  counts); `POST /admin/events`, `PUT /admin/events/{id}` and `DELETE /admin/events/{id}` add, edit
+  and remove them; `DELETE /admin/comments/{id}` removes any resident's comment. `GET /admin/overview`
+  sums up app data.
+- `GET /admin/stream` is a server-sent events stream that sends `change` whenever events, votes or
+  comments change, so the site updates live. Streams close after 5 minutes and the site reconnects.
+- The earlier project wizard endpoints (`/admin/drafts`, `/admin/uploads`, `/admin/projects`) are
+  still here but the website no longer uses them.
 
 Without Nix (e.g. on Windows):
 

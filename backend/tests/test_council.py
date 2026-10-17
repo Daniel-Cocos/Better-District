@@ -34,7 +34,13 @@ def test_events_comments_and_persistence(tmp_path):
         response = api.post("/events", json=EVENT)
         assert response.status_code == 201
         event = response.json()
-        assert event == {"id": 1, "likes": 0, "dislikes": 0, "my_vote": 0, **EVENT}
+        assert event == {
+            "id": 1,
+            "likes": 0,
+            "dislikes": 0,
+            "my_vote": 0,
+            **EVENT,
+        }
         assert api.get("/events/1").json() == event
         assert api.get("/events").json() == [event]
         assert api.get("/events/1/comments").json() == []
@@ -143,8 +149,8 @@ def test_seed_is_repeatable_and_foreign_keys_are_enforced(tmp_path):
         database.executescript(sql)
         assert database.execute("SELECT count(*) FROM events").fetchone()[0] == 5
         assert database.execute("SELECT count(*) FROM comments").fetchone()[0] == 10
-        assert database.execute("SELECT count(*) FROM users").fetchone()[0] == 4
-        assert database.execute("SELECT count(*) FROM admins").fetchone()[0] == 2
+        assert database.execute("SELECT count(*) FROM users").fetchone()[0] == 3
+        assert database.execute("SELECT count(*) FROM admins").fetchone()[0] == 1
         locations = database.execute(
             "SELECT latitude, longitude FROM events"
         ).fetchall()

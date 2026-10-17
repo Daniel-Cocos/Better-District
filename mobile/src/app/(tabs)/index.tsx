@@ -3,6 +3,7 @@ import { router, useFocusEffect, useIsFocused, useLocalSearchParams } from 'expo
 import { ActivityIndicator, Button, Keyboard, StyleSheet, Text, View } from 'react-native';
 import { OpenStreetMap } from '../../components/maps/OpenStreetMap';
 import { useEventsStore } from '../../store/events';
+import { useEventUpdates } from '../../hooks/useEventUpdates';
 import { EventPanel } from '../../components/events/EventPanel';
 
 export default function MapPage() {
@@ -17,6 +18,7 @@ export default function MapPage() {
   const selectedEvent = events.find((event) => event.id === selectedId);
 
   useFocusEffect(useCallback(() => { void loadEvents(); return () => Keyboard.dismiss(); }, [loadEvents]));
+  useEventUpdates();
 
   return (
     <View style={styles.container}>

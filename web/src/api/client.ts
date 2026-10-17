@@ -8,9 +8,11 @@ export const tokenStore = {
   clear: () => localStorage.removeItem(TOKEN_KEY),
 }
 
+export const API_BASE: string = import.meta.env.VITE_API_URL ?? '/api'
+
 /** Shared axios instance. In dev, Vite proxies /api to FastAPI on :8000. */
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? '/api',
+  baseURL: API_BASE,
   timeout: 15000,
 })
 
@@ -27,10 +29,15 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
   onUnauthorized = handler
 }
 
+/** Ends the local session; also used by requests made outside axios (the live stream). */
+export function signalUnauthorized() {
+  tokenStore.clear()
+  onUnauthorized?.()
+}
+
 api.interceptors.response.use(undefined, (error) => {
   if (isAxiosError(error) && error.response?.status === 401 && !error.config?.url?.endsWith('/auth/login')) {
-    tokenStore.clear()
-    onUnauthorized?.()
+    signalUnauthorized()
   }
   return Promise.reject(error)
 })

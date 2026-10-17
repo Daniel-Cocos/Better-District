@@ -1,80 +1,73 @@
-import { useCallback, useEffect, useState } from 'react'
-import { Link as RouterLink, useLocation, useNavigate } from 'react-router'
+import { useEffect, useMemo, useState } from 'react'
+import { Link as RouterLink, useNavigate } from 'react-router'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
-import Snackbar from '@mui/material/Snackbar'
 import Paper from '@mui/material/Paper'
 import ButtonBase from '@mui/material/ButtonBase'
+import Skeleton from '@mui/material/Skeleton'
 import AddRounded from '@mui/icons-material/AddRounded'
 import MapOutlined from '@mui/icons-material/MapOutlined'
-import CampaignOutlined from '@mui/icons-material/CampaignOutlined'
-import ConstructionOutlined from '@mui/icons-material/ConstructionOutlined'
-import TaskAltOutlined from '@mui/icons-material/TaskAltOutlined'
+import EventOutlined from '@mui/icons-material/EventOutlined'
 import ForumOutlined from '@mui/icons-material/ForumOutlined'
-import EditNoteOutlined from '@mui/icons-material/EditNoteOutlined'
+import ThumbsUpDownOutlined from '@mui/icons-material/ThumbsUpDownOutlined'
+import PeopleOutline from '@mui/icons-material/PeopleOutlineOutlined'
 import ChevronRight from '@mui/icons-material/ChevronRightRounded'
 import { fetchOverview, type Overview as OverviewData } from '../api/overview'
 import { errorMessage } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import { useLiveEvents } from '../hooks/useLiveEvents'
 import StatCard from '../components/overview/StatCard'
-import CityMapPreview from '../components/overview/CityMapPreview'
-import ActivityFeed from '../components/overview/ActivityFeed'
-import PostList from '../components/overview/PostList'
-import { stageMeta } from '../components/postMeta'
-import { formatNumber, greeting, relativeTime } from '../utils/format'
+import CommentItem from '../components/events/CommentItem'
+import LiveIndicator from '../components/events/LiveIndicator'
+import { useEventActions } from '../components/events/useEventActions'
+import { eventDeadlineLabel, isOpen } from '../utils/eventDeadline'
+import { formatNumber, greeting } from '../utils/format'
 
 const today = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 
+/** A summary of everything in the app, with quick moderation of the latest comments. */
 export default function Overview() {
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const { events, status, updatedAt, reload } = useLiveEvents()
   const [data, setData] = useState<OverviewData | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
   const [now] = useState(() => new Date())
-  // A one-off message passed from the project wizard after publishing
-  const location = useLocation()
-  const navigate = useNavigate()
-  const [flash, setFlash] = useState<string | null>((location.state as { flash?: string } | null)?.flash ?? null)
+  const actions = useEventActions({ onChanged: reload })
 
+  // The numbers follow the live events: each refresh there means something changed
   useEffect(() => {
-    if (location.state) navigate(location.pathname, { replace: true, state: null })
-  }, [location, navigate])
-
-  const load = useCallback((signal?: AbortSignal) => {
-    fetchOverview(signal)
+    const ctrl = new AbortController()
+    fetchOverview(ctrl.signal)
       .then((d) => {
         setData(d)
         setError(null)
       })
       .catch((err) => {
-        if (!signal?.aborted) setError(errorMessage(err, 'Couldn’t load the overview.'))
+        if (!ctrl.signal.aborted) setError(errorMessage(err, 'Couldn’t load the overview.'))
       })
-      .finally(() => {
-        if (!signal?.aborted) setLoading(false)
-      })
-  }, [])
-
-  useEffect(() => {
-    const ctrl = new AbortController()
-    load(ctrl.signal)
     return () => ctrl.abort()
-  }, [load])
+  }, [updatedAt])
 
-  function retry() {
-    setLoading(true)
-    setError(null)
-    load()
-  }
+  // Open events, soonest deadline first
+  const closingSoon = useMemo(
+    () =>
+      (events ?? [])
+        .filter((e) => e.closes_at && isOpen(e.closes_at))
+        .sort((a, b) => (a.closes_at ?? '').localeCompare(b.closes_at ?? ''))
+        .slice(0, 6),
+    [events],
+  )
 
   const s = data?.stats
+  const loading = !data && !error
   const firstName = user?.name.split(' ')[0]
 
   return (
     <Box sx={{ maxWidth: 1280, mx: 'auto' }}>
-      {/* Page header */}
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         sx={{ justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-end' }, gap: 2, mb: 4 }}
@@ -83,20 +76,23 @@ export default function Overview() {
           <Typography variant="overline" sx={{ color: 'primary.main' }}>
             {today.format(now)}
           </Typography>
-          <Typography variant="h2" component="h1" sx={{ mt: 0.5 }}>
-            {greeting(now)}
-            {firstName && `, ${firstName}`}
-          </Typography>
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', mt: 0.5 }}>
+            <Typography variant="h2" component="h1">
+              {greeting(now)}
+              {firstName && `, ${firstName}`}
+            </Typography>
+            <LiveIndicator status={status} updatedAt={updatedAt} />
+          </Stack>
           <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-            Here’s what’s happening across Southampton.
+            Here’s what’s happening in the Better District app.
           </Typography>
         </Box>
         <Stack direction="row" spacing={1.5}>
           <Button component={RouterLink} to="/map" variant="outlined" startIcon={<MapOutlined />} sx={{ bgcolor: 'background.paper' }}>
             Open map
           </Button>
-          <Button component={RouterLink} to="/projects/new" variant="contained" startIcon={<AddRounded />}>
-            New project
+          <Button variant="contained" startIcon={<AddRounded />} onClick={() => actions.addEvent()}>
+            Add event
           </Button>
         </Stack>
       </Stack>
@@ -107,7 +103,7 @@ export default function Overview() {
           variant="outlined"
           sx={{ mb: 3, bgcolor: 'background.paper' }}
           action={
-            <Button color="inherit" size="small" onClick={retry} sx={{ py: 0.5 }}>
+            <Button color="inherit" size="small" onClick={reload} sx={{ py: 0.5 }}>
               Retry
             </Button>
           }
@@ -116,44 +112,6 @@ export default function Overview() {
         </Alert>
       )}
 
-      {data && data.drafts.length > 0 && (
-        <Paper variant="outlined" sx={{ mb: 3, overflow: 'hidden' }}>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', px: 2.5, py: 1.5, bgcolor: 'primary.light' }}>
-            <EditNoteOutlined sx={{ color: 'primary.main' }} />
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {data.drafts.length === 1 ? '1 unpublished draft' : `${data.drafts.length} unpublished drafts`}
-            </Typography>
-          </Stack>
-          {data.drafts.slice(0, 3).map((d) => (
-            <ButtonBase
-              key={d.id}
-              component={RouterLink}
-              to={`/projects/new?draft=${d.id}`}
-              sx={{
-                width: '100%',
-                justifyContent: 'space-between',
-                gap: 2,
-                px: 2.5,
-                py: 1.25,
-                borderTop: 1,
-                borderColor: 'divider',
-                textAlign: 'left',
-                '&:hover': { bgcolor: 'background.default' },
-              }}
-            >
-              <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
-                {d.title}
-              </Typography>
-              <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center', color: 'text.secondary', flexShrink: 0 }}>
-                <Typography variant="caption">Edited {relativeTime(d.updated_at)}</Typography>
-                <ChevronRight fontSize="small" />
-              </Stack>
-            </ButtonBase>
-          ))}
-        </Paper>
-      )}
-
-      {/* Headline numbers */}
       <Box
         sx={{
           display: 'grid',
@@ -163,65 +121,109 @@ export default function Overview() {
         }}
       >
         <StatCard
-          label="Open proposals"
-          value={s && formatNumber(s.open_consultations)}
-          icon={<CampaignOutlined />}
-          accent={stageMeta.proposal.color}
-          soft={stageMeta.proposal.soft}
-          footer="Asking residents for views"
-          loading={loading && !data}
+          label="Events in the app"
+          value={s && formatNumber(s.events)}
+          icon={<EventOutlined />}
+          accent="#3E6FA8"
+          soft="#E6EEF8"
+          footer={s && `${formatNumber(s.open_events)} open · ${formatNumber(s.events - s.open_events)} closed`}
+          loading={loading}
         />
         <StatCard
-          label="Live trials"
-          value={s && formatNumber(s.live_trials)}
-          icon={<ConstructionOutlined />}
-          accent={stageMeta.live_trial.color}
-          soft={stageMeta.live_trial.soft}
-          footer="Running on site now"
-          loading={loading && !data}
-        />
-        <StatCard
-          label="Built"
-          value={s && formatNumber(s.completed)}
-          icon={<TaskAltOutlined />}
-          accent={stageMeta.built.color}
-          soft={stageMeta.built.soft}
-          footer="Finished and in place"
-          loading={loading && !data}
-        />
-        <StatCard
-          label="Resident responses"
-          value={s && formatNumber(s.comments + s.reactions)}
+          label="Comments"
+          value={s && formatNumber(s.comments)}
           icon={<ForumOutlined />}
           accent="#6B5CA5"
           soft="#EFECF7"
-          loading={loading && !data}
-          footer={s && `${formatNumber(s.comments)} comments · ${formatNumber(s.reactions)} likes and dislikes`}
+          footer="From accounts and anonymous guests"
+          loading={loading}
+        />
+        <StatCard
+          label="Votes"
+          value={s && formatNumber(s.likes + s.dislikes)}
+          icon={<ThumbsUpDownOutlined />}
+          accent="#2F8A87"
+          soft="#E3F2F1"
+          footer={s && `${formatNumber(s.likes)} likes · ${formatNumber(s.dislikes)} dislikes`}
+          loading={loading}
+        />
+        <StatCard
+          label="Resident accounts"
+          value={s && formatNumber(s.residents)}
+          icon={<PeopleOutline />}
+          accent="#5E7A4B"
+          soft="#EBF1E6"
+          footer="Guests can also take part anonymously"
+          loading={loading}
         />
       </Box>
 
-      {/* Map + activity */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 7fr) minmax(0, 5fr)' },
-          gap: 2,
-          mb: 2,
-        }}
-      >
-        <CityMapPreview posts={data?.posts} loading={loading && !data} />
-        <ActivityFeed comments={data?.recent_comments} loading={loading && !data} />
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 7fr) minmax(0, 5fr)' }, gap: 2 }}>
+        <Paper variant="outlined" sx={{ p: 2.5 }}>
+          <Typography variant="h6" component="h2" sx={{ fontSize: '1.05rem', fontWeight: 650 }}>
+            Latest comments
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            What residents are saying. Remove anything that breaks the rules.
+          </Typography>
+          <Stack component="ol" spacing={1.5} sx={{ listStyle: 'none', m: 0, p: 0 }}>
+            {loading && Array.from({ length: 4 }, (_, i) => <Skeleton key={i} component="li" variant="rounded" height={84} />)}
+            {data?.recent_comments.map((c) => (
+              <li key={c.id}>
+                <CommentItem comment={c} context={`On ${c.event_title}`} onDelete={() => actions.removeComment(c)} />
+              </li>
+            ))}
+          </Stack>
+          {data?.recent_comments.length === 0 && (
+            <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
+              No comments yet.
+            </Typography>
+          )}
+        </Paper>
+
+        <Paper variant="outlined" sx={{ p: 2.5, alignSelf: 'start' }}>
+          <Typography variant="h6" component="h2" sx={{ fontSize: '1.05rem', fontWeight: 650 }}>
+            Closing soon
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            Open events, soonest deadline first
+          </Typography>
+          {!events && Array.from({ length: 4 }, (_, i) => <Skeleton key={i} height={48} />)}
+          {events && closingSoon.length === 0 && (
+            <Typography variant="body2" color="text.secondary" sx={{ py: 3, textAlign: 'center' }}>
+              No open events.
+            </Typography>
+          )}
+          {closingSoon.map((e, i) => (
+            <ButtonBase
+              key={e.id}
+              onClick={() => navigate(`/map?event=${e.id}`)}
+              sx={{
+                width: '100%',
+                justifyContent: 'space-between',
+                gap: 2,
+                py: 1.25,
+                borderTop: i ? 1 : 0,
+                borderColor: 'divider',
+                textAlign: 'left',
+                '&:hover': { bgcolor: 'action.hover' },
+              }}
+            >
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="body2" noWrap sx={{ fontWeight: 600 }}>
+                  {e.title}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" noWrap component="p">
+                  {eventDeadlineLabel(e.closes_at)}
+                </Typography>
+              </Box>
+              <ChevronRight fontSize="small" sx={{ color: 'text.secondary', flexShrink: 0 }} />
+            </ButtonBase>
+          ))}
+        </Paper>
       </Box>
 
-      <PostList posts={data?.posts} loading={loading && !data} />
-
-      <Snackbar
-        open={Boolean(flash)}
-        message={flash}
-        autoHideDuration={5000}
-        onClose={() => setFlash(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      />
+      {actions.dialogs}
     </Box>
   )
 }

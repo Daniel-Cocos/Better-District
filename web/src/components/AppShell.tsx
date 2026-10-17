@@ -17,7 +17,6 @@ import Tooltip from '@mui/material/Tooltip'
 import { alpha } from '@mui/material/styles'
 import MenuIcon from '@mui/icons-material/MenuRounded'
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined'
-import SettingsOutlined from '@mui/icons-material/SettingsOutlined'
 import LogoutOutlined from '@mui/icons-material/LogoutOutlined'
 import { useAuth } from '../auth/AuthContext'
 import { navItems } from './navItems'
@@ -82,7 +81,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             Southampton City Council
           </Typography>
           <Typography variant="caption" color="text.secondary" noWrap component="p">
-            City Map &amp; Proposals
+            Better District admin
           </Typography>
         </Box>
       </Stack>
@@ -94,10 +93,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         {navItems.map(navButton)}
       </List>
 
-      <Box sx={{ flexGrow: 1 }} />
-      <List disablePadding>
-        {navButton({ to: '/settings', label: 'Settings', icon: <SettingsOutlined fontSize="small" /> })}
-      </List>
     </Box>
   )
 }

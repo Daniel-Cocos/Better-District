@@ -23,3 +23,9 @@ export async function voteEvent(eventId: number, vote: Vote) {
   const { data } = await api.put<CouncilEvent>(`/events/${eventId}/vote`, { vote });
   return data;
 }
+
+/** Changes whenever events, votes or comments do, so polling it is cheap. */
+export async function getEventsVersion(): Promise<string> {
+  const { data } = await api.get<{ version: string }>('/events/version');
+  return data.version;
+}

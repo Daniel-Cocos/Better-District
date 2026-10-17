@@ -5,8 +5,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { AuthProvider, useAuth } from './auth/AuthContext'
 import AdminLogin from './pages/AdminLogin'
 import Overview from './pages/Overview'
-import NewProject from './pages/NewProject'
-import ComingSoon from './pages/ComingSoon'
+import MapPage from './pages/MapPage'
+import Feed from './pages/Feed'
 import AppShell from './components/AppShell'
 
 function FullPageSpinner() {
@@ -33,7 +33,6 @@ function GuestOnly({ children }: { children: ReactNode }) {
   return children
 }
 
-// A data router, so pages can use useBlocker (unsaved-changes prompts)
 const router = createBrowserRouter([
   {
     path: '/login',
@@ -51,11 +50,8 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Overview /> },
-      { path: 'projects/new', element: <NewProject /> },
-      ...['map', 'proposals', 'projects', 'ideas', 'engagement', 'settings'].map((path) => ({
-        path,
-        element: <ComingSoon />,
-      })),
+      { path: 'map', element: <MapPage /> },
+      { path: 'feed', element: <Feed /> },
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },

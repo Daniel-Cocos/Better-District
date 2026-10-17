@@ -3,7 +3,8 @@
 from datetime import timezone
 from fastapi import APIRouter, HTTPException
 from app.database import Database
-from app.models import Event, EventCreate, VoteCreate
+from app.models import ChangeVersion, Event, EventCreate, VoteCreate
+from app.routes.live import change_signature
 from app.voting import Voter, cast_vote, with_vote
 
 router = APIRouter(prefix="/events", tags=["events"])
@@ -17,6 +18,28 @@ def require_event(database: Database, event_id: int):
     return dict(row)
 
 
+def event_values(event: EventCreate) -> tuple:
+    """Columns for INSERT or UPDATE, with the deadline stored in UTC."""
+    return (
+        event.title,
+        event.description,
+        event.latitude,
+        event.longitude,
+        event.closes_at.astimezone(timezone.utc).isoformat(),
+    )
+
+
+def insert_event(database: Database, event: EventCreate) -> int:
+    """Add an event and return its id."""
+    cursor = database.execute(
+        "INSERT INTO events (title, description, latitude, longitude, closes_at) "
+        "VALUES (?, ?, ?, ?, ?)",
+        event_values(event),
+    )
+    assert cursor.lastrowid is not None
+    return cursor.lastrowid
+
+
 @router.get("", response_model=list[Event])
 def list_events(database: Database, voter: Voter):
     return [
@@ -25,21 +48,15 @@ def list_events(database: Database, voter: Voter):
     ]
 
 
+@router.get("/version", response_model=ChangeVersion)
+def events_version(database: Database):
+    """A cheap fingerprint the app polls; it changes whenever events, votes or comments do."""
+    return {"version": change_signature(database)}
+
+
 @router.post("", response_model=Event, status_code=201)
 def add_event(event: EventCreate, database: Database):
-    cursor = database.execute(
-        "INSERT INTO events (title, description, latitude, longitude, closes_at) "
-        "VALUES (?, ?, ?, ?, ?)",
-        (
-            event.title,
-            event.description,
-            event.latitude,
-            event.longitude,
-            event.closes_at.astimezone(timezone.utc).isoformat(),
-        ),
-    )
-    assert cursor.lastrowid is not None
-    return require_event(database, cursor.lastrowid)
+    return require_event(database, insert_event(database, event))
 
 
 @router.get("/{event_id}", response_model=Event)
