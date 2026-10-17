@@ -2,7 +2,7 @@
 
 NIX_RUN := nix develop path:. --command
 
-.PHONY: help dev test format format-check lint typecheck db-shell
+.PHONY: help dev test format format-check lint typecheck db-shell seed
 
 help: ## Show available commands
 	@awk 'BEGIN {FS = ":.*## "; printf "\nBackend commands\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2} END {printf "\n"}' $(MAKEFILE_LIST)
@@ -27,3 +27,6 @@ typecheck: ## Check Python types with Pyright
 
 db-shell: ## Open the local SQLite database (start the API first)
 	$(NIX_RUN) sqlite3 -ifexists data/app.db
+
+seed: ## Populate SQLite with fictional council projects and comments
+	$(NIX_RUN) python -m app.seed

@@ -1,5 +1,11 @@
 # Backend
 
+First populate the sqlite database:
+
+```sh
+make seed
+```
+
 From `backend/`, enter the environment and start the server:
 
 ```sh
