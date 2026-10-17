@@ -20,17 +20,19 @@ fail() { printf '\033[1;31m%s\033[0m\n' "$*" >&2; exit 1; }
 
 PIDS=()
 cleanup() {
-  trap - EXIT INT TERM
+  trap - EXIT INT TERM HUP
   if ((${#PIDS[@]})); then
     step "Stopping the backend and website"
     for pid in "${PIDS[@]}"; do
       # Each service runs in its own session, so this also stops uvicorn's reloader and Vite's children
       kill -- "-$pid" 2>/dev/null || kill "$pid" 2>/dev/null || true
     done
+    rm -f "$ROOT/.dev/"*.pid
   fi
 }
 trap cleanup EXIT
-trap 'exit 130' INT TERM
+# HUP too: closing the terminal must not leave the services running and holding their ports
+trap 'exit 130' INT TERM HUP
 
 # Start a long-running service from a directory, in the background, logging to .dev/logs/<name>.log.
 # With setsid it gets its own session, so cleanup can stop its whole process group.
@@ -41,6 +43,48 @@ start() {
   shift 2
   (cd "$dir" && exec ${SETSID[@]+"${SETSID[@]}"} "$@") >"$LOGS/$name.log" 2>&1 &
   PIDS+=("$!")
+  echo "$!" >"$ROOT/.dev/$name.pid"
+}
+
+# Processes listening on a local TCP port (Linux ss, else lsof)
+port_pids() {
+  if command -v ss >/dev/null; then
+    ss -Hltnp "sport = :$1" 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2 | sort -u
+  elif command -v lsof >/dev/null; then
+    lsof -nP -tiTCP:"$1" -sTCP:LISTEN 2>/dev/null | sort -u
+  fi
+}
+process_dir() {
+  readlink "/proc/$1/cwd" 2>/dev/null || lsof -a -p "$1" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p'
+}
+
+# Stop services left behind by an earlier make dev (e.g. its terminal was closed), so this
+# run can take their ports. Only processes started from this repo are touched.
+stop_leftovers() {
+  local file pid port dir found=0
+  for file in "$ROOT/.dev/"*.pid; do
+    [[ -f "$file" ]] || continue
+    pid="$(cat "$file")"
+    dir="$(process_dir "$pid")"
+    if [[ "$dir" == "$ROOT" || "$dir" == "$ROOT/"* ]] && kill -- "-$pid" 2>/dev/null; then found=1; fi
+    rm -f "$file"
+  done
+  for port in "$API_PORT" "$WEB_PORT"; do
+    for pid in $(port_pids "$port"); do
+      dir="$(process_dir "$pid")"
+      if [[ "$dir" == "$ROOT" || "$dir" == "$ROOT/"* ]]; then
+        kill -- "-$(ps -o pgid= -p "$pid" | tr -d ' ')" 2>/dev/null || kill "$pid" 2>/dev/null || true
+        found=1
+      fi
+    done
+  done
+  if ((found)); then
+    step "Stopped the backend and website left running by an earlier make dev"
+    for _ in $(seq 20); do
+      port_busy "$API_PORT" || port_busy "$WEB_PORT" || return 0
+      sleep 0.5
+    done
+  fi
 }
 
 port_busy() { (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null || (exec 3<>"/dev/tcp/::1/$1") 2>/dev/null; }
@@ -61,8 +105,15 @@ wait_for() {
 command -v nix >/dev/null || fail "Nix is required (the backend and mobile dev shells come from their flake.nix)."
 command -v curl >/dev/null || fail "curl is required."
 mkdir -p "$LOGS"
+stop_leftovers
 for port in "$API_PORT" "$WEB_PORT"; do
-  port_busy "$port" && fail "Port $port is already in use. Stop whatever is using it (maybe another make dev) and try again."
+  if port_busy "$port"; then
+    owner="$(for pid in $(port_pids "$port"); do ps -o pid=,args= -p "$pid"; done)"
+    fail "Port $port is already in use${owner:+ by:
+$owner
+}${owner:-.}
+Stop it and try again, or use another port with API_PORT=... / WEB_PORT=..."
+  fi
 done
 
 step "Installing JavaScript dependencies where needed"
