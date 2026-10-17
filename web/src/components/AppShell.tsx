@@ -1,5 +1,6 @@
 import Badge from '@mui/material/Badge'
 import { useNotifications } from '../notifications/NotificationsContext'
+import { useFlaggedComments } from '../moderation/FlaggedCommentsContext'
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import Box from '@mui/material/Box'
@@ -37,6 +38,11 @@ const initials = (name: string) =>
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { items } = useNotifications()
   const unread = items.filter((item) => !item.is_read).length
+  const flagged = useFlaggedComments().items?.length ?? 0
+  const badges: Record<string, { count: number; color: 'primary' | 'warning' }> = {
+    '/notifications': { count: unread, color: 'primary' },
+    '/flagged': { count: flagged, color: 'warning' },
+  }
   const navButton = (item: (typeof navItems)[number]) => (
     <ListItemButton
       key={item.to}
@@ -58,7 +64,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         },
       })}
     >
-      <ListItemIcon><Badge badgeContent={item.to === '/notifications' ? unread : 0} color="primary">{item.icon}</Badge></ListItemIcon>
+      <ListItemIcon><Badge badgeContent={badges[item.to]?.count ?? 0} color={badges[item.to]?.color ?? 'primary'}>{item.icon}</Badge></ListItemIcon>
       <ListItemText primary={item.label} slotProps={{ primary: { variant: 'body2', noWrap: true } }} />
     </ListItemButton>
   )

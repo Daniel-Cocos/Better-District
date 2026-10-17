@@ -31,6 +31,7 @@ export interface EventComment {
   user_email: string | null // null for anonymous (guest) comments
   likes: number
   dislikes: number
+  under_review: boolean // reported by a resident, so hidden from the app until reviewed
 }
 
 export type LiveStatus = 'connecting' | 'live' | 'reconnecting'
@@ -54,7 +55,7 @@ export async function deleteEvent(id: number): Promise<void> {
   await api.delete(`/admin/events/${id}`)
 }
 
-/** The same public comment list the app shows. */
+/** The comment list the app shows, plus any comments hidden while under review. */
 export async function fetchComments(eventId: number, signal?: AbortSignal): Promise<EventComment[]> {
   const { data } = await api.get<EventComment[]>(`/admin/events/${eventId}/comments`, { signal })
   return data

@@ -1,5 +1,6 @@
 import NotificationsOutlined from '@mui/icons-material/NotificationsOutlined'
 import LightbulbOutlined from '@mui/icons-material/LightbulbOutlined'
+import FlagOutlined from '@mui/icons-material/FlagOutlined'
 import type { ReactElement } from 'react'
 import DashboardOutlined from '@mui/icons-material/SpaceDashboardOutlined'
 import MapOutlined from '@mui/icons-material/MapOutlined'
@@ -10,6 +11,7 @@ export const navItems: { to: string; label: string; icon: ReactElement }[] = [
   { to: '/', label: 'Overview', icon: <DashboardOutlined fontSize="small" /> },
   { to: '/map', label: 'Map', icon: <MapOutlined fontSize="small" /> },
   { to: '/community', label: 'Community insights', icon: <LightbulbOutlined fontSize="small" /> },
+  { to: '/flagged', label: 'Flagged comments', icon: <FlagOutlined fontSize="small" /> },
   { to: '/notifications', label: 'Notifications', icon: <NotificationsOutlined fontSize="small" /> },
   { to: '/feed', label: 'Feed', icon: <FormatListBulleted fontSize="small" /> },
 ]

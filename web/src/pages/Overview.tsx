@@ -112,6 +112,23 @@ export default function Overview() {
         </Alert>
       )}
 
+      {Boolean(s?.flagged_comments) && (
+        <Alert
+          severity="warning"
+          variant="outlined"
+          sx={{ mb: 3, bgcolor: 'background.paper' }}
+          action={
+            <Button component={RouterLink} to="/flagged" color="inherit" size="small" sx={{ py: 0.5 }}>
+              Review
+            </Button>
+          }
+        >
+          {s?.flagged_comments === 1
+            ? '1 reported comment is hidden from the app until you review it.'
+            : `${s?.flagged_comments} reported comments are hidden from the app until you review them.`}
+        </Alert>
+      )}
+
       <Box
         sx={{
           display: 'grid',

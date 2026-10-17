@@ -7,6 +7,7 @@ export interface OverviewStats {
   likes: number
   dislikes: number
   residents: number // app accounts; anonymous guests aren't counted
+  flagged_comments: number // hidden from the app until reviewed
 }
 
 export interface RecentComment {
@@ -17,6 +18,7 @@ export interface RecentComment {
   user_email: string | null
   likes: number
   dislikes: number
+  under_review: boolean
 }
 
 export interface Overview {

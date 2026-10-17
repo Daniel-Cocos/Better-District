@@ -9,6 +9,8 @@ import MapPage from './pages/MapPage'
 import Feed from './pages/Feed'
 import CommunityIssues from './pages/CommunityIssues'
 import Notifications from './pages/Notifications'
+import FlaggedComments from './pages/FlaggedComments'
+import { FlaggedCommentsProvider } from './moderation/FlaggedCommentsContext'
 import { NotificationsProvider } from './notifications/NotificationsContext'
 import AppShell from './components/AppShell'
 
@@ -48,7 +50,7 @@ const router = createBrowserRouter([
   {
     element: (
       <RequireAuth>
-        <NotificationsProvider><AppShell /></NotificationsProvider>
+        <NotificationsProvider><FlaggedCommentsProvider><AppShell /></FlaggedCommentsProvider></NotificationsProvider>
       </RequireAuth>
     ),
     children: [
@@ -57,6 +59,7 @@ const router = createBrowserRouter([
       { path: 'feed', element: <Feed /> },
       { path: 'community', element: <CommunityIssues /> },
       { path: 'notifications', element: <Notifications /> },
+      { path: 'flagged', element: <FlaggedComments /> },
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },

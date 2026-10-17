@@ -15,6 +15,7 @@ import DeleteOutline from '@mui/icons-material/DeleteOutlineRounded'
 import { errorMessage } from '../../api/client'
 import { fetchComments, postComment, type AdminEvent, type EventComment } from '../../api/events'
 import { eventDeadlineLabel } from '../../utils/eventDeadline'
+import { useFlaggedComments } from '../../moderation/FlaggedCommentsContext'
 import VoteCounts from './VoteCounts'
 import CommentItem from './CommentItem'
 
@@ -38,8 +39,12 @@ export default function EventPanel({ event, onClose, onEdit, onDelete, onDeleteC
   const [sendError, setSendError] = useState<string | null>(null)
   const input = useRef<HTMLTextAreaElement>(null)
   const [error, setError] = useState<string | null>(null)
+  const flagged = useFlaggedComments()
+  const flaggedHere = flagged.items?.filter((c) => c.event_id === event.id).map((c) => c.id).join(',')
+  const [approveError, setApproveError] = useState<string | null>(null)
 
-  // Refetch when the live count moves, so residents' comments appear (and removed ones go)
+  // Refetch when the live count moves, so residents' comments appear (and removed ones go),
+  // and when reports here change, so flagged comments are marked
   useEffect(() => {
     const ctrl = new AbortController()
     fetchComments(event.id, ctrl.signal)
@@ -51,7 +56,17 @@ export default function EventPanel({ event, onClose, onEdit, onDelete, onDeleteC
         if (!ctrl.signal.aborted) setError(errorMessage(err, 'Couldn’t load comments.'))
       })
     return () => ctrl.abort()
-  }, [event.id, event.comments])
+  }, [event.id, event.comments, flaggedHere])
+
+  async function keep(comment: EventComment) {
+    setApproveError(null)
+    try {
+      await flagged.approve(comment.id)
+      setComments((current) => current?.map((c) => (c.id === comment.id ? { ...c, under_review: false } : c)) ?? null)
+    } catch (err) {
+      setApproveError(errorMessage(err, 'Couldn’t keep this comment. Please try again.'))
+    }
+  }
 
   async function send(e: FormEvent) {
     e.preventDefault()
@@ -109,6 +124,11 @@ export default function EventPanel({ event, onClose, onEdit, onDelete, onDeleteC
             {error}
           </Alert>
         )}
+        {approveError && (
+          <Alert severity="error" variant="outlined" onClose={() => setApproveError(null)}>
+            {approveError}
+          </Alert>
+        )}
         {!comments && !error && (
           <Stack spacing={1}>
             <Skeleton variant="rounded" height={72} />
@@ -123,7 +143,7 @@ export default function EventPanel({ event, onClose, onEdit, onDelete, onDeleteC
         <Stack component="ol" spacing={2} sx={{ listStyle: 'none', m: 0, p: 0 }}>
           {comments?.map((c) => (
             <li key={c.id}>
-              <CommentItem comment={c} onDelete={() => onDeleteComment(c)}
+              <CommentItem comment={c} onDelete={() => onDeleteComment(c)} onApprove={() => void keep(c)}
                 replyTo={c.parent_id ? comments.find((parent) => parent.id === c.parent_id)?.user_email ?? 'Anonymous' : undefined}
                 onReply={() => { setReplyTo(c); input.current?.focus() }} />
             </li>
