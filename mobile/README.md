@@ -117,3 +117,14 @@ Run `make` to list commands, `make typecheck` to check TypeScript, and `make lin
 to run ESLint. `make test` checks auth requests, errors, and session transitions.
 
 Comments support likes/dislikes, editing, deletion, and a profile history. Only the author can edit or delete a comment. Authors can see their vote counts but cannot like or dislike their own comments. Signed-in ownership follows the account; anonymous ownership uses a persistent device cookie. Anonymous comments created before ownership was added cannot be claimed.
+
+
+The **Report** tab supports taking/uploading a photo, a title and description,
+and a location chosen by tapping/dragging a map pin (GPS is optional). Your own issues appear on the map alongside council projects. Other residents’
+issues are excluded. Tap an issue marker to open its details. Successful
+submissions also create a notification. Failed submissions retain the current draft in memory. The
+backend must include the community issue API and schema.
+
+After installing `expo-image-picker`, rebuild an existing development client to
+include the camera/photo module and permission configuration. Test camera capture
+on a physical device; the iOS simulator has no camera.

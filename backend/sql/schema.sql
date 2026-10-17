@@ -150,8 +150,40 @@ BEGIN UPDATE revision SET value = value + 1; END;
 CREATE TABLE IF NOT EXISTS notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     recipient TEXT NOT NULL,
-    comment_id INTEGER NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
+    comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,
+    issue_id INTEGER REFERENCES community_issues(id) ON DELETE CASCADE,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_read INTEGER NOT NULL DEFAULT 0
+    is_read INTEGER NOT NULL DEFAULT 0,
+    CHECK ((comment_id IS NOT NULL) != (issue_id IS NOT NULL))
 );
 CREATE INDEX IF NOT EXISTS notifications_recipient ON notifications(recipient, id);
+
+
+-- Resident proposals are separate from published council projects.
+CREATE TABLE IF NOT EXISTS community_issues (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL CHECK (length(trim(title)) BETWEEN 1 AND 200),
+    description TEXT NOT NULL CHECK (length(trim(description)) BETWEEN 1 AND 5000),
+    latitude REAL NOT NULL CHECK (latitude BETWEEN -90 AND 90),
+    longitude REAL NOT NULL CHECK (longitude BETWEEN -180 AND 180),
+    owner_key TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted', 'reviewed', 'planned', 'resolved')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS issues_location ON community_issues(latitude, longitude);
+CREATE INDEX IF NOT EXISTS issues_owner ON community_issues(owner_key, id);
+CREATE TABLE IF NOT EXISTS issue_photos (
+    issue_id INTEGER PRIMARY KEY REFERENCES community_issues(id) ON DELETE CASCADE,
+    content_type TEXT NOT NULL,
+    size INTEGER NOT NULL CHECK (size > 0),
+    data BLOB NOT NULL
+);
+-- Future ML results are versioned independently; no synthetic analysis is created.
+CREATE TABLE IF NOT EXISTS issue_analyses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    issue_id INTEGER NOT NULL REFERENCES community_issues(id) ON DELETE CASCADE,
+    model_version TEXT NOT NULL,
+    result_json TEXT NOT NULL CHECK (json_valid(result_json)),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS analyses_issue ON issue_analyses(issue_id, id);

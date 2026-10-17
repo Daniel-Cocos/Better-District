@@ -251,3 +251,18 @@ class OverviewComment(BaseModel):
 class Overview(BaseModel):
     stats: OverviewStats
     recent_comments: list[OverviewComment]
+
+
+class CommunityIssue(BaseModel):
+    id: int
+    title: str
+    description: str
+    latitude: float
+    longitude: float
+    status: Literal["submitted", "reviewed", "planned", "resolved"]
+    created_at: str
+
+
+class IssueEdit(BaseModel):
+    title: Text = Field(max_length=200)
+    description: Text = Field(max_length=5000)

@@ -2,9 +2,11 @@ import { api } from './client'
 
 export interface ReplyNotification {
   id: number
-  comment_id: number
+  kind?: 'reply' | 'issue_submitted'
+  issue_id?: number | null
+  comment_id: number | null
   parent_id: number | null
-  event_id: number
+  event_id: number | null
   event_title: string
   body: string
   user_email: string | null

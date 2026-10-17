@@ -20,6 +20,8 @@ import FilterListRounded from '@mui/icons-material/FilterListRounded'
 import CenterFocusStrongOutlined from '@mui/icons-material/CenterFocusStrongOutlined'
 import HomeOutlined from '@mui/icons-material/HomeOutlined'
 import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutlineOutlined'
+import { useCommunityIssues } from '../hooks/useCommunityIssues'
+import IssueDetails from '../components/issues/IssueDetails'
 import { useLiveEvents } from '../hooks/useLiveEvents'
 import LiveMap, { type MapCommand } from '../components/map/LiveMap'
 import { APP_PIN_COLOR } from '../components/map/pinIcon'
@@ -34,8 +36,10 @@ import { formatNumber } from '../utils/format'
 /** The app's Map tab: the same pins and event panel, with moderation tools. */
 export default function MapPage() {
   const { events, error, status, updatedAt, newIds, reload } = useLiveEvents()
+  const { issues, error: issuesError, refresh: refreshIssues } = useCommunityIssues()
   const [params, setParams] = useSearchParams()
   const selectedId = /^\d+$/.test(params.get('event') ?? '') ? Number(params.get('event')) : null
+  const selectedIssue = issues.find((issue) => String(issue.id) === params.get('issue'))
   const [filter, setFilter] = useState('')
   const [command, setCommand] = useState<MapCommand>(null)
   const [commandId, setCommandId] = useState(0)
@@ -50,6 +54,7 @@ export default function MapPage() {
   }
   const select = (id: number | null) =>
     setParams((p) => {
+      p.delete('issue')
       if (id === null) p.delete('event')
       else p.set('event', String(id))
       return p
@@ -115,7 +120,12 @@ export default function MapPage() {
           borderColor: 'divider',
         }}
       >
-        {selected ? (
+        {selectedIssue ? (
+          <Box sx={{ overflowY: 'auto' }}>
+            <Button sx={{ m: 2, mb: 0 }} onClick={() => select(null)}>Close issue</Button>
+            <IssueDetails issue={selectedIssue} />
+          </Box>
+        ) : selected ? (
           <EventPanel
             key={selected.id}
             event={selected}
@@ -244,7 +254,14 @@ export default function MapPage() {
 
       {/* Map */}
       <Box sx={{ order: { xs: 1, md: 2 }, position: 'relative', minHeight: 0 }}>
+        {issuesError && <Alert severity="warning" action={<Button color="inherit" onClick={refreshIssues}>Retry</Button>} sx={{ position: 'absolute', top: 16, left: 16, zIndex: 1000 }}>{issuesError}</Alert>}
+        <Box sx={{ position: 'absolute', bottom: 28, left: 12, zIndex: 500, bgcolor: 'background.paper', borderRadius: 2, p: 1 }}>
+          <Typography variant="caption" component="p" sx={{ color: APP_PIN_COLOR }}>● Council projects</Typography>
+          {selectedIssue && <Typography variant="caption" component="p" sx={{ color: '#bf6b24' }}>● Selected issue</Typography>}
+        </Box>
         <LiveMap
+          issues={selectedIssue ? [selectedIssue] : []} selectedIssueId={selectedIssue?.id}
+          onSelectIssue={(id) => setParams({ issue: String(id) })}
           events={visible}
           selectedId={selectedId}
           freshIds={newIds}

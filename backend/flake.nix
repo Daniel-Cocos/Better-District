@@ -16,6 +16,7 @@
             (python3.withPackages (ps: with ps; [
               pylint
               black
+              pillow
               pytest
               hypothesis
               requests

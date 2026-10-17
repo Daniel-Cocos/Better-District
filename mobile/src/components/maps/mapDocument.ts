@@ -26,6 +26,42 @@ try {
   });
   map.touchZoomRotate.disableRotation();
   map.addControl(new AttributionControl({ compact:true }), 'bottom-left');
+  let issueMarkers = [];
+  let reportMarker;
+  let picking = false;
+  window.setIssues = function (issues) {
+    issueMarkers.forEach(function (marker) { marker.remove(); });
+    issueMarkers = issues.map(function (issue) {
+      const marker = new Marker({ color:'#bf6b24', scale:0.7 }).setLngLat([issue.longitude, issue.latitude]).addTo(map);
+      const element = marker.getElement();
+      element.setAttribute('aria-label', 'Community issue: ' + issue.title);
+      element.setAttribute('role', 'button');
+      element.setAttribute('tabindex', '0');
+      function select() { window.ReactNativeWebView.postMessage(JSON.stringify({ type:'selectIssue', id:issue.id })); }
+      element.addEventListener('click', function (event) { event.stopPropagation(); select(); });
+      element.addEventListener('keydown', function (event) { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); } });
+      return marker;
+    });
+    if (!fittedEvents && issueMarkers.length) {
+      const bounds = new LngLatBounds();
+      issueMarkers.forEach(function (marker) { bounds.extend(marker.getLngLat()); });
+      map.fitBounds(bounds, { padding:60, maxZoom:13, duration:0 });
+      fittedEvents = true;
+    }
+  };
+  window.setReportLocation = function (location) {
+    picking = true;
+    if (reportMarker) reportMarker.remove();
+    if (location) {
+      reportMarker = new Marker({ color:'#bf6b24', draggable:true }).setLngLat([location.longitude, location.latitude]).addTo(map);
+      reportMarker.on('dragend', function () { const point = reportMarker.getLngLat(); pick(point.lat, point.lng); });
+      map.easeTo({ center:[location.longitude, location.latitude], zoom:16, duration:400 });
+    }
+  };
+  function pick(latitude, longitude) {
+    window.ReactNativeWebView.postMessage(JSON.stringify({ type:'pickLocation', latitude:latitude, longitude:longitude }));
+  }
+  map.on('click', function (event) { if (picking) pick(event.lngLat.lat, event.lngLat.lng); });
   let eventMarkers = [];
   let fittedEvents = false;
   window.setEvents = function (events) {

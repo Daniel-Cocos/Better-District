@@ -7,6 +7,7 @@ import AdminLogin from './pages/AdminLogin'
 import Overview from './pages/Overview'
 import MapPage from './pages/MapPage'
 import Feed from './pages/Feed'
+import CommunityIssues from './pages/CommunityIssues'
 import Notifications from './pages/Notifications'
 import { NotificationsProvider } from './notifications/NotificationsContext'
 import AppShell from './components/AppShell'
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
       { index: true, element: <Overview /> },
       { path: 'map', element: <MapPage /> },
       { path: 'feed', element: <Feed /> },
+      { path: 'community', element: <CommunityIssues /> },
       { path: 'notifications', element: <Notifications /> },
     ],
   },

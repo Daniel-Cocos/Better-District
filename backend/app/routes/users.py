@@ -51,8 +51,12 @@ def comment_history(database: Database, voter: Voter):
 def list_notifications(database: Database, voter: Voter):
     rows = database.execute(
         "SELECT n.id, n.created_at, n.is_read, c.id AS comment_id, c.parent_id, "
-        "c.event_id, c.body, c.user_email, e.title AS event_title FROM notifications n "
-        "JOIN comments c ON c.id = n.comment_id JOIN events e ON e.id = c.event_id "
+        "c.event_id, coalesce(c.body, 'Your issue has been submitted to the council.') AS body, "
+        "c.user_email, coalesce(e.title, i.title) AS event_title, n.issue_id, "
+        "CASE WHEN n.issue_id IS NOT NULL THEN 'issue_submitted' ELSE 'reply' END AS kind "
+        "FROM notifications n LEFT JOIN comments c ON c.id = n.comment_id "
+        "LEFT JOIN events e ON e.id = c.event_id "
+        "LEFT JOIN community_issues i ON i.id = n.issue_id "
         "WHERE n.recipient = ? ORDER BY n.id DESC",
         (voter,),
     ).fetchall()

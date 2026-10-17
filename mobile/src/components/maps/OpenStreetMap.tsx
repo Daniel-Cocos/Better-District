@@ -4,13 +4,15 @@ import { ActivityIndicator, Button, Linking, StyleSheet, Text, View } from 'reac
 import { WebView } from 'react-native-webview';
 import { mapDocument } from './mapDocument';
 import { MapControls } from './MapControls';
+import type { CommunityIssue, IssueLocation } from '../../api/issues';
 import type { CouncilEvent } from '../../api/events';
+import { issueMarkersScript, reportLocationScript } from './issueBridge';
 import { eventMarkersScript, focusEventScript } from './eventBridge';
 
 /** Keyless OSM-based map, isolated so screens need no WebView logic. */
-type Props = { events: CouncilEvent[]; focusedEvent?: CouncilEvent; onSelectEvent: (id: number) => void };
+type Props = { issues?: CommunityIssue[]; onSelectIssue?: (id: number) => void; pickingLocation?: boolean; location?: IssueLocation | null; onPickLocation?: (location: IssueLocation) => void; events: CouncilEvent[]; focusedEvent?: Pick<CouncilEvent, 'id' | 'latitude' | 'longitude'>; onSelectEvent: (id: number) => void };
 
-export function OpenStreetMap({ events, focusedEvent, onSelectEvent }: Props) {
+export function OpenStreetMap({ events, focusedEvent, onSelectEvent, issues, onSelectIssue, pickingLocation, location, onPickLocation }: Props) {
   const webView = useRef<WebView<object>>(null);
   const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -20,6 +22,13 @@ export function OpenStreetMap({ events, focusedEvent, onSelectEvent }: Props) {
   useEffect(() => {
     if (status === 'ready') webView.current?.injectJavaScript(eventMarkersScript(events));
   }, [events, status]);
+
+  useEffect(() => {
+    if (status === 'ready') webView.current?.injectJavaScript(issueMarkersScript(issues ?? []));
+  }, [issues, status]);
+  useEffect(() => {
+    if (status === 'ready' && pickingLocation) webView.current?.injectJavaScript(reportLocationScript(location));
+  }, [pickingLocation, location, status]);
 
   const focusLatitude = focusedEvent?.latitude;
   const focusLongitude = focusedEvent?.longitude;
@@ -97,6 +106,8 @@ export function OpenStreetMap({ events, focusedEvent, onSelectEvent }: Props) {
           } else {
             try {
               const message = JSON.parse(nativeEvent.data);
+              if (message.type === 'selectIssue' && Number.isInteger(message.id)) onSelectIssue?.(message.id);
+              if (message.type === 'pickLocation' && Number.isFinite(message.latitude) && Number.isFinite(message.longitude) && Math.abs(message.latitude) <= 90 && Math.abs(message.longitude) <= 180) onPickLocation?.({ latitude: message.latitude, longitude: message.longitude });
               if (message.type === 'selectEvent' && Number.isInteger(message.id)) onSelectEvent(message.id);
             } catch {
               // Ignore unrelated messages from the embedded renderer.

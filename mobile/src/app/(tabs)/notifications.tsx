@@ -19,16 +19,16 @@ export default function NotificationsPage() {
           {openError ? <Text accessibilityRole="alert">{openError}</Text> : null}
         </View>}
         ListEmptyComponent={loading ? <ActivityIndicator color={colors.accent} /> : !error ? <View style={styles.empty}>
-          <Bell color="#737373" size={32} /><Text style={styles.muted}>Replies to your comments will appear here.</Text>
+          <Bell color="#737373" size={32} /><Text style={styles.muted}>Replies and issue updates will appear here.</Text>
         </View> : undefined}
         renderItem={({ item }) => <Pressable accessibilityRole="button"
-          accessibilityLabel={`${item.is_read ? '' : 'Unread: '}${item.user_email ?? 'Anonymous'} replied on ${item.event_title}: ${item.body}`}
+          accessibilityLabel={`${item.is_read ? '' : 'Unread: '}${item.kind === 'issue_submitted' ? 'Issue submitted' : `${item.user_email ?? 'Anonymous'} replied on`} ${item.event_title}: ${item.body}`}
           style={[styles.card, !item.is_read && styles.unread]} onPress={async () => {
             setOpenError('');
             try { await markRead(item.id); } catch { setOpenError('Couldn’t mark this notification as read. Pull down to refresh and try again.'); }
-            router.navigate({ pathname: '/', params: { eventId: String(item.event_id) } });
+            router.navigate({ pathname: '/', params: item.issue_id ? { issueId: String(item.issue_id), eventId: undefined } : { eventId: String(item.event_id), issueId: undefined } });
           }}>
-          <Text style={styles.author}>{!item.is_read ? '● ' : ''}{item.user_email ?? 'Anonymous'} replied to you</Text>
+          <Text style={styles.author}>{!item.is_read ? '● ' : ''}{item.kind === 'issue_submitted' ? 'Issue submitted' : `${item.user_email ?? 'Anonymous'} replied to you`}</Text>
           <Text style={styles.event}>{item.event_title}</Text>
           <Text style={styles.body} numberOfLines={3}>{item.body}</Text>
           <Text style={styles.muted}>{new Date(item.created_at.replace(' ', 'T') + 'Z').toLocaleString()}</Text>

@@ -41,6 +41,22 @@ def initialize(path: Path = DEFAULT_DATABASE):
             connection.execute(
                 "ALTER TABLE comments ADD COLUMN parent_id INTEGER REFERENCES comments(id) ON DELETE SET NULL"
             )
+        notification_columns = {
+            row["name"]
+            for row in connection.execute("PRAGMA table_info(notifications)")
+        }
+        if "issue_id" not in notification_columns:
+            connection.execute(
+                "CREATE TABLE notifications_new (id INTEGER PRIMARY KEY AUTOINCREMENT, recipient TEXT NOT NULL, comment_id INTEGER REFERENCES comments(id) ON DELETE CASCADE, issue_id INTEGER REFERENCES community_issues(id) ON DELETE CASCADE, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, is_read INTEGER NOT NULL DEFAULT 0, CHECK ((comment_id IS NOT NULL) != (issue_id IS NOT NULL)))"
+            )
+            connection.execute(
+                "INSERT INTO notifications_new (id, recipient, comment_id, created_at, is_read) SELECT id, recipient, comment_id, created_at, is_read FROM notifications"
+            )
+            connection.execute("DROP TABLE notifications")
+            connection.execute("ALTER TABLE notifications_new RENAME TO notifications")
+            connection.execute(
+                "CREATE INDEX notifications_recipient ON notifications(recipient, id)"
+            )
         # Projects published before the app read their deadline from events.closes_at
         connection.executemany(
             "UPDATE events SET closes_at = ? WHERE id = ?",

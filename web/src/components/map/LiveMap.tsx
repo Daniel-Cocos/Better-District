@@ -4,6 +4,7 @@ import { latLngBounds, type LatLngExpression } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import Box from '@mui/material/Box'
 import { useTheme, keyframes } from '@mui/material/styles'
+import type { CommunityIssue } from '../../api/issues'
 import type { AdminEvent } from '../../api/events'
 import type { LatLng } from '../events/LocationPicker'
 import { APP_PIN_COLOR, pinIcon } from './pinIcon'
@@ -25,9 +26,10 @@ const pulse = keyframes`
   100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
 `
 
-const toLatLng = (e: AdminEvent): LatLng => [e.latitude, e.longitude]
+type MapPoint = Pick<AdminEvent, 'id' | 'latitude' | 'longitude'>
+const toLatLng = (e: MapPoint): LatLng => [e.latitude, e.longitude]
 
-function Commands({ events, command, commandId }: { events: AdminEvent[]; command: MapCommand; commandId: number }) {
+function Commands({ events, command, commandId }: { events: MapPoint[]; command: MapCommand; commandId: number }) {
   const map = useMap()
   const fitted = useRef(false)
   // Commands read the latest events without re-running when events change
@@ -63,7 +65,7 @@ function Commands({ events, command, commandId }: { events: AdminEvent[]; comman
   return null
 }
 
-function FocusSelected({ event }: { event: AdminEvent | undefined }) {
+function FocusSelected({ event }: { event: MapPoint | undefined }) {
   const map = useMap()
   // Like the phone: fly to a pin when it's chosen (or if it moves), not on every refresh
   const id = event?.id
@@ -101,6 +103,9 @@ function CenterWatcher({ centerRef }: { centerRef: RefObject<LatLng> }) {
 
 interface LiveMapProps {
   events: AdminEvent[]
+  issues?: CommunityIssue[]
+  selectedIssueId?: number | null
+  onSelectIssue?: (id: number) => void
   selectedId: number | null
   freshIds: ReadonlySet<number>
   onSelect: (id: number) => void
@@ -109,14 +114,16 @@ interface LiveMapProps {
   centerRef: RefObject<LatLng>
 }
 
-export default function LiveMap({ events, selectedId, freshIds, onSelect, command, commandId, centerRef }: LiveMapProps) {
+export default function LiveMap({ events, selectedId, freshIds, onSelect, command, commandId, centerRef, issues = [], selectedIssueId, onSelectIssue }: LiveMapProps) {
   const theme = useTheme()
   const dark = theme.palette.mode === 'dark'
-  const selected = events.find((e) => e.id === selectedId)
+  const selected = issues.find((issue) => issue.id === selectedIssueId) ?? events.find((e) => e.id === selectedId)
 
   // One colour for every pin, as in the app
   const icons = useMemo(
     () => ({
+      issue: pinIcon('#bf6b24', { scale: 0.8 }),
+      selectedIssue: pinIcon('#bf6b24', { scale: 1.05, className: 'pin-selected' }),
       normal: pinIcon(APP_PIN_COLOR, { scale: 0.8 }),
       selected: pinIcon(APP_PIN_COLOR, { scale: 1.05, className: 'pin-selected' }),
       fresh: pinIcon(APP_PIN_COLOR, { scale: 0.8, className: 'pin-fresh' }),
@@ -162,11 +169,17 @@ export default function LiveMap({ events, selectedId, freshIds, onSelect, comman
           maxZoom={19}
         />
         <ZoomControl position="bottomright" />
-        <Commands events={events} command={command} commandId={commandId} />
+        <Commands events={[...events, ...issues]} command={command} commandId={commandId} />
         <FocusSelected event={selected} />
         <KeepSized />
         <CenterWatcher centerRef={centerRef} />
 
+        {issues.map((issue) => <Marker key={`issue-${issue.id}`} position={toLatLng(issue)}
+          icon={issue.id === selectedIssueId ? icons.selectedIssue : icons.issue}
+          title={`Community issue: ${issue.title}`} alt={`Community issue: ${issue.title}`}
+          eventHandlers={{ click: () => onSelectIssue?.(issue.id) }}>
+          <Tooltip direction="top" opacity={1}>Community issue: {issue.title}</Tooltip>
+        </Marker>)}
         {events.map((e) => {
           const isSelected = e.id === selectedId
           return (

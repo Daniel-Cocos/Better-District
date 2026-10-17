@@ -13,7 +13,7 @@ export default function Notifications() {
     setReadError(null)
     try { await markRead(item.id) }
     catch (err) { setReadError(errorMessage(err, 'Couldn’t mark this notification as read. Please try again.')); return }
-    navigate(`/map?event=${item.event_id}`)
+    navigate(item.issue_id ? `/map?issue=${item.issue_id}` : `/map?event=${item.event_id}`)
   }
   return <Box sx={{ maxWidth: 760, mx: 'auto' }}>
     <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
@@ -29,7 +29,7 @@ export default function Notifications() {
         <ListItemButton onClick={() => void open(item)} sx={{ display: 'block', border: 1, borderRadius: 3,
           borderColor: item.is_read ? 'divider' : 'primary.main', bgcolor: 'background.paper', p: 2 }}>
           <Typography variant="body2" color="primary" sx={{ fontWeight: 600 }}>
-            {!item.is_read && '● '}{item.user_email ?? 'Anonymous'} replied to you
+            {!item.is_read && '● '}{item.kind === 'issue_submitted' ? 'Issue submitted' : `${item.user_email ?? 'Anonymous'} replied to you`}
           </Typography>
           <Typography sx={{ fontWeight: 600, mt: 0.5 }}>{item.event_title}</Typography>
           <Typography variant="body2" sx={{ my: 1, whiteSpace: 'pre-line', overflowWrap: 'anywhere' }}>{item.body}</Typography>
