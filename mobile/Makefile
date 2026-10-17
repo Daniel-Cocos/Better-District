@@ -2,7 +2,7 @@
 
 NIX_RUN := nix develop path:. --command
 
-.PHONY: help install dev emulator android ios lint typecheck
+.PHONY: help install dev emulator android ios test lint typecheck
 
 help: ## Show available commands
 	@awk 'BEGIN {FS = ":.*## "; printf "\nMobile commands\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2} END {printf "\n"}' $(MAKEFILE_LIST)
@@ -21,6 +21,9 @@ android: ## Start Expo on an Android device or running emulator
 
 ios: ## Start Expo on the iOS simulator (macOS)
 	$(NIX_RUN) npm run ios
+
+test: ## Test auth requests and session state
+	$(NIX_RUN) npm test
 
 lint: ## Run ESLint on the application
 	$(NIX_RUN) npm run lint
