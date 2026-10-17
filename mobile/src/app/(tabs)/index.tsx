@@ -10,7 +10,7 @@ import { useEventUpdates } from '../../hooks/useEventUpdates';
 import { EventPanel } from '../../components/events/EventPanel';
 
 export default function MapPage() {
-  const { eventId, issueId } = useLocalSearchParams<{ eventId?: string | string[]; issueId?: string | string[] }>();
+  const { eventId, issueId, submitted } = useLocalSearchParams<{ eventId?: string | string[]; issueId?: string | string[]; submitted?: string | string[] }>();
   const selectedId = typeof eventId === 'string' && /^\d+$/.test(eventId) ? Number(eventId) : null;
   const [issues, setIssues] = useState<CommunityIssue[]>([]);
   const [issuesError, setIssuesError] = useState(false);
@@ -27,7 +27,7 @@ export default function MapPage() {
     return () => { controller.abort(); clearTimeout(timer); };
   }, []));
   const focused = useIsFocused();
-  const closePanel = useCallback(() => { Keyboard.dismiss(); router.setParams({ eventId: undefined, issueId: undefined }); }, []);
+  const closePanel = useCallback(() => { Keyboard.dismiss(); router.setParams({ eventId: undefined, issueId: undefined, submitted: undefined }); }, []);
   const events = useEventsStore((state) => state.events);
   const loading = useEventsStore((state) => state.loading);
   const error = useEventsStore((state) => state.error);
@@ -40,8 +40,8 @@ export default function MapPage() {
   return (
     <View style={styles.container}>
       <OpenStreetMap events={events} issues={issues} focusedEvent={focused ? selectedIssue ?? selectedEvent : undefined}
-        onSelectIssue={(id) => router.setParams({ issueId: String(id), eventId: undefined })}
-        onSelectEvent={(id) => router.setParams({ eventId: String(id), issueId: undefined })} />
+        onSelectIssue={(id) => router.setParams({ issueId: String(id), eventId: undefined, submitted: undefined })}
+        onSelectEvent={(id) => router.setParams({ eventId: String(id), issueId: undefined, submitted: undefined })} />
       {(loading || error || (events.length === 0 && issues.length === 0)) && (
         <View style={styles.notice}>
           {loading ? <><ActivityIndicator color="#171717" /><Text>Loading events…</Text></> : error ? (
@@ -53,7 +53,7 @@ export default function MapPage() {
         </View>
       )}
       {issuesError && <View style={styles.issueError}><Text accessibilityRole="alert">Couldn’t refresh your issues. Retrying…</Text></View>}
-      {focused && selectedIssue && <IssuePanel key={selectedIssue.id} issue={selectedIssue} onClose={closePanel}
+      {focused && selectedIssue && <IssuePanel key={selectedIssue.id} issue={selectedIssue} justSubmitted={submitted === '1'} onClose={closePanel}
         onUpdated={(updated) => setIssues((current) => current.map((issue) => issue.id === updated.id ? updated : issue))}
         onDeleted={() => { setIssues((current) => current.filter((issue) => issue.id !== selectedIssue.id)); closePanel(); void useNotificationsStore.getState().refresh(); }} />}
       {focused && !selectedIssue && selectedEvent && <EventPanel key={selectedEvent.id} event={selectedEvent} onClose={closePanel} />}

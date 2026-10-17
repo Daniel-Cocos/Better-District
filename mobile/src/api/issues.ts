@@ -12,9 +12,11 @@ export const ISSUE_CATEGORIES: { value: IssueCategory; label: string }[] = [
 export type CommunityIssue = {
   id: number; title: string; description: string; latitude: number; longitude: number;
   status: 'submitted' | 'reviewed' | 'planned' | 'resolved'; category: IssueCategory; created_at: string;
+  photo_version: number;
 };
 export type IssueLocation = { latitude: number; longitude: number };
-export const issuePhotoUrl = (id: number) => `${api.defaults.baseURL}/issues/${id}/photo`;
+// The version changes when the photo is replaced, so the image cache can't show the old one
+export const issuePhotoUrl = (issue: Pick<CommunityIssue, 'id' | 'photo_version'>) => `${api.defaults.baseURL}/issues/${issue.id}/photo?v=${issue.photo_version}`;
 export async function listIssues(signal?: AbortSignal) {
   const { data } = await api.get<CommunityIssue[]>('/issues', { signal });
   return data;
@@ -26,14 +28,23 @@ export async function submitIssue(title: string, description: string, category: 
   form.append('category', category);
   form.append('latitude', String(location.latitude));
   form.append('longitude', String(location.longitude));
+  await appendPhoto(form, photo);
+  const { data } = await api.post<CommunityIssue>('/issues', form, { timeout: 60000, headers: { 'Content-Type': 'multipart/form-data' } });
+  return data;
+}
+export async function replaceIssuePhoto(id: number, photo: ImagePickerAsset) {
+  const form = new FormData();
+  await appendPhoto(form, photo);
+  const { data } = await api.put<CommunityIssue>(`/issues/${id}/photo`, form, { timeout: 60000, headers: { 'Content-Type': 'multipart/form-data' } });
+  return data;
+}
+async function appendPhoto(form: FormData, photo: ImagePickerAsset) {
   if (Platform.OS === 'web') {
     const blob = await (await fetch(photo.uri)).blob();
     form.append('photo', blob, photo.fileName ?? 'issue.jpg');
   } else {
     form.append('photo', { uri: photo.uri, name: photo.fileName ?? 'issue.jpg', type: photo.mimeType ?? 'image/jpeg' } as unknown as Blob);
   }
-  const { data } = await api.post<CommunityIssue>('/issues', form, { timeout: 60000, headers: { 'Content-Type': 'multipart/form-data' } });
-  return data;
 }
 
 export async function editIssue(id: number, title: string, description: string) {
