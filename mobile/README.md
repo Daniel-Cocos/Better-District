@@ -91,9 +91,27 @@ JavaScript dependencies, including React Native and Expo. No global Expo CLI is
 needed. This setup runs on a physical phone through Expo Go; native builds need
 additional Android SDK or macOS/Xcode tooling.
 
-To open Expo Go over USB, enable USB debugging on your Android phone, connect it,
-and accept the debugging authorization prompt. Run `make android`. You can check
-the connection with `nix develop path:. --command adb devices`.
+### Demo on your own Android phone (USB)
+
+The quickest way to put the app on a real phone, with no APK and no Wi-Fi setup:
+
+1. On the phone, open Settings > About phone and tap **Build number** seven times
+   to unlock Developer options. Then turn on Developer options > **USB debugging**
+   (menu names vary by manufacturer).
+2. Plug the phone into the computer with a data cable (not a charge-only one),
+   unlock it, and accept **Allow USB debugging** (tick "Always allow").
+3. From the repo root run `make phone`.
+
+This seeds and starts the backend and admin website like `make dev`, then runs
+`adb reverse` so the phone's `127.0.0.1:8000` (backend) and `127.0.0.1:8081`
+(Metro) go through the cable to the computer. Expo installs Expo Go on the phone
+if needed and opens the app. Firewalls and Wi-Fi networks don't matter, and the
+admin website at http://localhost:5173 uses the same backend, so reports and
+comments made on the phone show up there. Keep the cable plugged in during the
+demo. A running project emulator is shut down first so the app opens on the
+phone. Check the connection with `nix develop path:. --command adb devices`: the
+phone must show `device`, not `unauthorized`. Without a cable,
+`make dev EMULATOR=0` serves the app over Wi-Fi with a QR code instead.
 For an emulator on x86_64 Linux, run these in separate terminals from `mobile/`:
 
 ```sh

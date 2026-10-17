@@ -10,6 +10,11 @@ API_PORT="${API_PORT:-8000}"
 WEB_PORT="${WEB_PORT:-5173}"
 # EMULATOR=0 skips the emulator and shows a QR code for Expo Go on a phone instead
 EMULATOR="${EMULATOR:-1}"
+# PHONE=1 (make phone) runs the app on an Android phone plugged in over USB. adb reverse
+# carries the backend and Metro over the cable, so Wi-Fi and firewalls don't matter.
+PHONE="${PHONE:-0}"
+[[ "$PHONE" == 0 ]] || EMULATOR=0
+METRO_PORT=8081
 
 backend() { nix develop "path:$ROOT/backend" --command "$@"; }
 node_env() { nix develop "path:$ROOT/mobile" --command "$@"; } # Node 24 + adb; web has no flake of its own
@@ -130,7 +135,10 @@ step "Seeding the database with demo data"
 
 # A phone reaches the backend over the LAN; the emulator reaches the host's loopback as 10.0.2.2
 API_HOST=127.0.0.1
-if [[ "$EMULATOR" == 0 ]]; then
+if [[ "$PHONE" != 0 ]]; then
+  # The phone's localhost is forwarded to this computer's by adb reverse below
+  export EXPO_PUBLIC_API_URL="http://127.0.0.1:$API_PORT"
+elif [[ "$EMULATOR" == 0 ]]; then
   API_HOST=0.0.0.0
   LAN_IP="$(hostname -I 2>/dev/null | awk '{print $1}' || true)"
   [[ -n "$LAN_IP" ]] || LAN_IP="$(ipconfig getifaddr en0 2>/dev/null || true)"
@@ -169,6 +177,32 @@ if [[ "$EMULATOR" != 0 ]]; then
   echo "Emulator ready."
 fi
 
+if [[ "$PHONE" != 0 ]]; then
+  step "Connecting to your Android phone over USB"
+  node_env adb start-server >/dev/null
+  # The app opens on the first device Expo finds, so the emulator has to go
+  for d in $(node_env adb devices | awk '/^emulator-/ {print $1}'); do
+    echo "Shutting down $d so the app opens on your phone (make dev boots it again)."
+    node_env adb -s "$d" emu kill >/dev/null 2>&1 || true
+  done
+  tries=60
+  until SERIAL="$(node_env adb devices | awk '$2 == "device" && $1 !~ /^emulator-/ {print $1; exit}')" && [[ -n "$SERIAL" ]]; do
+    if ((tries == 60)); then
+      node_env adb devices | grep -q 'unauthorized' &&
+        warn "Your phone is connected but hasn't allowed this computer yet: unlock it and accept \"Allow USB debugging\"." ||
+        warn "No phone found. Plug it in with a data cable and turn on Developer options > USB debugging (see mobile/README.md)."
+    fi
+    tries=$((tries - 1))
+    ((tries > 0)) || fail "Still no phone after a minute. Check the cable and USB debugging, then run make phone again."
+    sleep 1
+  done
+  export ANDROID_SERIAL="$SERIAL"
+  for port in "$API_PORT" "$METRO_PORT"; do
+    node_env adb -s "$SERIAL" reverse "tcp:$port" "tcp:$port" >/dev/null
+  done
+  echo "Phone $SERIAL connected; it reaches the backend and Metro through the cable."
+fi
+
 OLLAMA_URL="${OLLAMA_URL:-http://100.100.79.70:11434}"
 if curl -fsS -m 3 -o /dev/null "$OLLAMA_URL/api/tags" 2>/dev/null; then
   OLLAMA_STATUS="$OLLAMA_URL (reachable)"
@@ -187,7 +221,11 @@ cat <<EOF
 Starting Expo. Press Ctrl-C to stop everything except the emulator.
 EOF
 
-if [[ "$EMULATOR" != 0 ]]; then
+if [[ "$PHONE" != 0 ]]; then
+  # --localhost serves the bundle on 127.0.0.1, which reaches the phone over adb reverse.
+  # --android installs Expo Go on the phone if needed and opens the app in it.
+  node_env npx expo start --android --localhost --port "$METRO_PORT"
+elif [[ "$EMULATOR" != 0 ]]; then
   node_env npx expo start --android
 else
   echo "The app will call the backend at $EXPO_PUBLIC_API_URL. Scan the QR code with Expo Go on the same Wi-Fi."
