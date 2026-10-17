@@ -148,9 +148,9 @@ def test_seed_is_repeatable_and_foreign_keys_are_enforced(tmp_path):
     with connect(path) as database:
         database.executescript(sql)
         database.executescript(sql)
-        assert database.execute("SELECT count(*) FROM events").fetchone()[0] == 5
-        assert database.execute("SELECT count(*) FROM comments").fetchone()[0] == 10
-        assert database.execute("SELECT count(*) FROM users").fetchone()[0] == 3
+        assert database.execute("SELECT count(*) FROM events").fetchone()[0] == 17
+        assert database.execute("SELECT count(*) FROM comments").fetchone()[0] == 70
+        assert database.execute("SELECT count(*) FROM users").fetchone()[0] == 11
         assert database.execute("SELECT count(*) FROM admins").fetchone()[0] == 1
         locations = database.execute(
             "SELECT latitude, longitude FROM events"
@@ -160,10 +160,22 @@ def test_seed_is_repeatable_and_foreign_keys_are_enforced(tmp_path):
         titles = [row[0] for row in database.execute("SELECT title FROM events")]
         assert any("Southampton Common" in title for title in titles)
         assert any("Old Town" in title for title in titles)
+        # Every seeded event says it is demo data, not official council information
         assert all(
-            "Fictional demo event" in row[0]
+            "demo" in row[0].lower()
             for row in database.execute("SELECT description FROM events")
         )
+        assert any("Bargate" in title for title in titles)
+        # Residents reply to each other, always within the same event
+        replies = database.execute(
+            "SELECT c.event_id, p.event_id FROM comments c "
+            "JOIN comments p ON p.id = c.parent_id"
+        ).fetchall()
+        assert len(replies) >= 15
+        assert all(child == parent for child, parent in replies)
+        assert database.execute(
+            "SELECT count(*) FROM comments WHERE user_email IS NULL"
+        ).fetchone()[0], "anonymous guests comment too"
         assert database.execute("PRAGMA foreign_key_check").fetchall() == []
         with pytest.raises(sqlite3.IntegrityError):
             database.execute(
