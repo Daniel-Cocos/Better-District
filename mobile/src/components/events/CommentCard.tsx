@@ -1,13 +1,14 @@
 import { colors } from '../../theme/colors';
 import { useState } from 'react';
-import { Pencil, Trash2 } from 'lucide-react-native';
+import { Flag, Pencil, Trash2 } from 'lucide-react-native';
+import { isAxiosError } from 'axios';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { deleteComment, editComment, voteComment, type EventComment } from '../../api/comments';
+import { deleteComment, editComment, flagComment, voteComment, type EventComment } from '../../api/comments';
 import { VoteButtons } from './VoteButtons';
 
-type Props = { comment: EventComment; onUpdated: (comment: EventComment) => void; onDeleted: (id: number) => void; onReply?: (comment: EventComment) => void; replyTo?: string; embedded?: boolean };
+type Props = { comment: EventComment; onUpdated: (comment: EventComment) => void; onDeleted: (id: number) => void; onFlagged?: (id: number) => void; onReply?: (comment: EventComment) => void; replyTo?: string; embedded?: boolean };
 
-export function CommentCard({ comment, onUpdated, onDeleted, onReply, replyTo, embedded = false }: Props) {
+export function CommentCard({ comment, onUpdated, onDeleted, onFlagged, onReply, replyTo, embedded = false }: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(comment.body);
   const [busy, setBusy] = useState(false);
@@ -35,13 +36,37 @@ export function CommentCard({ comment, onUpdated, onDeleted, onReply, replyTo, e
     ]);
   }
 
+  function confirmFlag() {
+    Alert.alert('Report this comment?', 'If it’s offensive, abusive or spam, it will be hidden for everyone until the council reviews it.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Report', style: 'destructive', onPress: async () => {
+        setBusy(true); setError('');
+        try {
+          await flagComment(comment.event_id, comment.id);
+          onFlagged?.(comment.id);
+          Alert.alert('Thanks for reporting', 'The comment is hidden while the council reviews it.');
+        } catch (err) {
+          setBusy(false);
+          setError(isAxiosError(err) && typeof err.response?.data?.detail === 'string' ? err.response.data.detail : 'Couldn’t report this comment. Please try again.');
+        }
+      } },
+    ]);
+  }
+
   return (
     <View style={[styles.card, embedded && styles.embedded]}>
       <View style={styles.header}>
         <View style={styles.identity}>
           {replyTo && <Text style={styles.author}>Replying to {replyTo}</Text>}
           <Text style={styles.author}>{comment.user_email ?? 'Anonymous'}{comment.is_mine ? ' · You' : ''}</Text>
+          {comment.under_review && <Text style={styles.review}>Reported · hidden from others until the council reviews it</Text>}
         </View>
+        {!comment.is_mine && onFlagged && (
+          <Pressable accessibilityRole="button" accessibilityLabel="Report this comment" disabled={busy} hitSlop={6}
+            onPress={confirmFlag} style={styles.iconButton}>
+            <Flag size={14} color="#737373" />
+          </Pressable>
+        )}
         {comment.is_mine && !editing && <View style={styles.ownerActions}>
           <Pressable accessibilityRole="button" accessibilityLabel="Edit your comment" disabled={busy} hitSlop={6}
             onPress={() => { setDraft(comment.body); setEditing(true); setError(''); }} style={styles.iconButton}>
@@ -91,6 +116,7 @@ const styles = StyleSheet.create({
   identity: { flex: 1, gap: 6 },
   ownerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   author: { fontSize: 11, fontWeight: '600', color: '#737373' },
+  review: { fontSize: 11, fontWeight: '600', color: '#b45309' },
   body: { fontSize: 14, lineHeight: 21, color: '#171717' },
   actions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 4 },
   commentActions: { flexDirection: 'row', alignItems: 'center', gap: 10, marginLeft: 'auto' },

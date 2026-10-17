@@ -7,7 +7,7 @@ import { useSessionStore } from '../src/store/session';
 import { useEventsStore } from '../src/store/events';
 import { eventMarkersScript, focusEventScript } from '../src/components/maps/eventBridge';
 import { eventDeadlineLabel } from '../src/utils/eventDeadline';
-import { listComments, postComment } from '../src/api/comments';
+import { flagComment, listComments, postComment } from '../src/api/comments';
 import { getEventsVersion } from '../src/api/events';
 
 const adapter = api.defaults.adapter;
@@ -151,4 +151,15 @@ test('the change version is read from the public events endpoint', async () => {
     return { config, data: { version: '7:7:0:0|1:x|0:0' }, status: 200, statusText: 'OK', headers: {} };
   };
   assert.equal(await getEventsVersion(), '7:7:0:0|1:x|0:0');
+});
+
+test('reporting a comment posts to its flag endpoint', async () => {
+  useSessionStore.getState().continueAsGuest();
+  api.defaults.adapter = async (config) => {
+    assert.equal(config.method, 'post');
+    assert.equal(config.url, '/events/1/comments/7/flag');
+    assert.deepEqual(JSON.parse(config.data), { reason: '' });
+    return { config, data: '', status: 204, statusText: 'No Content', headers: {} };
+  };
+  await flagComment(1, 7);
 });

@@ -26,6 +26,12 @@ export function EventPanel({ event, onClose }: Props) {
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
   const list = useRef<FlatList<EventComment>>(null);
+  // A parent missing from the list was reported and is hidden until the council reviews it
+  const replyLabel = (parentId?: number | null) => {
+    if (!parentId) return undefined;
+    const parent = comments.find((comment) => comment.id === parentId);
+    return parent ? parent.user_email ?? 'Anonymous' : 'a comment under review';
+  };
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -117,7 +123,11 @@ export function EventPanel({ event, onClose }: Props) {
               <View style={[styles.commentRow, item.is_mine && styles.ownCommentRow]}>
                 <View style={styles.avatar}><UserRound size={17} color="#525252" /></View>
                 <CommentCard comment={item} onReply={(comment) => { setReplyTo(comment); input.current?.focus(); }}
-                  replyTo={item.parent_id ? comments.find((comment) => comment.id === item.parent_id)?.user_email ?? 'Anonymous' : undefined} onUpdated={(updated) => {
+                  replyTo={replyLabel(item.parent_id)} onFlagged={(id) => {
+                    if (!mounted.current) return;
+                    setComments((current) => current.filter((comment) => comment.id !== id));
+                    setReplyTo((current) => current?.id === id ? null : current);
+                  }} onUpdated={(updated) => {
                   if (mounted.current) setComments((current) => current.map((comment) => comment.id === updated.id ? updated : comment));
                 }} onDeleted={(id) => { if (mounted.current) setComments((current) => current.filter((comment) => comment.id !== id).map((comment) => comment.parent_id === id ? { ...comment, parent_id: null } : comment)); }} />
               </View>

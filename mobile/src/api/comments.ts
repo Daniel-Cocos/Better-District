@@ -11,6 +11,8 @@ export type EventComment = {
   dislikes: number;
   my_vote: Vote;
   is_mine: boolean;
+  /** Reported as inappropriate: hidden from everyone else until the council reviews it */
+  under_review?: boolean;
 };
 
 export type CommentHistory = EventComment & { event_title: string };
@@ -37,6 +39,11 @@ export async function listComments(eventId: number, signal?: AbortSignal) {
 export async function voteComment(eventId: number, commentId: number, vote: Vote) {
   const { data } = await api.put<EventComment>(`/events/${eventId}/comments/${commentId}/vote`, { vote });
   return data;
+}
+
+/** Report a comment as inappropriate; the app hides it until the council reviews it. */
+export async function flagComment(eventId: number, commentId: number, reason = '') {
+  await api.post(`/events/${eventId}/comments/${commentId}/flag`, { reason });
 }
 
 export async function postComment(eventId: number, body: string, parentId?: number) {
