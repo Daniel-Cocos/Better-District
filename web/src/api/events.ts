@@ -23,6 +23,8 @@ export interface EventInput {
 }
 
 export interface EventComment {
+  parent_id: number | null
+  is_mine: boolean
   id: number
   event_id: number
   body: string
@@ -54,7 +56,7 @@ export async function deleteEvent(id: number): Promise<void> {
 
 /** The same public comment list the app shows. */
 export async function fetchComments(eventId: number, signal?: AbortSignal): Promise<EventComment[]> {
-  const { data } = await api.get<EventComment[]>(`/events/${eventId}/comments`, { signal })
+  const { data } = await api.get<EventComment[]>(`/admin/events/${eventId}/comments`, { signal })
   return data
 }
 
@@ -120,4 +122,10 @@ export function subscribeToChanges(onChange: (version: string) => void, onStatus
     controller?.abort()
     clearTimeout(timer)
   }
+}
+
+
+export async function postComment(eventId: number, body: string, parentId?: number): Promise<EventComment> {
+  const { data } = await api.post<EventComment>(`/admin/events/${eventId}/comments`, { body: body.trim(), parent_id: parentId })
+  return data
 }

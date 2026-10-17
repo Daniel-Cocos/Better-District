@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -13,10 +14,12 @@ interface CommentItemProps {
   onDelete: () => void
   /** Shown above the author, e.g. the event the comment belongs to */
   context?: string
+  replyTo?: string
+  onReply?: () => void
 }
 
 /** One comment as the app shows it (author, text, votes), with a moderator's delete button. */
-export default function CommentItem({ comment, onDelete, context }: CommentItemProps) {
+export default function CommentItem({ comment, onDelete, context, replyTo, onReply }: CommentItemProps) {
   return (
     <Stack direction="row" spacing={1} sx={{ alignItems: 'flex-start' }}>
       <Box
@@ -49,6 +52,7 @@ export default function CommentItem({ comment, onDelete, context }: CommentItemP
             {context}
           </Typography>
         )}
+        {replyTo && <Typography variant="caption" color="text.secondary" component="p">Replying to {replyTo}</Typography>}
         <Typography variant="caption" color="text.secondary" component="p" sx={{ fontWeight: 600 }}>
           {comment.user_email ?? 'Anonymous'}
         </Typography>
@@ -57,6 +61,7 @@ export default function CommentItem({ comment, onDelete, context }: CommentItemP
         </Typography>
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', mt: 0.5 }}>
           <VoteCounts likes={comment.likes} dislikes={comment.dislikes} />
+          {onReply && <Button size="small" onClick={onReply}>Reply</Button>}
           <Tooltip title="Delete comment">
             <IconButton size="small" aria-label="Delete comment" onClick={onDelete} sx={{ mr: -0.75 }}>
               <DeleteOutline sx={{ fontSize: 18 }} />

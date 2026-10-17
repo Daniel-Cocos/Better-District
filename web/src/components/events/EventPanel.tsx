@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import TextField from '@mui/material/TextField'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -12,7 +13,7 @@ import ScheduleOutlined from '@mui/icons-material/ScheduleOutlined'
 import EditOutlined from '@mui/icons-material/EditOutlined'
 import DeleteOutline from '@mui/icons-material/DeleteOutlineRounded'
 import { errorMessage } from '../../api/client'
-import { fetchComments, type AdminEvent, type EventComment } from '../../api/events'
+import { fetchComments, postComment, type AdminEvent, type EventComment } from '../../api/events'
 import { eventDeadlineLabel } from '../../utils/eventDeadline'
 import VoteCounts from './VoteCounts'
 import CommentItem from './CommentItem'
@@ -31,6 +32,11 @@ interface EventPanelProps {
  */
 export default function EventPanel({ event, onClose, onEdit, onDelete, onDeleteComment }: EventPanelProps) {
   const [comments, setComments] = useState<EventComment[] | null>(null)
+  const [replyTo, setReplyTo] = useState<EventComment | null>(null)
+  const [draft, setDraft] = useState('')
+  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState<string | null>(null)
+  const input = useRef<HTMLTextAreaElement>(null)
   const [error, setError] = useState<string | null>(null)
 
   // Refetch when the live count moves, so residents' comments appear (and removed ones go)
@@ -46,6 +52,20 @@ export default function EventPanel({ event, onClose, onEdit, onDelete, onDeleteC
       })
     return () => ctrl.abort()
   }, [event.id, event.comments])
+
+  async function send(e: FormEvent) {
+    e.preventDefault()
+    if (sending || !draft.trim()) return
+    setSending(true)
+    setSendError(null)
+    try {
+      const comment = await postComment(event.id, draft, replyTo?.id)
+      setComments((current) => [...(current ?? []).filter((item) => item.id !== comment.id), comment])
+      setDraft('')
+      setReplyTo(null)
+    } catch (err) { setSendError(errorMessage(err, 'Couldn’t post your reply. Your draft is still here.')) }
+    finally { setSending(false) }
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: 0, height: '100%' }}>
@@ -103,11 +123,26 @@ export default function EventPanel({ event, onClose, onEdit, onDelete, onDeleteC
         <Stack component="ol" spacing={2} sx={{ listStyle: 'none', m: 0, p: 0 }}>
           {comments?.map((c) => (
             <li key={c.id}>
-              <CommentItem comment={c} onDelete={() => onDeleteComment(c)} />
+              <CommentItem comment={c} onDelete={() => onDeleteComment(c)}
+                replyTo={c.parent_id ? comments.find((parent) => parent.id === c.parent_id)?.user_email ?? 'Anonymous' : undefined}
+                onReply={() => { setReplyTo(c); input.current?.focus() }} />
             </li>
           ))}
         </Stack>
       </Box>
+      <Stack component="form" onSubmit={send} spacing={1} sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+        {replyTo && <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant="caption">Replying to {replyTo.user_email ?? 'Anonymous'}</Typography>
+          <Button size="small" disabled={sending} onClick={() => setReplyTo(null)}>Cancel reply</Button>
+        </Stack>}
+        {sendError && <Alert severity="error">{sendError}</Alert>}
+        <TextField inputRef={input} label={replyTo ? 'Write a reply' : 'Add a comment'} multiline minRows={2} maxRows={5}
+          value={draft} onChange={(e) => setDraft(e.target.value)} disabled={sending}
+          slotProps={{ htmlInput: { maxLength: 5000 } }} />
+        <Button type="submit" variant="contained" disabled={sending || !draft.trim() || !comments || Boolean(error)}>
+          {sending ? 'Sending…' : replyTo ? 'Send reply' : 'Post comment'}
+        </Button>
+      </Stack>
     </Box>
   )
 }

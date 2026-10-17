@@ -1,3 +1,5 @@
+import Badge from '@mui/material/Badge'
+import { useNotifications } from '../notifications/NotificationsContext'
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import Box from '@mui/material/Box'
@@ -33,6 +35,8 @@ const initials = (name: string) =>
     .toUpperCase()
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+  const { items } = useNotifications()
+  const unread = items.filter((item) => !item.is_read).length
   const navButton = (item: (typeof navItems)[number]) => (
     <ListItemButton
       key={item.to}
@@ -54,7 +58,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         },
       })}
     >
-      <ListItemIcon>{item.icon}</ListItemIcon>
+      <ListItemIcon><Badge badgeContent={item.to === '/notifications' ? unread : 0} color="primary">{item.icon}</Badge></ListItemIcon>
       <ListItemText primary={item.label} slotProps={{ primary: { variant: 'body2', noWrap: true } }} />
     </ListItemButton>
   )

@@ -7,6 +7,8 @@ import AdminLogin from './pages/AdminLogin'
 import Overview from './pages/Overview'
 import MapPage from './pages/MapPage'
 import Feed from './pages/Feed'
+import Notifications from './pages/Notifications'
+import { NotificationsProvider } from './notifications/NotificationsContext'
 import AppShell from './components/AppShell'
 
 function FullPageSpinner() {
@@ -45,13 +47,14 @@ const router = createBrowserRouter([
   {
     element: (
       <RequireAuth>
-        <AppShell />
+        <NotificationsProvider><AppShell /></NotificationsProvider>
       </RequireAuth>
     ),
     children: [
       { index: true, element: <Overview /> },
       { path: 'map', element: <MapPage /> },
       { path: 'feed', element: <Feed /> },
+      { path: 'notifications', element: <Notifications /> },
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },
