@@ -1,0 +1,281 @@
+comment_id,dataset_id,consultation_group,comment_text,productive_true,label_quality,split,productive,score,latency_ms,input_tokens,output_tokens,error,model,correct
+s77446_carparks_p101_row3,s77446_carparks,carparks,Bollocks,False,ai_reference,test,True,1.0,0.0063019979279488325,,,,always_positive,False
+s77446_carparks_p104_row11,s77446_carparks,carparks,Labour kill business,True,ai_reference,test,True,1.0,0.0029049988370388746,,,,always_positive,True
+s77446_carparks_p105_row3,s77446_carparks,carparks,Will discourage spending at local shops,True,ai_reference,test,True,1.0,0.0013130011211615056,,,,always_positive,True
+s77446_carparks_p106_row2,s77446_carparks,carparks,Will negatively affect businesses,True,ai_reference,test,True,1.0,0.0007210001058410853,,,,always_positive,True
+s77446_carparks_p109_row7,s77446_carparks,carparks,I would support if you provide more regular bus services on Hill Lane and Westwood Road!,True,ai_reference,test,True,1.0,0.0008009992598090321,,,,always_positive,True
+s77446_carparks_p113_row7,s77446_carparks,carparks,It is an unfair for their customers!,False,ai_reference,test,True,1.0,0.0007710004865657538,,,,always_positive,False
+s77446_carparks_p116_row7,s77446_carparks,carparks,I believe the motorists are being used as a cash cow to support other questionable services.,False,ai_reference,test,True,1.0,0.0006420013960450888,,,,always_positive,False
+s77446_carparks_p118_row6,s77446_carparks,carparks,It will destroy local business,True,ai_reference,test,True,1.0,0.0006419977580662817,,,,always_positive,True
+s77446_carparks_p11_row7,s77446_carparks,carparks,Local shops will suffer,True,ai_reference,test,True,1.0,0.0005710026016458869,,,,always_positive,True
+s77446_carparks_p120_row2,s77446_carparks,carparks,"Shoppers will go elsewhere, ruining local business",True,ai_reference,test,True,1.0,0.0005709989636670798,,,,always_positive,True
+s77446_carparks_p126_row3,s77446_carparks,carparks,It is not essential to proceed with those arrangements at this time.,False,ai_reference,test,True,1.0,0.0005709989636670798,,,,always_positive,False
+s77446_carparks_p127_row11,s77446_carparks,carparks,We are already paying more than enough in council tax and road tax.,True,ai_reference,test,True,1.0,0.0006609989213757217,,,,always_positive,True
+s77446_carparks_p131_row14,s77446_carparks,carparks,Killing businesses,True,ai_reference,test,True,1.0,0.0005809997674077749,,,,always_positive,True
+s77446_carparks_p134_row10,s77446_carparks,carparks,We've paid Council tax and road tax already.,True,ai_reference,test,True,1.0,0.0006810005288571119,,,,always_positive,True
+s77446_carparks_p141_row10,s77446_carparks,carparks,Will kill the small business trading evenings,True,ai_reference,test,True,1.0,0.0006809968908783048,,,,always_positive,True
+s77446_carparks_p14_row6,s77446_carparks,carparks,"Why pick on the motorist,",False,ai_reference,test,True,1.0,0.0006510017556138337,,,,always_positive,False
+s77446_carparks_p151_row5,s77446_carparks,carparks,Bitterne needs free parking to get people to shop there,True,ai_reference,test,True,1.0,0.0006709997251164168,,,,always_positive,True
+s77446_carparks_p156_row12,s77446_carparks,carparks,Because the facilities mentioned do not equate to long term parking,True,ai_reference,test,True,1.0,0.00059100057114847,,,,always_positive,True
+s77446_carparks_p156_row8,s77446_carparks,carparks,Crazy,False,ai_reference,test,True,1.0,0.0006819973350502551,,,,always_positive,False
+s77446_carparks_p161_row2,s77446_carparks,carparks,Purely a reason to raise money for the city council. Not to get people on public transport.,False,ai_reference,test,True,1.0,0.000590996933169663,,,,always_positive,False
+s77446_carparks_p16_row3,s77446_carparks,carparks,You'll drive people away and businesses will close.,True,ai_reference,test,True,1.0,0.0005809997674077749,,,,always_positive,True
+s77446_carparks_p174_row8,s77446_carparks,carparks,Parking should be free,False,ai_reference,test,True,1.0,0.0006209993443917483,,,,always_positive,False
+s77446_carparks_p17_row5,s77446_carparks,carparks,Money grabbing a holes,False,ai_reference,test,True,1.0,0.0006010013748891652,,,,always_positive,False
+s77446_carparks_p20_row2,s77446_carparks,carparks,You will kill the local community which is already bad,False,ai_reference,test,True,1.0,0.000590996933169663,,,,always_positive,False
+s77446_carparks_p22_row2,s77446_carparks,carparks,"Ridiculous, Bitterne will lose loads of customers, or people will just clog up local roads",True,ai_reference,test,True,1.0,0.0006410009518731385,,,,always_positive,True
+s77446_carparks_p33_row7,s77446_carparks,carparks,Small business will feel an impact of this.,False,ai_reference,test,True,1.0,0.00059100057114847,,,,always_positive,False
+s77446_carparks_p50_row10,s77446_carparks,carparks,car parking charges can be used to maintain car parks and be re-invested into public transport and repairing roads,True,ai_reference,test,True,1.0,0.0006709997251164168,,,,always_positive,True
+s77446_carparks_p56_row8,s77446_carparks,carparks,As it should be a free car park,False,ai_reference,test,True,1.0,0.0006009977369103581,,,,always_positive,False
+s77446_carparks_p5_row14,s77446_carparks,carparks,This will only hurt the community and serves only to funnel money to a lackluster council.,False,ai_reference,test,True,1.0,0.000590996933169663,,,,always_positive,False
+s77446_carparks_p66_row2,s77446_carparks,carparks,You'll be charging us per breath soon! You will put people off using local shops too.,True,ai_reference,test,True,1.0,0.0005809997674077749,,,,always_positive,True
+s77446_carparks_p6_row3,s77446_carparks,carparks,Having to pay to park everywhere is a disgusting money grab by Southampton City Council. You will put people off visiting Bitterne and Woolston so the local economy will suffer. Asking people to pay to go to the doctors at Bitterne Health Centre is also disgusting. I have a disability and have no choice but to drive and park in these places so on top of the horrific amount of Council Tax you take you also want us all to pay to park. You should be ashamed of yourselves.,True,ai_reference,test,True,1.0,0.00059100057114847,,,,always_positive,True
+s77446_carparks_p70_row13,s77446_carparks,carparks,Kills off local shopping,True,ai_reference,test,True,1.0,0.0006209993443917483,,,,always_positive,True
+s77446_carparks_p71_row8,s77446_carparks,carparks,"You as a Council are doing all you can to get cars of the road, you have no thought of the public who have to use the roads and car parks for all sorts of reasons You are a typical Labour Council and government",False,ai_reference,test,True,1.0,0.0006919981387909502,,,,always_positive,False
+s77446_carparks_p72_row2,s77446_carparks,carparks,We don't get anything free in this council and to take this is a nail in the coffin,False,ai_reference,test,True,1.0,0.0007210001058410853,,,,always_positive,False
+s77446_carparks_p75_row4,s77446_carparks,carparks,Unreasonable and desperate. Where else can we eek out more avenues of revenue? This reeks of desperation.,False,ai_reference,test,True,1.0,0.0018639984773471951,,,,always_positive,False
+s77446_carparks_p78_row7,s77446_carparks,carparks,Measure will significantly impact local businesses,False,ai_reference,test,True,1.0,0.0014930010365787894,,,,always_positive,False
+s77446_carparks_p79_row9,s77446_carparks,carparks,I object to parking charges,False,ai_reference,test,True,1.0,0.00059100057114847,,,,always_positive,False
+s77446_carparks_p7_row5,s77446_carparks,carparks,Absolutely disgusted to see this! Will be detrimental to local businesses and so unnecessary to try and implement these changes!,True,ai_reference,test,True,1.0,0.0005809997674077749,,,,always_positive,True
+s77446_carparks_p85_row4,s77446_carparks,carparks,It's just yet another way to get at drivers,False,ai_reference,test,True,1.0,0.0006010013748891652,,,,always_positive,False
+s77446_carparks_p94_row11,s77446_carparks,carparks,Absolutely terrible idea.. object object object this silliness. Very poor on the councillor who proposed this.,False,ai_reference,test,True,1.0,0.00059100057114847,,,,always_positive,False
+s77446_carparks_p101_row3,s77446_carparks,carparks,Bollocks,False,ai_reference,test,False,,0.02720100019359961,,,,heuristic,True
+s77446_carparks_p104_row11,s77446_carparks,carparks,Labour kill business,True,ai_reference,test,False,,0.008617000275989994,,,,heuristic,False
+s77446_carparks_p105_row3,s77446_carparks,carparks,Will discourage spending at local shops,True,ai_reference,test,False,,0.006923000910319388,,,,heuristic,False
+s77446_carparks_p106_row2,s77446_carparks,carparks,Will negatively affect businesses,True,ai_reference,test,False,,0.005300000339047983,,,,heuristic,False
+s77446_carparks_p109_row7,s77446_carparks,carparks,I would support if you provide more regular bus services on Hill Lane and Westwood Road!,True,ai_reference,test,True,,0.009096998837776482,,,,heuristic,True
+s77446_carparks_p113_row7,s77446_carparks,carparks,It is an unfair for their customers!,False,ai_reference,test,False,,0.005870999302715063,,,,heuristic,True
+s77446_carparks_p116_row7,s77446_carparks,carparks,I believe the motorists are being used as a cash cow to support other questionable services.,False,ai_reference,test,False,,0.018714999896474183,,,,heuristic,True
+s77446_carparks_p118_row6,s77446_carparks,carparks,It will destroy local business,True,ai_reference,test,False,,0.005269997927825898,,,,heuristic,False
+s77446_carparks_p11_row7,s77446_carparks,carparks,Local shops will suffer,True,ai_reference,test,False,,0.00478899892186746,,,,heuristic,False
+s77446_carparks_p120_row2,s77446_carparks,carparks,"Shoppers will go elsewhere, ruining local business",True,ai_reference,test,False,,0.005580997822107747,,,,heuristic,False
+s77446_carparks_p126_row3,s77446_carparks,carparks,It is not essential to proceed with those arrangements at this time.,False,ai_reference,test,False,,0.006551999831572175,,,,heuristic,True
+s77446_carparks_p127_row11,s77446_carparks,carparks,We are already paying more than enough in council tax and road tax.,True,ai_reference,test,False,,0.006242000381462276,,,,heuristic,False
+s77446_carparks_p131_row14,s77446_carparks,carparks,Killing businesses,True,ai_reference,test,False,,0.011221000022487715,,,,heuristic,False
+s77446_carparks_p134_row10,s77446_carparks,carparks,We've paid Council tax and road tax already.,True,ai_reference,test,False,,0.005370002327254042,,,,heuristic,False
+s77446_carparks_p141_row10,s77446_carparks,carparks,Will kill the small business trading evenings,True,ai_reference,test,False,,0.005219997547101229,,,,heuristic,False
+s77446_carparks_p14_row6,s77446_carparks,carparks,"Why pick on the motorist,",False,ai_reference,test,False,,0.004769000952364877,,,,heuristic,True
+s77446_carparks_p151_row5,s77446_carparks,carparks,Bitterne needs free parking to get people to shop there,True,ai_reference,test,True,,0.006051999662304297,,,,heuristic,True
+s77446_carparks_p156_row12,s77446_carparks,carparks,Because the facilities mentioned do not equate to long term parking,True,ai_reference,test,True,,0.006823000148870051,,,,heuristic,True
+s77446_carparks_p156_row8,s77446_carparks,carparks,Crazy,False,ai_reference,test,False,,0.0036769997677765787,,,,heuristic,True
+s77446_carparks_p161_row2,s77446_carparks,carparks,Purely a reason to raise money for the city council. Not to get people on public transport.,False,ai_reference,test,False,,0.007324000762309879,,,,heuristic,True
+s77446_carparks_p16_row3,s77446_carparks,carparks,You'll drive people away and businesses will close.,True,ai_reference,test,False,,0.005720998160541058,,,,heuristic,False
+s77446_carparks_p174_row8,s77446_carparks,carparks,Parking should be free,False,ai_reference,test,False,,0.004599001840688288,,,,heuristic,True
+s77446_carparks_p17_row5,s77446_carparks,carparks,Money grabbing a holes,False,ai_reference,test,False,,0.004358000296633691,,,,heuristic,True
+s77446_carparks_p20_row2,s77446_carparks,carparks,You will kill the local community which is already bad,False,ai_reference,test,False,,0.005559999408433214,,,,heuristic,True
+s77446_carparks_p22_row2,s77446_carparks,carparks,"Ridiculous, Bitterne will lose loads of customers, or people will just clog up local roads",True,ai_reference,test,False,,0.007003000064287335,,,,heuristic,False
+s77446_carparks_p33_row7,s77446_carparks,carparks,Small business will feel an impact of this.,False,ai_reference,test,False,,0.0052390023483894765,,,,heuristic,True
+s77446_carparks_p50_row10,s77446_carparks,carparks,car parking charges can be used to maintain car parks and be re-invested into public transport and repairing roads,True,ai_reference,test,False,,0.007574999472126365,,,,heuristic,False
+s77446_carparks_p56_row8,s77446_carparks,carparks,As it should be a free car park,False,ai_reference,test,True,,0.005049001629231498,,,,heuristic,False
+s77446_carparks_p5_row14,s77446_carparks,carparks,This will only hurt the community and serves only to funnel money to a lackluster council.,False,ai_reference,test,False,,0.00713299959897995,,,,heuristic,True
+s77446_carparks_p66_row2,s77446_carparks,carparks,You'll be charging us per breath soon! You will put people off using local shops too.,True,ai_reference,test,False,,0.00654199902783148,,,,heuristic,False
+s77446_carparks_p6_row3,s77446_carparks,carparks,Having to pay to park everywhere is a disgusting money grab by Southampton City Council. You will put people off visiting Bitterne and Woolston so the local economy will suffer. Asking people to pay to go to the doctors at Bitterne Health Centre is also disgusting. I have a disability and have no choice but to drive and park in these places so on top of the horrific amount of Council Tax you take you also want us all to pay to park. You should be ashamed of yourselves.,True,ai_reference,test,True,,0.02220200258307159,,,,heuristic,True
+s77446_carparks_p70_row13,s77446_carparks,carparks,Kills off local shopping,True,ai_reference,test,False,,0.004628996975952759,,,,heuristic,False
+s77446_carparks_p71_row8,s77446_carparks,carparks,"You as a Council are doing all you can to get cars of the road, you have no thought of the public who have to use the roads and car parks for all sorts of reasons You are a typical Labour Council and government",False,ai_reference,test,False,,0.010689996997825801,,,,heuristic,True
+s77446_carparks_p72_row2,s77446_carparks,carparks,We don't get anything free in this council and to take this is a nail in the coffin,False,ai_reference,test,False,,0.007044000085443258,,,,heuristic,True
+s77446_carparks_p75_row4,s77446_carparks,carparks,Unreasonable and desperate. Where else can we eek out more avenues of revenue? This reeks of desperation.,False,ai_reference,test,False,,0.007384001946775243,,,,heuristic,True
+s77446_carparks_p78_row7,s77446_carparks,carparks,Measure will significantly impact local businesses,False,ai_reference,test,False,,0.0054299998737405986,,,,heuristic,True
+s77446_carparks_p79_row9,s77446_carparks,carparks,I object to parking charges,False,ai_reference,test,False,,0.004458001058083028,,,,heuristic,True
+s77446_carparks_p7_row5,s77446_carparks,carparks,Absolutely disgusted to see this! Will be detrimental to local businesses and so unnecessary to try and implement these changes!,True,ai_reference,test,False,,0.008475999493384734,,,,heuristic,False
+s77446_carparks_p85_row4,s77446_carparks,carparks,It's just yet another way to get at drivers,False,ai_reference,test,False,,0.005070000042906031,,,,heuristic,True
+s77446_carparks_p94_row11,s77446_carparks,carparks,Absolutely terrible idea.. object object object this silliness. Very poor on the councillor who proposed this.,False,ai_reference,test,False,,0.007393999112537131,,,,heuristic,True
+s77446_carparks_p101_row3,s77446_carparks,carparks,Bollocks,False,ai_reference,test,False,0.29510561480558584,1.0884740004257765,,,,lightgbm,True
+s77446_carparks_p104_row11,s77446_carparks,carparks,Labour kill business,True,ai_reference,test,False,0.29510561480558584,0.7536039993283339,,,,lightgbm,False
+s77446_carparks_p105_row3,s77446_carparks,carparks,Will discourage spending at local shops,True,ai_reference,test,True,0.8977322447903049,0.6319859967334196,,,,lightgbm,True
+s77446_carparks_p106_row2,s77446_carparks,carparks,Will negatively affect businesses,True,ai_reference,test,False,0.29958552537886857,0.5771929972979706,,,,lightgbm,False
+s77446_carparks_p109_row7,s77446_carparks,carparks,I would support if you provide more regular bus services on Hill Lane and Westwood Road!,True,ai_reference,test,True,0.8361406361319152,0.550213000678923,,,,lightgbm,True
+s77446_carparks_p113_row7,s77446_carparks,carparks,It is an unfair for their customers!,False,ai_reference,test,True,0.8785445269384167,0.5416570020315703,,,,lightgbm,False
+s77446_carparks_p116_row7,s77446_carparks,carparks,I believe the motorists are being used as a cash cow to support other questionable services.,False,ai_reference,test,True,0.8361406361319152,0.5267090018605813,,,,lightgbm,False
+s77446_carparks_p118_row6,s77446_carparks,carparks,It will destroy local business,True,ai_reference,test,True,0.5528195394206191,0.515096999151865,,,,lightgbm,True
+s77446_carparks_p11_row7,s77446_carparks,carparks,Local shops will suffer,True,ai_reference,test,False,0.29958552537886857,0.49234400285058655,,,,lightgbm,False
+s77446_carparks_p120_row2,s77446_carparks,carparks,"Shoppers will go elsewhere, ruining local business",True,ai_reference,test,True,0.8785445269384167,0.48462999984622,,,,lightgbm,True
+s77446_carparks_p126_row3,s77446_carparks,carparks,It is not essential to proceed with those arrangements at this time.,False,ai_reference,test,True,0.7919533809368261,0.47882799844956025,,,,lightgbm,False
+s77446_carparks_p127_row11,s77446_carparks,carparks,We are already paying more than enough in council tax and road tax.,True,ai_reference,test,True,0.7685996511812223,0.4723070014733821,,,,lightgbm,True
+s77446_carparks_p131_row14,s77446_carparks,carparks,Killing businesses,True,ai_reference,test,False,0.29510561480558584,0.46483299956889823,,,,lightgbm,False
+s77446_carparks_p134_row10,s77446_carparks,carparks,We've paid Council tax and road tax already.,True,ai_reference,test,True,0.9398461388802734,0.48227599836536683,,,,lightgbm,True
+s77446_carparks_p141_row10,s77446_carparks,carparks,Will kill the small business trading evenings,True,ai_reference,test,True,0.8785445269384167,0.46253799882833846,,,,lightgbm,True
+s77446_carparks_p14_row6,s77446_carparks,carparks,"Why pick on the motorist,",False,ai_reference,test,True,0.5528195394206191,0.46497299990733154,,,,lightgbm,False
+s77446_carparks_p151_row5,s77446_carparks,carparks,Bitterne needs free parking to get people to shop there,True,ai_reference,test,True,0.8738017943618951,0.4621170010068454,,,,lightgbm,True
+s77446_carparks_p156_row12,s77446_carparks,carparks,Because the facilities mentioned do not equate to long term parking,True,ai_reference,test,True,0.9016314509190153,0.46290899990708567,,,,lightgbm,True
+s77446_carparks_p156_row8,s77446_carparks,carparks,Crazy,False,ai_reference,test,False,0.29510561480558584,0.4529799989541061,,,,lightgbm,True
+s77446_carparks_p161_row2,s77446_carparks,carparks,Purely a reason to raise money for the city council. Not to get people on public transport.,False,ai_reference,test,True,0.8361406361319152,0.4564869996102061,,,,lightgbm,False
+s77446_carparks_p16_row3,s77446_carparks,carparks,You'll drive people away and businesses will close.,True,ai_reference,test,True,0.9398461388802734,0.4819450005015824,,,,lightgbm,True
+s77446_carparks_p174_row8,s77446_carparks,carparks,Parking should be free,False,ai_reference,test,False,0.29958552537886857,0.45806999696651474,,,,lightgbm,True
+s77446_carparks_p17_row5,s77446_carparks,carparks,Money grabbing a holes,False,ai_reference,test,False,0.29958552537886857,0.4669070003728848,,,,lightgbm,True
+s77446_carparks_p20_row2,s77446_carparks,carparks,You will kill the local community which is already bad,False,ai_reference,test,True,0.8553732908639838,0.45874100032960996,,,,lightgbm,False
+s77446_carparks_p22_row2,s77446_carparks,carparks,"Ridiculous, Bitterne will lose loads of customers, or people will just clog up local roads",True,ai_reference,test,True,0.7829540172432518,0.48443999912706204,,,,lightgbm,True
+s77446_carparks_p33_row7,s77446_carparks,carparks,Small business will feel an impact of this.,False,ai_reference,test,True,0.9398461388802734,0.47979000009945594,,,,lightgbm,False
+s77446_carparks_p50_row10,s77446_carparks,carparks,car parking charges can be used to maintain car parks and be re-invested into public transport and repairing roads,True,ai_reference,test,True,0.7416223448735686,0.5305859995132778,,,,lightgbm,True
+s77446_carparks_p56_row8,s77446_carparks,carparks,As it should be a free car park,False,ai_reference,test,True,0.9398461388802734,0.5145659997651819,,,,lightgbm,False
+s77446_carparks_p5_row14,s77446_carparks,carparks,This will only hurt the community and serves only to funnel money to a lackluster council.,False,ai_reference,test,True,0.8361406361319152,0.5662319999828469,,,,lightgbm,False
+s77446_carparks_p66_row2,s77446_carparks,carparks,You'll be charging us per breath soon! You will put people off using local shops too.,True,ai_reference,test,True,0.8361406361319152,0.5661530012730509,,,,lightgbm,True
+s77446_carparks_p6_row3,s77446_carparks,carparks,Having to pay to park everywhere is a disgusting money grab by Southampton City Council. You will put people off visiting Bitterne and Woolston so the local economy will suffer. Asking people to pay to go to the doctors at Bitterne Health Centre is also disgusting. I have a disability and have no choice but to drive and park in these places so on top of the horrific amount of Council Tax you take you also want us all to pay to park. You should be ashamed of yourselves.,True,ai_reference,test,True,0.9961460806429818,0.6081819992687088,,,,lightgbm,True
+s77446_carparks_p70_row13,s77446_carparks,carparks,Kills off local shopping,True,ai_reference,test,False,0.29958552537886857,0.5825429980177432,,,,lightgbm,False
+s77446_carparks_p71_row8,s77446_carparks,carparks,"You as a Council are doing all you can to get cars of the road, you have no thought of the public who have to use the roads and car parks for all sorts of reasons You are a typical Labour Council and government",False,ai_reference,test,True,0.9918273280602004,0.5630369996652007,,,,lightgbm,False
+s77446_carparks_p72_row2,s77446_carparks,carparks,We don't get anything free in this council and to take this is a nail in the coffin,False,ai_reference,test,True,0.7416223448735686,0.5522870014829095,,,,lightgbm,False
+s77446_carparks_p75_row4,s77446_carparks,carparks,Unreasonable and desperate. Where else can we eek out more avenues of revenue? This reeks of desperation.,False,ai_reference,test,True,0.8361406361319152,0.5406849995779339,,,,lightgbm,False
+s77446_carparks_p78_row7,s77446_carparks,carparks,Measure will significantly impact local businesses,False,ai_reference,test,True,0.8977322447903049,0.5287719977786765,,,,lightgbm,False
+s77446_carparks_p79_row9,s77446_carparks,carparks,I object to parking charges,False,ai_reference,test,True,0.5528195394206191,0.5050180006946903,,,,lightgbm,False
+s77446_carparks_p7_row5,s77446_carparks,carparks,Absolutely disgusted to see this! Will be detrimental to local businesses and so unnecessary to try and implement these changes!,True,ai_reference,test,True,0.9273932983423232,0.5115300009492785,,,,lightgbm,True
+s77446_carparks_p85_row4,s77446_carparks,carparks,It's just yet another way to get at drivers,False,ai_reference,test,True,0.9411974530628243,0.49250399752054363,,,,lightgbm,False
+s77446_carparks_p94_row11,s77446_carparks,carparks,Absolutely terrible idea.. object object object this silliness. Very poor on the councillor who proposed this.,False,ai_reference,test,True,0.8361406361319152,0.4975740012014285,,,,lightgbm,False
+s77446_carparks_p101_row3,s77446_carparks,carparks,Bollocks,False,ai_reference,test,True,0.6379424929618835,77.08259500213899,,,,deberta,False
+s77446_carparks_p104_row11,s77446_carparks,carparks,Labour kill business,True,ai_reference,test,True,0.6320578455924988,80.22674200037727,,,,deberta,True
+s77446_carparks_p105_row3,s77446_carparks,carparks,Will discourage spending at local shops,True,ai_reference,test,True,0.9301652908325195,79.7606780033675,,,,deberta,True
+s77446_carparks_p106_row2,s77446_carparks,carparks,Will negatively affect businesses,True,ai_reference,test,True,0.6591830849647522,80.91368099849205,,,,deberta,True
+s77446_carparks_p109_row7,s77446_carparks,carparks,I would support if you provide more regular bus services on Hill Lane and Westwood Road!,True,ai_reference,test,True,0.9877625703811646,87.77624299909803,,,,deberta,True
+s77446_carparks_p113_row7,s77446_carparks,carparks,It is an unfair for their customers!,False,ai_reference,test,True,0.6222659945487976,83.36056100233691,,,,deberta,False
+s77446_carparks_p116_row7,s77446_carparks,carparks,I believe the motorists are being used as a cash cow to support other questionable services.,False,ai_reference,test,True,0.7357375025749207,90.94479600025807,,,,deberta,False
+s77446_carparks_p118_row6,s77446_carparks,carparks,It will destroy local business,True,ai_reference,test,True,0.6526373028755188,79.61776999945869,,,,deberta,True
+s77446_carparks_p11_row7,s77446_carparks,carparks,Local shops will suffer,True,ai_reference,test,True,0.6712536811828613,81.39771899732295,,,,deberta,True
+s77446_carparks_p120_row2,s77446_carparks,carparks,"Shoppers will go elsewhere, ruining local business",True,ai_reference,test,True,0.8957522511482239,81.4228750023176,,,,deberta,True
+s77446_carparks_p126_row3,s77446_carparks,carparks,It is not essential to proceed with those arrangements at this time.,False,ai_reference,test,True,0.6728452444076538,87.08361300159595,,,,deberta,False
+s77446_carparks_p127_row11,s77446_carparks,carparks,We are already paying more than enough in council tax and road tax.,True,ai_reference,test,True,0.9860625863075256,93.29393200096092,,,,deberta,True
+s77446_carparks_p131_row14,s77446_carparks,carparks,Killing businesses,True,ai_reference,test,True,0.6576552391052246,77.96726399828913,,,,deberta,True
+s77446_carparks_p134_row10,s77446_carparks,carparks,We've paid Council tax and road tax already.,True,ai_reference,test,True,0.7193044424057007,90.33844899749965,,,,deberta,True
+s77446_carparks_p141_row10,s77446_carparks,carparks,Will kill the small business trading evenings,True,ai_reference,test,True,0.755579948425293,78.21866599988425,,,,deberta,True
+s77446_carparks_p14_row6,s77446_carparks,carparks,"Why pick on the motorist,",False,ai_reference,test,True,0.6411008238792419,74.87500299976091,,,,deberta,False
+s77446_carparks_p151_row5,s77446_carparks,carparks,Bitterne needs free parking to get people to shop there,True,ai_reference,test,True,0.889825165271759,85.43138499953784,,,,deberta,True
+s77446_carparks_p156_row12,s77446_carparks,carparks,Because the facilities mentioned do not equate to long term parking,True,ai_reference,test,True,0.7449241280555725,85.17802999995183,,,,deberta,True
+s77446_carparks_p156_row8,s77446_carparks,carparks,Crazy,False,ai_reference,test,True,0.6328346729278564,79.70825899974443,,,,deberta,False
+s77446_carparks_p161_row2,s77446_carparks,carparks,Purely a reason to raise money for the city council. Not to get people on public transport.,False,ai_reference,test,True,0.8568751215934753,92.6354059993173,,,,deberta,False
+s77446_carparks_p16_row3,s77446_carparks,carparks,You'll drive people away and businesses will close.,True,ai_reference,test,True,0.9877661466598511,92.43721500024549,,,,deberta,True
+s77446_carparks_p174_row8,s77446_carparks,carparks,Parking should be free,False,ai_reference,test,True,0.6434250473976135,81.47250899855862,,,,deberta,False
+s77446_carparks_p17_row5,s77446_carparks,carparks,Money grabbing a holes,False,ai_reference,test,True,0.6580073237419128,81.6561229985382,,,,deberta,False
+s77446_carparks_p20_row2,s77446_carparks,carparks,You will kill the local community which is already bad,False,ai_reference,test,True,0.6472682356834412,84.0464159991825,,,,deberta,False
+s77446_carparks_p22_row2,s77446_carparks,carparks,"Ridiculous, Bitterne will lose loads of customers, or people will just clog up local roads",True,ai_reference,test,True,0.9900540113449097,99.42219700315036,,,,deberta,True
+s77446_carparks_p33_row7,s77446_carparks,carparks,Small business will feel an impact of this.,False,ai_reference,test,True,0.6819496154785156,90.27994899952319,,,,deberta,False
+s77446_carparks_p50_row10,s77446_carparks,carparks,car parking charges can be used to maintain car parks and be re-invested into public transport and repairing roads,True,ai_reference,test,True,0.9949641227722168,103.08190100113279,,,,deberta,True
+s77446_carparks_p56_row8,s77446_carparks,carparks,As it should be a free car park,False,ai_reference,test,True,0.682195782661438,104.98666400235379,,,,deberta,False
+s77446_carparks_p5_row14,s77446_carparks,carparks,This will only hurt the community and serves only to funnel money to a lackluster council.,False,ai_reference,test,True,0.8202016949653625,97.97329899811302,,,,deberta,False
+s77446_carparks_p66_row2,s77446_carparks,carparks,You'll be charging us per breath soon! You will put people off using local shops too.,True,ai_reference,test,True,0.9292013049125671,98.49129000212997,,,,deberta,True
+s77446_carparks_p6_row3,s77446_carparks,carparks,Having to pay to park everywhere is a disgusting money grab by Southampton City Council. You will put people off visiting Bitterne and Woolston so the local economy will suffer. Asking people to pay to go to the doctors at Bitterne Health Centre is also disgusting. I have a disability and have no choice but to drive and park in these places so on top of the horrific amount of Council Tax you take you also want us all to pay to park. You should be ashamed of yourselves.,True,ai_reference,test,True,0.9965342283248901,146.00575199801824,,,,deberta,True
+s77446_carparks_p70_row13,s77446_carparks,carparks,Kills off local shopping,True,ai_reference,test,True,0.6915764808654785,83.08272899739677,,,,deberta,True
+s77446_carparks_p71_row8,s77446_carparks,carparks,"You as a Council are doing all you can to get cars of the road, you have no thought of the public who have to use the roads and car parks for all sorts of reasons You are a typical Labour Council and government",False,ai_reference,test,True,0.986932098865509,101.0290599988366,,,,deberta,False
+s77446_carparks_p72_row2,s77446_carparks,carparks,We don't get anything free in this council and to take this is a nail in the coffin,False,ai_reference,test,True,0.6451113820075989,98.22868700211984,,,,deberta,False
+s77446_carparks_p75_row4,s77446_carparks,carparks,Unreasonable and desperate. Where else can we eek out more avenues of revenue? This reeks of desperation.,False,ai_reference,test,True,0.7314417362213135,93.59383400078514,,,,deberta,False
+s77446_carparks_p78_row7,s77446_carparks,carparks,Measure will significantly impact local businesses,False,ai_reference,test,True,0.6860843300819397,78.0383460005396,,,,deberta,False
+s77446_carparks_p79_row9,s77446_carparks,carparks,I object to parking charges,False,ai_reference,test,True,0.6283273696899414,78.44787400244968,,,,deberta,False
+s77446_carparks_p7_row5,s77446_carparks,carparks,Absolutely disgusted to see this! Will be detrimental to local businesses and so unnecessary to try and implement these changes!,True,ai_reference,test,True,0.6733506917953491,88.52725999895483,,,,deberta,True
+s77446_carparks_p85_row4,s77446_carparks,carparks,It's just yet another way to get at drivers,False,ai_reference,test,True,0.6684009432792664,86.01656099926913,,,,deberta,False
+s77446_carparks_p94_row11,s77446_carparks,carparks,Absolutely terrible idea.. object object object this silliness. Very poor on the councillor who proposed this.,False,ai_reference,test,True,0.6413708925247192,97.70146799928625,,,,deberta,False
+s77446_carparks_p101_row3,s77446_carparks,carparks,Bollocks,False,ai_reference,test,False,,7554.7188429991365,214,45,,zero_shot,True
+s77446_carparks_p104_row11,s77446_carparks,carparks,Labour kill business,True,ai_reference,test,False,,2755.590394997853,214,55,,zero_shot,False
+s77446_carparks_p105_row3,s77446_carparks,carparks,Will discourage spending at local shops,True,ai_reference,test,True,,1958.0243959971995,217,39,,zero_shot,True
+s77446_carparks_p106_row2,s77446_carparks,carparks,Will negatively affect businesses,True,ai_reference,test,True,,1831.2774439982604,215,36,,zero_shot,True
+s77446_carparks_p109_row7,s77446_carparks,carparks,I would support if you provide more regular bus services on Hill Lane and Westwood Road!,True,ai_reference,test,True,,2444.3925939995097,229,46,,zero_shot,True
+s77446_carparks_p113_row7,s77446_carparks,carparks,It is an unfair for their customers!,False,ai_reference,test,False,,2507.604154998262,219,49,,zero_shot,True
+s77446_carparks_p116_row7,s77446_carparks,carparks,I believe the motorists are being used as a cash cow to support other questionable services.,False,ai_reference,test,False,,2281.224818998453,228,43,,zero_shot,True
+s77446_carparks_p118_row6,s77446_carparks,carparks,It will destroy local business,True,ai_reference,test,False,,2477.8521900007036,216,49,,zero_shot,False
+s77446_carparks_p11_row7,s77446_carparks,carparks,Local shops will suffer,True,ai_reference,test,False,,1845.2275380004721,215,37,,zero_shot,False
+s77446_carparks_p120_row2,s77446_carparks,carparks,"Shoppers will go elsewhere, ruining local business",True,ai_reference,test,False,,2825.3391799989913,220,56,,zero_shot,False
+s77446_carparks_p126_row3,s77446_carparks,carparks,It is not essential to proceed with those arrangements at this time.,False,ai_reference,test,False,,2683.9127279999957,224,51,,zero_shot,True
+s77446_carparks_p127_row11,s77446_carparks,carparks,We are already paying more than enough in council tax and road tax.,True,ai_reference,test,True,,2207.8418620003504,225,42,,zero_shot,True
+s77446_carparks_p131_row14,s77446_carparks,carparks,Killing businesses,True,ai_reference,test,False,,2479.010410999763,214,50,,zero_shot,False
+s77446_carparks_p134_row10,s77446_carparks,carparks,We've paid Council tax and road tax already.,True,ai_reference,test,True,,1768.9629529995727,221,34,,zero_shot,True
+s77446_carparks_p141_row10,s77446_carparks,carparks,Will kill the small business trading evenings,True,ai_reference,test,False,,2258.503078999638,218,44,,zero_shot,False
+s77446_carparks_p14_row6,s77446_carparks,carparks,"Why pick on the motorist,",False,ai_reference,test,False,,1959.1277110012015,218,39,,zero_shot,True
+s77446_carparks_p151_row5,s77446_carparks,carparks,Bitterne needs free parking to get people to shop there,True,ai_reference,test,True,,1860.0026879976213,223,35,,zero_shot,True
+s77446_carparks_p156_row12,s77446_carparks,carparks,Because the facilities mentioned do not equate to long term parking,True,ai_reference,test,True,,2238.6310000001686,223,43,,zero_shot,True
+s77446_carparks_p156_row8,s77446_carparks,carparks,Crazy,False,ai_reference,test,False,,2221.558963999996,213,44,,zero_shot,True
+s77446_carparks_p161_row2,s77446_carparks,carparks,Purely a reason to raise money for the city council. Not to get people on public transport.,False,ai_reference,test,False,,2138.2426239979395,231,39,,zero_shot,True
+s77446_carparks_p16_row3,s77446_carparks,carparks,You'll drive people away and businesses will close.,True,ai_reference,test,False,,2558.2342769994284,221,49,,zero_shot,False
+s77446_carparks_p174_row8,s77446_carparks,carparks,Parking should be free,False,ai_reference,test,True,,1754.7156670007098,215,34,,zero_shot,False
+s77446_carparks_p17_row5,s77446_carparks,carparks,Money grabbing a holes,False,ai_reference,test,True,,1983.8456370016502,215,40,,zero_shot,False
+s77446_carparks_p20_row2,s77446_carparks,carparks,You will kill the local community which is already bad,False,ai_reference,test,False,,2494.3975690002844,221,49,,zero_shot,True
+s77446_carparks_p22_row2,s77446_carparks,carparks,"Ridiculous, Bitterne will lose loads of customers, or people will just clog up local roads",True,ai_reference,test,False,,2127.609831000882,234,39,,zero_shot,False
+s77446_carparks_p33_row7,s77446_carparks,carparks,Small business will feel an impact of this.,False,ai_reference,test,True,,1877.561016000982,220,36,,zero_shot,False
+s77446_carparks_p50_row10,s77446_carparks,carparks,car parking charges can be used to maintain car parks and be re-invested into public transport and repairing roads,True,ai_reference,test,True,,2225.4452820016013,233,41,,zero_shot,True
+s77446_carparks_p56_row8,s77446_carparks,carparks,As it should be a free car park,False,ai_reference,test,False,,2456.072364002466,219,49,,zero_shot,True
+s77446_carparks_p5_row14,s77446_carparks,carparks,This will only hurt the community and serves only to funnel money to a lackluster council.,False,ai_reference,test,False,,2629.871411001659,230,49,,zero_shot,True
+s77446_carparks_p66_row2,s77446_carparks,carparks,You'll be charging us per breath soon! You will put people off using local shops too.,True,ai_reference,test,False,,2290.620460000355,230,44,,zero_shot,False
+s77446_carparks_p6_row3,s77446_carparks,carparks,Having to pay to park everywhere is a disgusting money grab by Southampton City Council. You will put people off visiting Bitterne and Woolston so the local economy will suffer. Asking people to pay to go to the doctors at Bitterne Health Centre is also disgusting. I have a disability and have no choice but to drive and park in these places so on top of the horrific amount of Council Tax you take you also want us all to pay to park. You should be ashamed of yourselves.,True,ai_reference,test,True,,3202.21120199858,310,46,,zero_shot,True
+s77446_carparks_p70_row13,s77446_carparks,carparks,Kills off local shopping,True,ai_reference,test,False,,2475.3070389997447,216,50,,zero_shot,False
+s77446_carparks_p71_row8,s77446_carparks,carparks,"You as a Council are doing all you can to get cars of the road, you have no thought of the public who have to use the roads and car parks for all sorts of reasons You are a typical Labour Council and government",False,ai_reference,test,False,,2834.2493460004334,256,49,,zero_shot,True
+s77446_carparks_p72_row2,s77446_carparks,carparks,We don't get anything free in this council and to take this is a nail in the coffin,False,ai_reference,test,False,,2694.1942220000783,230,51,,zero_shot,True
+s77446_carparks_p75_row4,s77446_carparks,carparks,Unreasonable and desperate. Where else can we eek out more avenues of revenue? This reeks of desperation.,False,ai_reference,test,False,,2064.467762997083,234,38,,zero_shot,True
+s77446_carparks_p78_row7,s77446_carparks,carparks,Measure will significantly impact local businesses,False,ai_reference,test,True,,1908.97054600282,217,38,,zero_shot,False
+s77446_carparks_p79_row9,s77446_carparks,carparks,I object to parking charges,False,ai_reference,test,False,,2028.7517049982853,216,40,,zero_shot,True
+s77446_carparks_p7_row5,s77446_carparks,carparks,Absolutely disgusted to see this! Will be detrimental to local businesses and so unnecessary to try and implement these changes!,True,ai_reference,test,False,,2740.244607000932,233,52,,zero_shot,False
+s77446_carparks_p85_row4,s77446_carparks,carparks,It's just yet another way to get at drivers,False,ai_reference,test,False,,2501.2217379990034,221,49,,zero_shot,True
+s77446_carparks_p94_row11,s77446_carparks,carparks,Absolutely terrible idea.. object object object this silliness. Very poor on the councillor who proposed this.,False,ai_reference,test,False,,2885.610707999149,231,56,,zero_shot,True
+s77446_carparks_p101_row3,s77446_carparks,carparks,Bollocks,False,ai_reference,test,False,,3033.026136999979,310,23,,dspy,True
+s77446_carparks_p104_row11,s77446_carparks,carparks,Labour kill business,True,ai_reference,test,True,,3003.367053999682,310,22,,dspy,True
+s77446_carparks_p105_row3,s77446_carparks,carparks,Will discourage spending at local shops,True,ai_reference,test,True,,3326.52701799816,313,26,,dspy,True
+s77446_carparks_p106_row2,s77446_carparks,carparks,Will negatively affect businesses,True,ai_reference,test,True,,3145.4130290003377,311,24,,dspy,True
+s77446_carparks_p109_row7,s77446_carparks,carparks,I would support if you provide more regular bus services on Hill Lane and Westwood Road!,True,ai_reference,test,True,,4269.776957000431,324,37,,dspy,True
+s77446_carparks_p113_row7,s77446_carparks,carparks,It is an unfair for their customers!,False,ai_reference,test,True,,3486.2146329978714,314,27,,dspy,False
+s77446_carparks_p116_row7,s77446_carparks,carparks,I believe the motorists are being used as a cash cow to support other questionable services.,False,ai_reference,test,True,,4095.983475999674,323,36,,dspy,False
+s77446_carparks_p118_row6,s77446_carparks,carparks,It will destroy local business,True,ai_reference,test,True,,3252.215853000962,312,25,,dspy,True
+s77446_carparks_p11_row7,s77446_carparks,carparks,Local shops will suffer,True,ai_reference,test,True,,3258.506246002071,311,24,,dspy,True
+s77446_carparks_p120_row2,s77446_carparks,carparks,"Shoppers will go elsewhere, ruining local business",True,ai_reference,test,True,,3832.8399550009635,316,29,,dspy,True
+s77446_carparks_p126_row3,s77446_carparks,carparks,It is not essential to proceed with those arrangements at this time.,False,ai_reference,test,True,,3659.952590998728,319,32,,dspy,False
+s77446_carparks_p127_row11,s77446_carparks,carparks,We are already paying more than enough in council tax and road tax.,True,ai_reference,test,True,,3897.4558480003907,320,32,,dspy,True
+s77446_carparks_p131_row14,s77446_carparks,carparks,Killing businesses,True,ai_reference,test,True,,3286.568791998434,310,23,,dspy,True
+s77446_carparks_p134_row10,s77446_carparks,carparks,We've paid Council tax and road tax already.,True,ai_reference,test,True,,3603.6276500017266,316,29,,dspy,True
+s77446_carparks_p141_row10,s77446_carparks,carparks,Will kill the small business trading evenings,True,ai_reference,test,True,,3551.985475998663,314,27,,dspy,True
+s77446_carparks_p14_row6,s77446_carparks,carparks,"Why pick on the motorist,",False,ai_reference,test,True,,3366.0311339990585,313,26,,dspy,False
+s77446_carparks_p151_row5,s77446_carparks,carparks,Bitterne needs free parking to get people to shop there,True,ai_reference,test,True,,3778.0177610002283,319,32,,dspy,True
+s77446_carparks_p156_row12,s77446_carparks,carparks,Because the facilities mentioned do not equate to long term parking,True,ai_reference,test,True,,3598.3553379992372,319,31,,dspy,True
+s77446_carparks_p156_row8,s77446_carparks,carparks,Crazy,False,ai_reference,test,True,,3018.934924999485,309,22,,dspy,False
+s77446_carparks_p161_row2,s77446_carparks,carparks,Purely a reason to raise money for the city council. Not to get people on public transport.,False,ai_reference,test,True,,4439.756455998577,326,38,,dspy,False
+s77446_carparks_p16_row3,s77446_carparks,carparks,You'll drive people away and businesses will close.,True,ai_reference,test,True,,3561.787363003532,316,29,,dspy,True
+s77446_carparks_p174_row8,s77446_carparks,carparks,Parking should be free,False,ai_reference,test,True,,3094.3158189984388,311,24,,dspy,False
+s77446_carparks_p17_row5,s77446_carparks,carparks,Money grabbing a holes,False,ai_reference,test,True,,3182.881978998921,311,24,,dspy,False
+s77446_carparks_p20_row2,s77446_carparks,carparks,You will kill the local community which is already bad,False,ai_reference,test,True,,3613.12917900068,317,30,,dspy,False
+s77446_carparks_p22_row2,s77446_carparks,carparks,"Ridiculous, Bitterne will lose loads of customers, or people will just clog up local roads",True,ai_reference,test,True,,4803.484479001781,330,43,,dspy,True
+s77446_carparks_p33_row7,s77446_carparks,carparks,Small business will feel an impact of this.,False,ai_reference,test,True,,3372.005741999601,315,28,,dspy,False
+s77446_carparks_p50_row10,s77446_carparks,carparks,car parking charges can be used to maintain car parks and be re-invested into public transport and repairing roads,True,ai_reference,test,True,,4600.683960001334,329,41,,dspy,True
+s77446_carparks_p56_row8,s77446_carparks,carparks,As it should be a free car park,False,ai_reference,test,True,,3310.7366879994515,315,27,,dspy,False
+s77446_carparks_p5_row14,s77446_carparks,carparks,This will only hurt the community and serves only to funnel money to a lackluster council.,False,ai_reference,test,True,,4319.759676000103,325,38,,dspy,False
+s77446_carparks_p66_row2,s77446_carparks,carparks,You'll be charging us per breath soon! You will put people off using local shops too.,True,ai_reference,test,True,,4256.031304998032,325,37,,dspy,True
+s77446_carparks_p6_row3,s77446_carparks,carparks,Having to pay to park everywhere is a disgusting money grab by Southampton City Council. You will put people off visiting Bitterne and Woolston so the local economy will suffer. Asking people to pay to go to the doctors at Bitterne Health Centre is also disgusting. I have a disability and have no choice but to drive and park in these places so on top of the horrific amount of Council Tax you take you also want us all to pay to park. You should be ashamed of yourselves.,True,ai_reference,test,True,,11704.728738000995,405,117,,dspy,True
+s77446_carparks_p70_row13,s77446_carparks,carparks,Kills off local shopping,True,ai_reference,test,True,,3276.0012580001785,312,25,,dspy,True
+s77446_carparks_p71_row8,s77446_carparks,carparks,"You as a Council are doing all you can to get cars of the road, you have no thought of the public who have to use the roads and car parks for all sorts of reasons You are a typical Labour Council and government",False,ai_reference,test,True,,6702.1435820024635,352,64,,dspy,False
+s77446_carparks_p72_row2,s77446_carparks,carparks,We don't get anything free in this council and to take this is a nail in the coffin,False,ai_reference,test,True,,4430.618764999963,326,39,,dspy,False
+s77446_carparks_p75_row4,s77446_carparks,carparks,Unreasonable and desperate. Where else can we eek out more avenues of revenue? This reeks of desperation.,False,ai_reference,test,True,,4668.274733001454,329,42,,dspy,False
+s77446_carparks_p78_row7,s77446_carparks,carparks,Measure will significantly impact local businesses,False,ai_reference,test,True,,3249.119805997907,313,26,,dspy,False
+s77446_carparks_p79_row9,s77446_carparks,carparks,I object to parking charges,False,ai_reference,test,True,,3321.6387370011944,312,25,,dspy,False
+s77446_carparks_p7_row5,s77446_carparks,carparks,Absolutely disgusted to see this! Will be detrimental to local businesses and so unnecessary to try and implement these changes!,True,ai_reference,test,True,,4604.458942998463,328,40,,dspy,True
+s77446_carparks_p85_row4,s77446_carparks,carparks,It's just yet another way to get at drivers,False,ai_reference,test,True,,3591.004994999821,317,30,,dspy,False
+s77446_carparks_p94_row11,s77446_carparks,carparks,Absolutely terrible idea.. object object object this silliness. Very poor on the councillor who proposed this.,False,ai_reference,test,True,,4419.132480001281,326,39,,dspy,False
+s77446_carparks_p101_row3,s77446_carparks,carparks,Bollocks,False,ai_reference,test,False,0.244,1538.0758840001363,177,0,,laya,True
+s77446_carparks_p104_row11,s77446_carparks,carparks,Labour kill business,True,ai_reference,test,True,0.5384,1507.2726069993223,178,0,,laya,True
+s77446_carparks_p105_row3,s77446_carparks,carparks,Will discourage spending at local shops,True,ai_reference,test,True,0.6356,1530.1558729988756,180,0,,laya,True
+s77446_carparks_p106_row2,s77446_carparks,carparks,Will negatively affect businesses,True,ai_reference,test,False,0.4774,1526.4878460002365,178,0,,laya,False
+s77446_carparks_p109_row7,s77446_carparks,carparks,I would support if you provide more regular bus services on Hill Lane and Westwood Road!,True,ai_reference,test,True,0.8036,1565.2059089989052,192,0,,laya,True
+s77446_carparks_p113_row7,s77446_carparks,carparks,It is an unfair for their customers!,False,ai_reference,test,True,0.5161,1690.7354300019506,182,0,,laya,False
+s77446_carparks_p116_row7,s77446_carparks,carparks,I believe the motorists are being used as a cash cow to support other questionable services.,False,ai_reference,test,True,0.7747,1554.102767000586,192,0,,laya,False
+s77446_carparks_p118_row6,s77446_carparks,carparks,It will destroy local business,True,ai_reference,test,True,0.6994,1530.8678999972472,179,0,,laya,True
+s77446_carparks_p11_row7,s77446_carparks,carparks,Local shops will suffer,True,ai_reference,test,True,0.7797,1582.7054060027876,178,0,,laya,True
+s77446_carparks_p120_row2,s77446_carparks,carparks,"Shoppers will go elsewhere, ruining local business",True,ai_reference,test,True,0.6841,1504.5995820000826,184,0,,laya,True
+s77446_carparks_p126_row3,s77446_carparks,carparks,It is not essential to proceed with those arrangements at this time.,False,ai_reference,test,True,0.5898,1648.3465439996507,187,0,,laya,False
+s77446_carparks_p127_row11,s77446_carparks,carparks,We are already paying more than enough in council tax and road tax.,True,ai_reference,test,False,0.3943,1754.4707089982694,188,0,,laya,False
+s77446_carparks_p131_row14,s77446_carparks,carparks,Killing businesses,True,ai_reference,test,False,0.471,1469.572201000119,177,0,,laya,False
+s77446_carparks_p134_row10,s77446_carparks,carparks,We've paid Council tax and road tax already.,True,ai_reference,test,False,0.2152,1495.9980989988253,184,0,,laya,False
+s77446_carparks_p141_row10,s77446_carparks,carparks,Will kill the small business trading evenings,True,ai_reference,test,False,0.2344,1594.3075110008067,181,0,,laya,False
+s77446_carparks_p14_row6,s77446_carparks,carparks,"Why pick on the motorist,",False,ai_reference,test,True,0.7408,1609.8127569966891,181,0,,laya,False
+s77446_carparks_p151_row5,s77446_carparks,carparks,Bitterne needs free parking to get people to shop there,True,ai_reference,test,True,0.6376,1578.78451400029,186,0,,laya,True
+s77446_carparks_p156_row12,s77446_carparks,carparks,Because the facilities mentioned do not equate to long term parking,True,ai_reference,test,True,0.8163,1613.2896079980128,186,0,,laya,True
+s77446_carparks_p156_row8,s77446_carparks,carparks,Crazy,False,ai_reference,test,False,0.1234,1497.3912669993297,176,0,,laya,True
+s77446_carparks_p161_row2,s77446_carparks,carparks,Purely a reason to raise money for the city council. Not to get people on public transport.,False,ai_reference,test,True,0.6457,1681.701752000663,195,0,,laya,False
+s77446_carparks_p16_row3,s77446_carparks,carparks,You'll drive people away and businesses will close.,True,ai_reference,test,True,0.7451,1561.1671610022313,184,0,,laya,True
+s77446_carparks_p174_row8,s77446_carparks,carparks,Parking should be free,False,ai_reference,test,True,0.802,1549.4563629981712,179,0,,laya,False
+s77446_carparks_p17_row5,s77446_carparks,carparks,Money grabbing a holes,False,ai_reference,test,False,0.1343,1528.4558599996672,178,0,,laya,True
+s77446_carparks_p20_row2,s77446_carparks,carparks,You will kill the local community which is already bad,False,ai_reference,test,True,0.5504,1530.6591180014948,184,0,,laya,False
+s77446_carparks_p22_row2,s77446_carparks,carparks,"Ridiculous, Bitterne will lose loads of customers, or people will just clog up local roads",True,ai_reference,test,False,0.4046,1717.858714000613,195,0,,laya,False
+s77446_carparks_p33_row7,s77446_carparks,carparks,Small business will feel an impact of this.,False,ai_reference,test,True,0.6862,1605.1225169976533,183,0,,laya,False
+s77446_carparks_p50_row10,s77446_carparks,carparks,car parking charges can be used to maintain car parks and be re-invested into public transport and repairing roads,True,ai_reference,test,True,0.8247,1623.7005470029544,196,0,,laya,True
+s77446_carparks_p56_row8,s77446_carparks,carparks,As it should be a free car park,False,ai_reference,test,False,0.3883,1629.7084129982977,182,0,,laya,True
+s77446_carparks_p5_row14,s77446_carparks,carparks,This will only hurt the community and serves only to funnel money to a lackluster council.,False,ai_reference,test,False,0.2791,1582.0377830023062,193,0,,laya,True
+s77446_carparks_p66_row2,s77446_carparks,carparks,You'll be charging us per breath soon! You will put people off using local shops too.,True,ai_reference,test,True,0.7128,1571.5787449989875,193,0,,laya,True
+s77446_carparks_p6_row3,s77446_carparks,carparks,Having to pay to park everywhere is a disgusting money grab by Southampton City Council. You will put people off visiting Bitterne and Woolston so the local economy will suffer. Asking people to pay to go to the doctors at Bitterne Health Centre is also disgusting. I have a disability and have no choice but to drive and park in these places so on top of the horrific amount of Council Tax you take you also want us all to pay to park. You should be ashamed of yourselves.,True,ai_reference,test,False,0.2996,2350.5558220022067,275,0,,laya,False
+s77446_carparks_p70_row13,s77446_carparks,carparks,Kills off local shopping,True,ai_reference,test,True,0.5056,1587.2566979996918,179,0,,laya,True
+s77446_carparks_p71_row8,s77446_carparks,carparks,"You as a Council are doing all you can to get cars of the road, you have no thought of the public who have to use the roads and car parks for all sorts of reasons You are a typical Labour Council and government",False,ai_reference,test,True,0.5245,1839.9748689989792,219,0,,laya,False
+s77446_carparks_p72_row2,s77446_carparks,carparks,We don't get anything free in this council and to take this is a nail in the coffin,False,ai_reference,test,True,0.5971,1591.8998470006045,193,0,,laya,False
+s77446_carparks_p75_row4,s77446_carparks,carparks,Unreasonable and desperate. Where else can we eek out more avenues of revenue? This reeks of desperation.,False,ai_reference,test,True,0.5973,1717.6410410029348,197,0,,laya,False
+s77446_carparks_p78_row7,s77446_carparks,carparks,Measure will significantly impact local businesses,False,ai_reference,test,True,0.7087,1515.9812940000847,180,0,,laya,False
+s77446_carparks_p79_row9,s77446_carparks,carparks,I object to parking charges,False,ai_reference,test,True,0.7854,1535.3557590024138,179,0,,laya,False
+s77446_carparks_p7_row5,s77446_carparks,carparks,Absolutely disgusted to see this! Will be detrimental to local businesses and so unnecessary to try and implement these changes!,True,ai_reference,test,False,0.3858,1702.421931000572,197,0,,laya,False
+s77446_carparks_p85_row4,s77446_carparks,carparks,It's just yet another way to get at drivers,False,ai_reference,test,False,0.4997,1482.1387939991837,184,0,,laya,True
+s77446_carparks_p94_row11,s77446_carparks,carparks,Absolutely terrible idea.. object object object this silliness. Very poor on the councillor who proposed this.,False,ai_reference,test,False,0.3678,1717.261662997771,195,0,,laya,True
