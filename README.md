@@ -2,26 +2,32 @@
   <img src="assets/logo.png" alt="Better District" width="280">
 </p>
 
-# Better District
+<h1 align="center">Better District</h1>
+
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white">
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white">
+  <img alt="SQLite" src="https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">
+  <img alt="React" src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB">
+  <img alt="Expo" src="https://img.shields.io/badge/React_Native_/_Expo-000020?logo=expo&logoColor=white">
+  <img alt="Nix" src="https://img.shields.io/badge/Nix-5277C3?logo=nixos&logoColor=white">
+  <img alt="Ollama" src="https://img.shields.io/badge/Ollama-000000?logo=ollama&logoColor=white">
+</p>
 
 A map-based platform connecting residents with their council. Residents explore local plans, vote and comment, and report problems with photos and map pins. Council officers manage projects, moderate feedback and review AI-assisted insights through an admin website.
-
-![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
-![Expo](https://img.shields.io/badge/React_Native_/_Expo-000020?logo=expo&logoColor=white)
-![Nix](https://img.shields.io/badge/Nix-5277C3?logo=nixos&logoColor=white)
-![Ollama](https://img.shields.io/badge/Ollama-000000?logo=ollama&logoColor=white)
 
 **Local prototype with demo data.** Includes a separate research benchmark evaluating whether models can filter unhelpful consultation comments without losing useful feedback.
 
 ## Project walkthrough
 
-[![Watch the Better District project walkthrough on YouTube](https://img.youtube.com/vi/gBwpKXgnWPM/hqdefault.jpg)](https://youtu.be/gBwpKXgnWPM)
-
-[Watch the project walkthrough](https://youtu.be/gBwpKXgnWPM). Select the thumbnail to play on YouTube.
+<p align="center">
+  <a href="https://youtu.be/gBwpKXgnWPM">
+    <img src="https://img.youtube.com/vi/gBwpKXgnWPM/hqdefault.jpg" alt="Watch the Better District project walkthrough on YouTube" width="720">
+  </a>
+  <br>
+  <a href="https://youtu.be/gBwpKXgnWPM">Watch the project walkthrough on YouTube</a>
+</p>
 
 ## Components
 
