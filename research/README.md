@@ -2,7 +2,7 @@
 
 ## Abstract
 
-We compared five approaches across different ML paradigms for filtering useful public consultation comments: classical machine learning, a fine-tuned transformer, zero-shot LLM prompting, automatic prompt tuning, and a pretrained decision model. Two small trials with AI-labelled comments gave no clear overall winner. The results showed the trade-off between removing unhelpful comments and losing useful feedback, and how much the choice of test data matters. The experiment gave us a reusable benchmark and clear next steps: add consultation context, improve the labels, and test stronger models on unseen consultations.
+We compared five approaches across different ML paradigms for filtering useful public consultation comments: classical machine learning, a fine-tuned transformer, zero-shot LLM prompting, automatic prompt tuning, and a pretrained decision model. Two small trials with AI-labelled comments gave no clear overall winner. The results showed the trade-off between removing unhelpful comments and losing useful feedback, and how much the choice of test data matters. The experiment gave us a reusable benchmark and clear next steps: expand the dataset, improve the labels, and test stronger models on unseen consultations.
 
 ## Usage Instructions
 
@@ -115,10 +115,13 @@ We expanded from 120 to **310 comments, including 73 unhelpful ones**. The new t
 
 **Next trials:**
 
-1. Add the actual consultation question and a short proposal summary, so short comments have context.
-2. Add balanced training examples: short useful answers, angry useful comments, and bare opposition. Ask the LLM to quote the useful point.
-3. Allow **keep / unsure / discard**. Keep unsure comments; choose decisions on validation data to avoid losing useful feedback. Measure confidence rather than trusting a self-reported percentage.
-4. Compare a larger local LLM and a frontier LLM with the same inputs, recording missed useful comments, filtering, speed and cost.
-5. Test [TF-IDF word features with a linear classifier](https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html), [sentence embeddings](https://arxiv.org/abs/2209.11055), and balanced encoder training. Later, try fine-tuning a small LLM on checked labels.
+**Main priority: expand the dataset and check the labels by hand.** Add comments from more consultation topics, including short useful answers, angry useful comments, and detailed but unhelpful responses. Keep a whole unseen consultation aside as a shared final test, separate from training and prompt tuning. This should show whether more training data helps the trained models catch up, and whether Qwen's results hold across topics.
+
+Then, using the expanded dataset:
+
+1. Allow **keep / unsure / discard**. Keep unsure comments; choose decisions on validation data to avoid losing useful feedback. Measure confidence rather than trusting a self-reported percentage.
+2. Compare a larger local LLM and a frontier LLM with the same inputs, recording missed useful comments, filtering, speed and cost.
+3. Test [TF-IDF word features with a linear classifier](https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html), [sentence embeddings](https://arxiv.org/abs/2209.11055), and balanced encoder training. Later, try fine-tuning a small LLM on checked labels.
+4. Monitor results and re-iterate
 
 [Results](benchmark/results/results.csv) · [Predictions](benchmark/results/case_predictions.csv) · [Details](benchmark/results/findings.md) · [First experiment](benchmark/previous/results/findings.md). Rebuild the figures with `make analysis`.
