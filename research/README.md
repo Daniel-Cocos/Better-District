@@ -115,7 +115,7 @@ We expanded from 120 to **310 comments, including 73 unhelpful ones**. The new t
 
 **Next trials:**
 
-**Main priority: expand the dataset and check the labels by hand.** Add comments from more consultation topics, including short useful answers, angry useful comments, and detailed but unhelpful responses. Keep a whole unseen consultation aside as a shared final test, separate from training and prompt tuning. This should show whether more training data helps the trained models catch up, and whether Qwen's results hold across topics.
+**Main priority: expand the dataset.** Add comments from more consultation topics, including short useful answers, angry useful comments, and detailed but unhelpful responses. Keep a whole unseen consultation aside as a shared final test, separate from training and prompt tuning. This should show whether more training data helps the trained models catch up, and whether Qwen's results hold across topics.
 
 Then, using the expanded dataset:
 
