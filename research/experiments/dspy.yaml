@@ -1,0 +1,18 @@
+name: dspy
+seed: 42
+data:
+  data_dir: benchmark/data
+  annotations: benchmark/labels.csv
+  reference_quality: ai_reference
+  split_strategy: stratified
+  splits_file: benchmark/splits.json
+model:
+  kind: dspy
+  params:
+    model_name: ollama_chat/qwen3:1.7b
+    api_base: http://localhost:11434
+    auto: light
+    num_trials: 3
+    max_tokens: 768
+    timeout: 60
+    reasoning_effort: "none"

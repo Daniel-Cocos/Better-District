@@ -1,0 +1,7 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Experiment comparison</title>
+<style>body{font:16px/1.6 system-ui;max-width:1200px;margin:40px auto}img{max-width:100%}td,th{padding:10px;text-align:left}</style>
+<h1>Experiment comparison</h1><p>These runs share identical test inputs, labels and target scope. Scores use the saved reference labels. For the PoC these labels were assigned by Codex. Inspect class counts and failed predictions alongside scores.</p>
+<img src="comparison.png" alt="Model quality, latency and coverage">
+<table><tr><th>Run</th><th>Precision</th><th>Recall</th><th>Coverage</th><th>Scored</th></tr>
+{% for row in rows %}<tr><td>{{ row.run_id }}</td><td>{{ row.precision if row.precision is not none else 'Unavailable' }}</td><td>{{ row.recall if row.recall is not none else 'Unavailable' }}</td><td>{{ row.coverage }}</td><td>{{ row.n_scored }}</td></tr>{% endfor %}</table>
+<p><a href="comparison.csv">CSV</a> · <a href="comparison.json">JSON</a> · <a href="comparison.svg">SVG</a></p></html>

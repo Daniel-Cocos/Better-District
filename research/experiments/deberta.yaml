@@ -1,0 +1,19 @@
+name: deberta
+seed: 42
+data:
+  data_dir: benchmark/data
+  annotations: benchmark/labels.csv
+  reference_quality: ai_reference
+  split_strategy: stratified
+  splits_file: benchmark/splits.json
+model:
+  kind: deberta
+  params:
+    model_name: microsoft/deberta-v3-small
+    revision: a36c739020e01763fe789b4b85e2df55d6180012
+    epochs: 2
+    learning_rate: 0.00002
+    batch_size: 4
+    max_length: 192
+    device: cpu
+threshold: 0.5

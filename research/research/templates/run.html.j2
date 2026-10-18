@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>{{ run.name }} — {{ run.run_id }}</title>
+<style>body{max-width:1100px;margin:40px auto;padding:0 24px;font:16px/1.6 system-ui;color:#21312f}pre{overflow:auto;background:#f1f5f4;padding:16px}table{border-collapse:collapse;width:100%}td,th{padding:7px;text-align:left;border-bottom:1px solid #ddd}img{max-width:100%}.warning{background:#fff1d9;padding:12px}</style>
+<h1>{{ run.name }}</h1><p>Run <code>{{ run.run_id }}</code> · {{ run.model }} · <strong>{{ run.status }}</strong></p>
+<p>Started {{ run.started_at }}. Duration {{ '%.2f'|format(run.elapsed_seconds) }} seconds.</p>
+{% for warning in run.warnings %}<p class="warning">{{ warning }}</p>{% endfor %}
+{% if run.error is defined %}<p class="warning">{{ run.error }}</p>{% endif %}
+{% if run.artifact_error is defined %}<p class="warning">Artifact save failed: {{ run.artifact_error }}</p>{% endif %}
+<h2>Metrics</h2><p>Scores compare successful predictions with the saved reference labels. Check failures and class counts alongside precision and recall. {% if run.reference_quality is defined and run.reference_quality == "ai_reference" %}This PoC uses AI-assigned reference labels.{% endif %}</p>
+<table><tr><th>Metric</th><th>Value</th></tr>{% for name, value in metrics.items() %}<tr><td>{{ name }}</td><td>{{ value if value is not none else 'Unavailable' }}</td></tr>{% endfor %}</table>
+{% for figure in figures %}<img src="figures/{{ figure }}" alt="{{ figure }}">{% endfor %}
+<h2>Configuration</h2><pre>{{ config|tojson(indent=2) }}</pre>
+<h2>Provenance</h2><pre>{{ run|tojson(indent=2) }}</pre>
+<p>Artifacts: <a href="config.json">configuration</a> · <a href="splits.json">split manifest</a> · <a href="dataset.parquet">dataset snapshot</a> · <a href="predictions.csv">predictions</a> · <a href="metrics.json">metrics</a> · <a href="model/metadata.json">model metadata</a> · <a href="model/raw_responses.jsonl">raw responses</a></p>
+</html>

@@ -1,0 +1,17 @@
+name: zero-shot
+seed: 42
+data:
+  data_dir: benchmark/data
+  annotations: benchmark/labels.csv
+  reference_quality: ai_reference
+  split_strategy: stratified
+  splits_file: benchmark/splits.json
+model:
+  kind: zero_shot
+  params:
+    model_name: ollama_chat/qwen3:1.7b
+    api_base: http://localhost:11434
+    temperature: 0.0
+    max_tokens: 256
+    timeout: 60
+    reasoning_effort: "none"

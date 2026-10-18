@@ -1,0 +1,10 @@
+name: heuristic
+seed: 42
+data:
+  data_dir: benchmark/data
+  annotations: benchmark/labels.csv
+  reference_quality: ai_reference
+  split_strategy: stratified
+  splits_file: benchmark/splits.json
+model:
+  kind: heuristic
