@@ -42,7 +42,12 @@ make data
 
 ## Evaluation
 
-The ML Algorithms / Models evaluated are the following
+The ML Algorithms / Models evaluated are the following. The purpose of this eval is to compare models / techniques ranging from classic ML algorithms to modern LLM's and also system-1 decision models.
+
+There are few deliverables this research aims to achive:
+
+1. Comparing how cost effective different implementation are in the context of filtering unproductive comments
+2. Composing various inputs which can be fed into the insight generation pipeline to help narrow in on optimal prioritisation towards precision and recall
 
 ### Classical ML - LightGBM
 
