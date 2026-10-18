@@ -1,0 +1,45 @@
+[tool.black]
+line-length = 88
+target-version = ["py314"]
+
+[tool.pyright]
+include = ["consultations", "research", "tests", "main.py"]
+exclude = [".cache", "runs", "benchmark/data", "benchmark/results"]
+pythonVersion = "3.14"
+typeCheckingMode = "standard"
+
+[tool.pylint.main]
+py-version = "3.14"
+
+[tool.pylint.format]
+max-line-length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+# Load heavyweight ML runtimes only when their adapter is used.
+[tool.pylint.imports]
+allow-any-import-level = [
+    "benchmark.benchmark",
+    "consultations.download",
+    "dspy",
+    "hub.fetch_model",
+    "huggingface_hub",
+    "huggingface_hub.HfApi",
+    "huggingface_hub.snapshot_download",
+    "io",
+    "laya",
+    "lightgbm.LGBMClassifier",
+    "litellm",
+    "research.models.deberta.DebertaClassifier",
+    "research.models.dspy.DSPyClassifier",
+    "research.models.laya",
+    "research.models.laya.LayaClassifier",
+    "research.models.laya.REVISION",
+    "sklearn.model_selection.StratifiedGroupKFold",
+    "torch",
+    "transformers",
+    "transformers.AutoModelForSequenceClassification",
+    "transformers.AutoTokenizer",
+    "transformers.set_seed",
+]
