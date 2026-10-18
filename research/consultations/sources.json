@@ -1,0 +1,44 @@
+[
+  {
+    "filename": "s77446_district_carparks.pdf",
+    "dataset_id": "s77446_carparks",
+    "policy_domain": "Transport_Parking",
+    "url": "https://www.southampton.gov.uk/moderngov/documents/s77446/MRD%201%20-%20Consultation%20Responses.pdf"
+  },
+  {
+    "filename": "s59108_portswood_comments.pdf",
+    "dataset_id": "s59108_portswood_p1",
+    "policy_domain": "Transport_ActiveTravel",
+    "url": "https://www.southampton.gov.uk/moderngov/documents/s59108/Appendix%202%20Portswood%20Corridor%20Consultation%20Comments%20Report.pdf"
+  },
+  {
+    "filename": "psg29_portswood_annex_b.pdf",
+    "dataset_id": "psg29_portswood_log",
+    "policy_domain": "Transport_YouSaidWeDid",
+    "url": "https://transport.southampton.gov.uk/media/3302/psg29_annex-b-log-of-comments-responses.pdf"
+  },
+  {
+    "filename": "portswood_final_2024.pdf",
+    "dataset_id": "media3131_portswood_p2",
+    "policy_domain": "Transport_ActiveTravel",
+    "url": "https://transport.southampton.gov.uk/media/3131/portswood-project-consultation-final-feedback-report-040124.pdf"
+  },
+  {
+    "filename": "s50527_licensing_persian_centre.pdf",
+    "dataset_id": "s50527_licensing",
+    "policy_domain": "Licensing_Statutory",
+    "url": "https://www.southampton.gov.uk/moderngov/documents/s50527/NEW%20APPLICATION%20FOR%20PREMISES%20LICENCE%20-%20PERSIAN%20CULTURAL%20CENTRE%201%20MANOR%20FARM%20ROAD%20SOUTHAMPTON%20SO18%20.pdf"
+  },
+  {
+    "filename": "s69290_council_tax_feedback.pdf",
+    "dataset_id": "s69290_budget",
+    "policy_domain": "Fiscal_CouncilTax",
+    "url": "https://www.southampton.gov.uk/moderngov/documents/s69290/Appendix%203%20Budget%20Consultation%20Council%20Tax%20Proposals%20Feedback.pdf"
+  },
+  {
+    "filename": "s57570_pna_briefing.pdf",
+    "dataset_id": "s57570_pna",
+    "policy_domain": "Health_PNA",
+    "url": "https://www.southampton.gov.uk/moderngov/documents/s57570/Appendix%201%20for%20Pharmaceutical%20Needs%20Assessment%20Briefing.pdf"
+  }
+]

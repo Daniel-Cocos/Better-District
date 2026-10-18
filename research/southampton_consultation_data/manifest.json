@@ -1,0 +1,50 @@
+{
+  "format_version": 2,
+  "created_at": "2026-10-18T00:25:55.253032+00:00",
+  "records": 1117,
+  "silver_labels": 48,
+  "sources": [
+    {
+      "dataset_id": "s77446_carparks",
+      "url": "https://www.southampton.gov.uk/moderngov/documents/s77446/MRD%201%20-%20Consultation%20Responses.pdf",
+      "sha256": "c827556f0e32ba4391b6402dcb47331f5560d3f01413fdb3a2e99a7259863540",
+      "records": 197
+    },
+    {
+      "dataset_id": "s59108_portswood_p1",
+      "url": "https://www.southampton.gov.uk/moderngov/documents/s59108/Appendix%202%20Portswood%20Corridor%20Consultation%20Comments%20Report.pdf",
+      "sha256": "883f6bb54808c407689630e960bc74eae8c26578032d0f5d09b1f6c7e868d255",
+      "records": 20
+    },
+    {
+      "dataset_id": "psg29_portswood_log",
+      "url": "https://transport.southampton.gov.uk/media/3302/psg29_annex-b-log-of-comments-responses.pdf",
+      "sha256": "a02ef7155b1d82dafe7d3de882c520bfb20d8ebf17c7ee050f792fe31fc7bf26",
+      "records": 48
+    },
+    {
+      "dataset_id": "media3131_portswood_p2",
+      "url": "https://transport.southampton.gov.uk/media/3131/portswood-project-consultation-final-feedback-report-040124.pdf",
+      "sha256": "616302da10b6a29ee6f7eb135e2b7f504042b5c0bf81ab38293f609d26833a9a",
+      "records": 579
+    },
+    {
+      "dataset_id": "s50527_licensing",
+      "url": "https://www.southampton.gov.uk/moderngov/documents/s50527/NEW%20APPLICATION%20FOR%20PREMISES%20LICENCE%20-%20PERSIAN%20CULTURAL%20CENTRE%201%20MANOR%20FARM%20ROAD%20SOUTHAMPTON%20SO18%20.pdf",
+      "sha256": "56d1561506f14151bac83b72374bd60cdccd6a77f21d5b3f91af11a0ed479e9d",
+      "records": 149
+    },
+    {
+      "dataset_id": "s69290_budget",
+      "url": "https://www.southampton.gov.uk/moderngov/documents/s69290/Appendix%203%20Budget%20Consultation%20Council%20Tax%20Proposals%20Feedback.pdf",
+      "sha256": "25ffe4dccfd14b477d33a3a44ca7755ad449199d82c5a6db13d85d5d5a9819e4",
+      "records": 70
+    },
+    {
+      "dataset_id": "s57570_pna",
+      "url": "https://www.southampton.gov.uk/moderngov/documents/s57570/Appendix%201%20for%20Pharmaceutical%20Needs%20Assessment%20Briefing.pdf",
+      "sha256": "30d019fa130b18bf9f2a26c1ec0cff092bd55f0a21a35fdf1a1471b88073bc49",
+      "records": 54
+    }
+  ]
+}

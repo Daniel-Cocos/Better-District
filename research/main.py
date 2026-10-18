@@ -1,14 +1,17 @@
-import pandas as pd
+"""Small example: run `nix develop --command python main.py` after `make data`."""
 
-# Load the aggregated corpus
-df = pd.read_parquet("./southampton_consultation_data/southampton_consultations_aggregated.parquet")
+from consultations import load_dataset
 
-# Or load via CSV:
-# df = pd.read_csv("./southampton_consultation_data/southampton_consultations_aggregated.csv")
 
-print(df.info())
-print(df.groupby(["dataset_id", "extraction_type"])["comment_id"].count())
+def main() -> None:
+    """Parse command-line arguments and execute the requested operation."""
+    df = load_dataset(include_silver=True)
+    print(df.groupby(["dataset_id", "extraction_type"]).size())
+    print(df[["comment_id", "comment_text", "productive", "label_quality"]].head())
+    # Unknown labels stay null. Silver labels are opt-in, assumption-based positives.
+    labelled = df[df.productive.notna()]
+    print(f"{len(labelled)} labelled rows; review before using as an evaluation set.")
 
-# Example: Isolate the District Centre Car Parks verbatim objections (s77446) for Stage 1 filtering
-carparks_df = df[df["dataset_id"] == "s77446_carparks"].copy()
-print(carparks_df[["comment_id", "word_count", "comment_text"]].head())
+
+if __name__ == "__main__":
+    main()
