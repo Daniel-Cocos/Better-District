@@ -48,6 +48,8 @@ There are few deliverables this research aims to achive:
 
 1. Comparing how cost effective different implementation are in the context of filtering unproductive comments
 2. Composing various inputs which can be fed into the insight generation pipeline to help narrow in on optimal prioritisation towards precision and recall
+  - Current hypothesis: A false negative is generally more costly because it can result in a genuine issue never being considered
+  - The question remains of determining a quantitative ratio which represents the value of recall:precision
 
 ### Classical ML - LightGBM
 
@@ -68,3 +70,49 @@ Rather than manual prompt compile the llm - automatically test different instruc
 ### System-1 classifier - Laya
 
 System 1 decision model - recent gain in popularity due to the release of Jev from typesafe-AI 
+
+## Results
+
+**Verdict:** LLMs are promising when labels are limited, but no reliable filter emerged. Zero-shot Qwen had the highest expanded-test accuracy (62.5%), while losing 11 of 20 useful comments. DSPy kept useful comments but barely filtered.
+
+**Rubric:** Useful comments give a clear issue, reason, impact, experience or suggestion about the consultation. Anger and bad spelling are fine. Bare opinions, abuse or off-topic text with no useful point do not count.
+
+First test: 22 useful, two unhelpful comments. Expanded test: 20 of each. **Lost** means useful comments wrongly removed; **filtered** means unhelpful comments correctly removed.
+
+| Model | First test | Expanded test |
+| --- | --- | --- |
+| LightGBM | Lost 0; filtered 0. | Lost 5; filtered 4. |
+| DeBERTa-v3-small | Lost 0; filtered 0. | Lost 0; filtered 0: kept everything again. |
+| Qwen3 1.7B, zero-shot | Lost 2; filtered 2. | Lost 11; filtered 16: more filtering, many useful comments lost. |
+| Qwen3 1.7B, DSPy | Lost 0; filtered 0. | Lost 0; filtered 1: kept useful feedback, barely filtered. |
+| Laya | Lost 5; filtered 0. | Lost 8; filtered 7. |
+
+Keeping everything scored 91.7% accuracy in the first test and 50% in the second.
+
+- Precision measures usefulness among kept comments.
+- Recall measures how many useful comments we kept.
+- Accuracy measures all correct decisions.
+
+**First trial - 24 comments (22 useful, two unhelpful):**
+
+![First trial: precision and recall for each model](benchmark/previous/figures/precision_recall.png)
+
+[First-trial stats](benchmark/previous/results/results.csv). Four models share the same point because they kept every comment.
+
+**Expanded trial - 40 comments (20 useful, 20 unhelpful):**
+
+![Expanded trial: precision and recall for each model](benchmark/results/figures/precision_recall.png)
+
+We expanded from 120 to **310 comments, including 73 unhelpful ones**. The new test uses fresh parking comments matched by rough length. Both tests are small selected samples, and their different class mixes make precision and accuracy unsuitable for a direct before/after comparison.
+
+**What this supports:** Our LightGBM used only four counts. DeBERTa had brief training and limited labels. These results do not establish that classical ML cannot handle varied text, or that missing structured data caused the failures. [Small trained text models can also compete with larger LLMs.](https://aclanthology.org/2025.emnlp-main.9/) Qwen was promising and makes stronger LLMs worth testing, but their success remains a hypothesis.
+
+**Next trials:**
+
+1. Add the actual consultation question and a short proposal summary, so short comments have context.
+2. Add balanced training examples: short useful answers, angry useful comments, and bare opposition. Ask the LLM to quote the useful point.
+3. Allow **keep / unsure / discard**. Keep unsure comments; choose decisions on validation data to avoid losing useful feedback. Measure confidence rather than trusting a self-reported percentage.
+4. Compare a larger local LLM and a frontier LLM with the same inputs, recording missed useful comments, filtering, speed and cost.
+5. Test [TF-IDF word features with a linear classifier](https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html), [sentence embeddings](https://arxiv.org/abs/2209.11055), and balanced encoder training. Later, try fine-tuning a small LLM on checked labels.
+
+[Results](benchmark/results/results.csv) · [Predictions](benchmark/results/case_predictions.csv) · [Details](benchmark/results/findings.md) · [First experiment](benchmark/previous/results/findings.md). Rebuild the figures with `make analysis`.
