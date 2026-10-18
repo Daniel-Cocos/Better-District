@@ -1,5 +1,11 @@
 # Southampton consultation aggregation
 
+## Abstract
+
+We compared five approaches across different ML paradigms for filtering useful public consultation comments: classical machine learning, a fine-tuned transformer, zero-shot LLM prompting, automatic prompt tuning, and a pretrained decision model. Two small trials with AI-labelled comments gave no clear overall winner. The results showed the trade-off between removing unhelpful comments and losing useful feedback, and how much the choice of test data matters. The experiment gave us a reusable benchmark and clear next steps: add consultation context, improve the labels, and test stronger models on unseen consultations.
+
+## Usage Instructions
+
 Run from this directory using Nix with flakes enabled:
 
 ```sh
